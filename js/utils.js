@@ -12,39 +12,38 @@
 
 const UI = {
 
-// ── Loading overlay ────────────────────────────────────
+// -- Loading overlay --------------------------------------------
 
 _loadTimer: null,
 
-showLoading(message = ‘Loading…’) {
-const overlay = document.getElementById(‘loadingOverlay’);
-const text    = document.getElementById(‘loadingText’);
+showLoading(message = 'Loading...') {
+const overlay = document.getElementById('loadingOverlay');
+const text    = document.getElementById('loadingText');
 if (!overlay) return;
 if (text) text.textContent = message;
-overlay.classList.add(‘loading-overlay–show’);
+overlay.classList.add('loading-overlay--show');
 // Safety timeout — never block the UI forever
 if (this._loadTimer) clearTimeout(this._loadTimer);
 this._loadTimer = setTimeout(() => this.hideLoading(), 15000);
 },
 
 hideLoading() {
-const overlay = document.getElementById(‘loadingOverlay’);
+const overlay = document.getElementById('loadingOverlay');
 if (!overlay) return;
-overlay.classList.remove(‘loading-overlay–show’);
+overlay.classList.remove('loading-overlay--show');
 if (this._loadTimer) {
 clearTimeout(this._loadTimer);
 this._loadTimer = null;
 }
 },
 
-// ── Toast notifications ────────────────────────────────
+// -- Toast notifications ----------------------------------------
 
 _toastTimer: null,
 
-showToast(message, type = ‘default’, duration = 2500) {
-let toast = document.getElementById(‘appToast’);
+showToast(message, type = 'default', duration = 2500) {
+let toast = document.getElementById('appToast');
 
-```
 // Create if doesn't exist
 if (!toast) {
   toast = document.createElement('div');
@@ -68,50 +67,48 @@ toast.classList.add('toast--show');
 this._toastTimer = setTimeout(() => {
   toast.classList.remove('toast--show');
 }, duration);
-```
-
 },
 
 showSuccess(message, duration = 2500) {
-this.showToast(message, ‘success’, duration);
+this.showToast(message, 'success', duration);
 },
 
 showError(message, duration = 3500) {
-this.showToast(message, ‘error’, duration);
+this.showToast(message, 'error', duration);
 },
 
-// ── Inline error/success messages ─────────────────────
+// -- Inline error/success messages -----------------------------
 
 showInlineError(elementId, message) {
 const el = document.getElementById(elementId);
 if (!el) return;
 el.textContent = message;
-el.classList.add(‘error-message–show’);
-setTimeout(() => el.classList.remove(‘error-message–show’), 5000);
+el.classList.add('error-message--show');
+setTimeout(() => el.classList.remove('error-message--show'), 5000);
 },
 
 hideInlineError(elementId) {
 const el = document.getElementById(elementId);
 if (!el) return;
-el.classList.remove(‘error-message–show’);
+el.classList.remove('error-message--show');
 },
 
-// ── Scroll to top ──────────────────────────────────────
+// -- Scroll to top ---------------------------------------------
 
 scrollToTop(smooth = false) {
-const main = document.querySelector(’.app-main’);
+const main = document.querySelector('.app-main');
 if (main) {
-main.scrollTo({ top: 0, behavior: smooth ? ‘smooth’ : ‘instant’ });
+main.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'instant' });
 }
-window.scrollTo({ top: 0, behavior: smooth ? ‘smooth’ : ‘instant’ });
+window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'instant' });
 },
 
-// ── Prevent iOS keyboard layout shift ─────────────────
+// -- Prevent iOS keyboard layout shift -------------------------
 
 fixIOSKeyboard() {
-const inputs = document.querySelectorAll(‘input, textarea’);
+const inputs = document.querySelectorAll('input, textarea');
 inputs.forEach(el => {
-el.addEventListener(‘blur’, () => {
+el.addEventListener('blur', () => {
 setTimeout(() => {
 window.scrollTo(0, 0);
 document.body.scrollTop = 0;
@@ -120,31 +117,30 @@ document.body.scrollTop = 0;
 });
 },
 
-// ── Set dynamic viewport height on iOS ────────────────
+// -- Set dynamic viewport height on iOS -----------------------
 
 setIOSViewportHeight() {
 const setVH = () => {
 const vh = window.innerHeight * 0.01;
-document.documentElement.style.setProperty(’–vh’, `${vh}px`);
+document.documentElement.style.setProperty('--vh', `${vh}px`);
 };
 setVH();
-window.addEventListener(‘resize’, setVH);
+window.addEventListener('resize', setVH);
 },
 
-// ── Body loaded state ──────────────────────────────────
+// -- Body loaded state -----------------------------------------
 
 markLoaded(delay = 80) {
-setTimeout(() => document.body.classList.add(‘loaded’), delay);
+setTimeout(() => document.body.classList.add('loaded'), delay);
 },
 
-// ── Character counter ──────────────────────────────────
+// -- Character counter -----------------------------------------
 
 bindCharCounter(inputId, counterId, minChars = 0) {
 const input   = document.getElementById(inputId);
 const counter = document.getElementById(counterId);
 if (!input || !counter) return;
 
-```
 const update = () => {
   const len = input.value.length;
   counter.textContent = minChars > 0
@@ -160,20 +156,17 @@ const update = () => {
 
 input.addEventListener('input', update);
 update(); // Run immediately
-```
-
 },
 
-// ── Checkbox toggle ────────────────────────────────────
+// -- Checkbox toggle -------------------------------------------
 
-bindCheckboxLabels(containerSelector = ‘.checkbox-grid’) {
+bindCheckboxLabels(containerSelector = '.checkbox-grid') {
 const containers = document.querySelectorAll(containerSelector);
 containers.forEach(container => {
-container.querySelectorAll(‘input[type=“checkbox”]’).forEach(cb => {
-const label = cb.closest(’.checkbox-label’);
+container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+const label = cb.closest('.checkbox-label');
 if (!label) return;
 
-```
     cb.addEventListener('change', () => {
       label.classList.toggle('checkbox-label--checked', cb.checked);
     });
@@ -182,18 +175,16 @@ if (!label) return;
     if (cb.checked) label.classList.add('checkbox-label--checked');
   });
 });
-```
-
 },
 
-// ── Button loading state ───────────────────────────────
+// -- Button loading state ---------------------------------------
 
 setButtonLoading(btnId, loading, originalText = null) {
 const btn = document.getElementById(btnId);
 if (!btn) return;
 if (loading) {
 btn.dataset.originalText = btn.textContent;
-btn.textContent = ‘Loading…’;
+btn.textContent = 'Loading...';
 btn.disabled = true;
 } else {
 btn.textContent = originalText || btn.dataset.originalText || btn.textContent;
@@ -201,15 +192,15 @@ btn.disabled = false;
 }
 },
 
-// ── Confetti celebration ───────────────────────────────
+// -- Confetti celebration ---------------------------------------
 
 celebrate(options = {}) {
-if (typeof confetti !== ‘function’) return;
+if (typeof confetti !== 'function') return;
 confetti({
 particleCount: options.count   || 80,
 spread:        options.spread  || 60,
 origin:        options.origin  || { y: 0.7 },
-colors:        options.colors  || [’#0d9488’, ‘#d97706’, ‘#5eead4’, ‘#fbbf24’],
+colors:        options.colors  || ['#0d9488', '#d97706', '#5eead4', '#fbbf24'],
 gravity:       options.gravity || 0.9
 });
 }
@@ -222,13 +213,13 @@ gravity:       options.gravity || 0.9
 const Nav = {
 
 // Navigate with loading state
-go(url, loadingMessage = ‘Loading…’) {
+go(url, loadingMessage = 'Loading...') {
 UI.showLoading(loadingMessage);
 setTimeout(() => { window.location.href = url; }, 200);
 },
 
 // Go back safely
-back(fallback = ‘/app.html’) {
+back(fallback = '/app.html') {
 if (window.history.length > 1) {
 window.history.back();
 } else {
@@ -254,13 +245,13 @@ return params;
 setTab(tabName) {
 // Update URL without reload
 const url = new URL(window.location);
-url.searchParams.set(‘tab’, tabName);
-window.history.replaceState({}, ‘’, url);
+url.searchParams.set('tab', tabName);
+window.history.replaceState({}, '', url);
 },
 
 // Get current tab from URL
-getCurrentTab(defaultTab = ‘today’) {
-return this.getParam(‘tab’) || defaultTab;
+getCurrentTab(defaultTab = 'today') {
+return this.getParam('tab') || defaultTab;
 }
 };
 
@@ -276,33 +267,30 @@ return new Date().toISOString().slice(0, 10);
 },
 
 // Format date for display
-formatDate(dateStr, style = ‘medium’) {
-if (!dateStr) return ‘’;
-const date = new Date(dateStr + ‘T00:00:00’);
+formatDate(dateStr, style = 'medium') {
+if (!dateStr) return '';
+const date = new Date(dateStr + 'T00:00:00');
 const styles = {
-short:  { month: ‘short’, day: ‘numeric’ },
-medium: { month: ‘long’,  day: ‘numeric’, year: ‘numeric’ },
-long:   { weekday: ‘long’, month: ‘long’, day: ‘numeric’ },
-day:    { weekday: ‘long’ }
+short:  { month: 'short', day: 'numeric' },
+medium: { month: 'long',  day: 'numeric', year: 'numeric' },
+long:   { weekday: 'long', month: 'long', day: 'numeric' },
+day:    { weekday: 'long' }
 };
-return date.toLocaleDateString(‘en-US’, styles[style] || styles.medium);
+return date.toLocaleDateString('en-US', styles[style] || styles.medium);
 },
 
 // Time ago string
 timeAgo(dateStr) {
-if (!dateStr) return ‘’;
+if (!dateStr) return '';
 const date = new Date(dateStr);
 const now  = new Date();
 const diff = Math.floor((now - date) / 1000);
 
-```
 if (diff < 60)     return 'just now';
 if (diff < 3600)   return `${Math.floor(diff / 60)}m ago`;
 if (diff < 86400)  return `${Math.floor(diff / 3600)}h ago`;
 if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
 return this.formatDate(dateStr, 'short');
-```
-
 },
 
 // Is today
@@ -320,7 +308,7 @@ return dateStr === yesterday.toISOString().slice(0, 10);
 // Days since a date
 daysSince(dateStr) {
 if (!dateStr) return null;
-const then = new Date(dateStr + ‘T00:00:00’);
+const then = new Date(dateStr + 'T00:00:00');
 const now  = new Date();
 return Math.floor((now - then) / 86400000);
 },
@@ -328,10 +316,10 @@ return Math.floor((now - then) / 86400000);
 // Greeting based on time of day
 greeting() {
 const hour = new Date().getHours();
-if (hour < 12) return ‘Good morning’;
-if (hour < 17) return ‘Good afternoon’;
-if (hour < 21) return ‘Good evening’;
-return ‘Good night’;
+if (hour < 12) return 'Good morning';
+if (hour < 17) return 'Good afternoon';
+if (hour < 21) return 'Good evening';
+return 'Good night';
 }
 };
 
@@ -342,7 +330,7 @@ return ‘Good night’;
 
 const Cache = {
 
-KEY: ‘innershadow_state_cache’,
+KEY: 'innershadow_state_cache',
 TTL: 5 * 60 * 1000, // 5 minutes
 
 save(data) {
@@ -352,7 +340,7 @@ data,
 savedAt: Date.now()
 }));
 } catch (err) {
-console.warn(’[Cache] save failed:’, err);
+console.warn('[Cache] save failed:', err);
 }
 },
 
@@ -365,7 +353,7 @@ const { data, savedAt } = JSON.parse(raw);
 if (Date.now() - savedAt > this.TTL) return null;
 return data;
 } catch (err) {
-console.warn(’[Cache] load failed:’, err);
+console.warn('[Cache] load failed:', err);
 return null;
 }
 },
@@ -394,7 +382,7 @@ this.save(current);
 const Validate = {
 
 email(email) {
-return /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(email);
+return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 },
 
 password(password) {
@@ -408,11 +396,11 @@ hasNumber:     /[0-9]/.test(password)
 },
 
 minLength(text, min) {
-return (text || ‘’).trim().length >= min;
+return (text || '').trim().length >= min;
 },
 
 notEmpty(text) {
-return (text || ‘’).trim().length > 0;
+return (text || '').trim().length > 0;
 }
 };
 
@@ -427,20 +415,20 @@ isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream,
 isSafari: /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
 
 isStandalone: window.navigator.standalone === true ||
-window.matchMedia(’(display-mode: standalone)’).matches,
+window.matchMedia('(display-mode: standalone)').matches,
 
 isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
 .test(navigator.userAgent),
 
-hasNotifications: ‘Notification’ in window,
+hasNotifications: 'Notification' in window,
 
-hasServiceWorker: ‘serviceWorker’ in navigator,
+hasServiceWorker: 'serviceWorker' in navigator,
 
 // Trigger Add to Home Screen prompt if available
 _deferredPrompt: null,
 
 initInstallPrompt() {
-window.addEventListener(‘beforeinstallprompt’, e => {
+window.addEventListener('beforeinstallprompt', e => {
 e.preventDefault();
 this._deferredPrompt = e;
 });
@@ -451,7 +439,7 @@ if (!this._deferredPrompt) return false;
 this._deferredPrompt.prompt();
 const { outcome } = await this._deferredPrompt.userChoice;
 this._deferredPrompt = null;
-return outcome === ‘accepted’;
+return outcome === 'accepted';
 },
 
 canInstall() {
@@ -468,39 +456,39 @@ const Assessment = {
 // Route Q1 answer to primary pathway
 getPathway(q1Answer) {
 const map = {
-‘emotions’:   ‘emotional’,
-‘identity’:   ‘identity’,
-‘connection’: ‘connection’,
-‘heavy’:      ‘living’,
-‘growth’:     ‘identity’
+'emotions':   'emotional',
+'identity':   'identity',
+'connection': 'connection',
+'heavy':      'living',
+'growth':     'identity'
 };
-return map[q1Answer] || ‘emotional’;
+return map[q1Answer] || 'emotional';
 },
 
 // Override routing for high intensity — always start with emotional
 getRoutedPathway(q1Answer, q3Answer) {
-if (q3Answer === ‘very-difficult’) return ‘emotional’;
+if (q3Answer === 'very-difficult') return 'emotional';
 return this.getPathway(q1Answer);
 },
 
 // Determine experience level from Q4
 getExperienceLevel(q4Answer) {
-const experienced = [‘therapy-helped’, ‘therapy-didnt-fit’];
-const some        = [‘tried-own’];
-if (experienced.includes(q4Answer)) return ‘experienced’;
-if (some.includes(q4Answer))        return ‘some’;
-return ‘new’;
+const experienced = ['therapy-helped', 'therapy-didnt-fit'];
+const some        = ['tried-own'];
+if (experienced.includes(q4Answer)) return 'experienced';
+if (some.includes(q4Answer))        return 'some';
+return 'new';
 },
 
 // Determine intensity level from Q3
 getIntensityLevel(q3Answer) {
 const map = {
-‘background’:     ‘low’,
-‘getting-harder’: ‘medium’,
-‘very-difficult’: ‘high’,
-‘mostly-okay’:    ‘low’
+'background':     'low',
+'getting-harder': 'medium',
+'very-difficult': 'high',
+'mostly-okay':    'low'
 };
-return map[q3Answer] || ‘medium’;
+return map[q3Answer] || 'medium';
 },
 
 // Generate the personalized reflection paragraph
@@ -508,7 +496,6 @@ return map[q3Answer] || ‘medium’;
 generateReflection(answers) {
 const { q1, q2, q3, q5 } = answers;
 
-```
 // High distress — always acknowledge first
 if (q3 === 'very-difficult') {
   return `You came here in a hard moment. That takes something. What you're going through is real — and the fact that you're looking for tools to work with it, rather than just waiting for it to pass, matters. InnerShadow isn't therapy and it isn't a crisis line. But it is a place to learn specific, evidence-based skills for exactly what you're describing. Start small. One module. One skill. That's enough for today.`;
@@ -547,8 +534,7 @@ if (q1 === 'heavy') {
 
 // Default
 return `You came here because something isn't quite right — maybe you can't name it exactly, maybe you just know that the way things are isn't the way you want them to be. That honest recognition is rarer than it sounds. Most people spend years avoiding it. You didn't. What you're describing isn't permanent and it isn't a character flaw. It's a gap — between where you are and where you could be — and that gap is exactly what InnerShadow is designed to close.`;
-```
-
+}
 }
 };
 
@@ -559,48 +545,48 @@ return `You came here because something isn't quite right — maybe you can't na
 const Mood = {
 
 MOODS: [
-{ id: ‘rough’,   emoji: ‘😞’, label: ‘Rough’   },
-{ id: ‘anxious’, emoji: ‘😰’, label: ‘Anxious’ },
-{ id: ‘okay’,    emoji: ‘😐’, label: ‘Okay’    },
-{ id: ‘good’,    emoji: ‘🙂’, label: ‘Good’    },
-{ id: ‘great’,   emoji: ‘😊’, label: ‘Great’   }
+{ id: 'rough',   emoji: '😞', label: 'Rough'   },
+{ id: 'anxious', emoji: '😰', label: 'Anxious' },
+{ id: 'okay',    emoji: '😐', label: 'Okay'    },
+{ id: 'good',    emoji: '🙂', label: 'Good'    },
+{ id: 'great',   emoji: '😊', label: 'Great'   }
 ],
 
 getEmoji(moodId) {
-return this.MOODS.find(m => m.id === moodId)?.emoji || ‘😐’;
+return this.MOODS.find(m => m.id === moodId)?.emoji || '😐';
 },
 
 getLabel(moodId) {
-return this.MOODS.find(m => m.id === moodId)?.label || ‘Okay’;
+return this.MOODS.find(m => m.id === moodId)?.label || 'Okay';
 },
 
 // Contextual message after check-in
 getCheckinMessage(moodId, streakCount, hasUnlockedTools) {
 const messages = {
 rough: hasUnlockedTools
-? ‘Hard days happen. You have tools for this now.’
-: ‘Hard days are real. You showed up anyway — that counts.’,
+? 'Hard days happen. You have tools for this now.'
+: 'Hard days are real. You showed up anyway — that counts.',
 anxious: hasUnlockedTools
-? ‘Anxiety is information. You've learned how to work with it.’
-: ‘You noticed it. That's the first step.’,
+? 'Anxiety is information. You\'ve learned how to work with it.'
+: 'You noticed it. That\'s the first step.',
 okay: streakCount > 7
 ? `${streakCount} days in a row. That\'s not nothing.`
-: ‘Okay is a valid place to be.’,
-good:  ‘Good energy is worth investing. Keep that momentum.’,
-great: ‘Something is working. Notice it — you can return to this.’
+: 'Okay is a valid place to be.',
+good:  'Good energy is worth investing. Keep that momentum.',
+great: 'Something is working. Notice it — you can return to this.'
 };
-return messages[moodId] || ‘You showed up. That matters.’;
+return messages[moodId] || 'You showed up. That matters.';
 },
 
 // Which tools to suggest based on mood
 // Returns ordered list — first unlocked tool wins
 getToolSuggestions(moodId) {
 const map = {
-rough:   [‘tool-self-compassion-pause’, ‘tool-regulation-sequence’, ‘tool-name-it’],
-anxious: [‘tool-regulation-sequence’, ‘tool-body-check’, ‘tool-event-vs-story’],
-okay:    [‘tool-alive-inventory’, ‘tool-values-compass’, ‘tool-name-it’],
-good:    [‘tool-meaning-reframe’, ‘tool-design-tomorrow’, ‘tool-weekly-review’],
-great:   [‘tool-weekly-review’, ‘tool-relationship-inventory’, ‘tool-quarterly-audit’]
+rough:   ['tool-self-compassion-pause', 'tool-regulation-sequence', 'tool-name-it'],
+anxious: ['tool-regulation-sequence', 'tool-body-check', 'tool-event-vs-story'],
+okay:    ['tool-alive-inventory', 'tool-values-compass', 'tool-name-it'],
+good:    ['tool-meaning-reframe', 'tool-design-tomorrow', 'tool-weekly-review'],
+great:   ['tool-weekly-review', 'tool-relationship-inventory', 'tool-quarterly-audit']
 };
 return map[moodId] || [];
 }
@@ -613,23 +599,23 @@ return map[moodId] || [];
 const Streak = {
 
 getMessage(count) {
-if (count === 0)  return ‘Start your streak today’;
-if (count === 1)  return ‘Day 1. The hardest one.’;
+if (count === 0)  return 'Start your streak today';
+if (count === 1)  return 'Day 1. The hardest one.';
 if (count < 7)    return `${count} days. Keep going.`;
-if (count === 7)  return ‘7 days. One full week.’;
-if (count < 14)   return `${count} days. You\'re building something.`;
-if (count === 14) return ‘14 days. Two weeks straight.’;
+if (count === 7)  return '7 days. One full week.';
+if (count < 14)   return `${count} days. You're building something.`;
+if (count === 14) return '14 days. Two weeks straight.';
 if (count < 30)   return `${count} days. This is becoming a habit.`;
-if (count === 30) return ‘30 days. One month. That's real.’;
+if (count === 30) return '30 days. One month. That\'s real.';
 return `${count} days. Remarkable.`;
 },
 
 getIcon(count) {
-if (count === 0)  return ‘○’;
-if (count < 3)    return ‘🔥’;
-if (count < 7)    return ‘🔥’;
-if (count < 30)   return ‘🔥’;
-return ‘⚡’;
+if (count === 0)  return '○';
+if (count < 3)    return '🔥';
+if (count < 7)    return '🔥';
+if (count < 30)   return '🔥';
+return '⚡';
 }
 };
 
@@ -641,31 +627,31 @@ const Str = {
 
 // Truncate with ellipsis
 truncate(str, maxLen = 100) {
-if (!str) return ‘’;
+if (!str) return '';
 if (str.length <= maxLen) return str;
-return str.slice(0, maxLen).trimEnd() + ‘…’;
+return str.slice(0, maxLen).trimEnd() + '…';
 },
 
 // Capitalize first letter
 capitalize(str) {
-if (!str) return ‘’;
+if (!str) return '';
 return str.charAt(0).toUpperCase() + str.slice(1);
 },
 
 // Escape HTML for safe insertion
 escape(str) {
-if (!str) return ‘’;
+if (!str) return '';
 return str
-.replace(/&/g, ‘&’)
-.replace(/</g, ‘<’)
-.replace(/>/g, ‘>’)
-.replace(/”/g, ‘"’)
-.replace(/’/g, ‘'’);
+.replace(/&/g, '&amp;')
+.replace(/</g, '&lt;')
+.replace(/>/g, '&gt;')
+.replace(/"/g, '&quot;')
+.replace(/'/g, '&#039;');
 },
 
 // Plural helper
 plural(count, singular, plural) {
-return count === 1 ? singular : (plural || singular + ‘s’);
+return count === 1 ? singular : (plural || singular + 's');
 }
 };
 
@@ -690,4 +676,4 @@ Device.initInstallPrompt();
 // Fix iOS viewport height
 if (Device.isIOS) UI.setIOSViewportHeight();
 
-console.log(’[InnerShadow] Utils ready’);
+console.log('[InnerShadow] Utils ready');
