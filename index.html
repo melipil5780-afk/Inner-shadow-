@@ -533,6 +533,40 @@
     </style>
 </head>
 <body>
+    <!-- DEBUG SCRIPT - Forces page to show and catches errors -->
+    <script>
+        (function() {
+            console.log('🔍 DEBUG: Force showing page');
+            // Force show the page immediately
+            document.body.classList.add('loaded');
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = '1';
+            
+            // Catch and display any JavaScript errors
+            window.onerror = function(msg, url, line, col, error) {
+                console.error('❌ JavaScript Error:', msg, 'at line', line);
+                alert('Error: ' + msg + ' at line ' + line);
+                return true;
+            };
+            
+            // Check if we can access CSS variables
+            setTimeout(function() {
+                var testDiv = document.createElement('div');
+                testDiv.style.backgroundColor = 'var(--bg-dark)';
+                document.body.appendChild(testDiv);
+                var bgColor = window.getComputedStyle(testDiv).backgroundColor;
+                testDiv.remove();
+                
+                console.log('🔍 CSS Variables test:', bgColor);
+                if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') {
+                    console.error('❌ CSS variables not working!');
+                } else {
+                    console.log('✅ CSS variables working');
+                }
+            }, 500);
+        })();
+    </script>
+
     <div class="container">
         <div class="bg-blur-1"></div>
         <div class="bg-blur-2"></div>
@@ -796,6 +830,7 @@
                 window.addEventListener('resize', setVH);
             }
 
+            // This will run, but our debug script already added the class
             setTimeout(() => document.body.classList.add('loaded'), 100);
         }
 
