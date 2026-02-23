@@ -9,8 +9,9 @@
   <title>InnerShadow – Before We Begin</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/main.css">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
   <style>
+    /* Your original CSS – unchanged */
     html, body {
       position: fixed;
       width: 100%;
@@ -325,6 +326,34 @@
   </style>
 </head>
 <body>
+  <!-- ========== SESSION RECOVERY – MUST RUN FIRST ========== -->
+  <script>
+    (async function() {
+      try {
+        // Wait a tick to ensure Supabase client is loaded
+        await new Promise(resolve => setTimeout(resolve, 50));
+        if (typeof sb === 'undefined') {
+          console.warn('Supabase client not yet ready, retrying...');
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        const { data: { session }, error } = await sb.auth.getSession();
+        if (error || !session) {
+          // Try PKCE recovery from URL hash
+          const { data, error: refreshError } = await sb.auth.refreshSession();
+          if (refreshError || !data?.session) {
+            // No session – user shouldn't be here, redirect to index
+            window.location.href = '/index.html';
+            return;
+          }
+        }
+        // Session exists – continue
+      } catch (err) {
+        console.error('Session recovery failed:', err);
+        window.location.href = '/index.html';
+      }
+    })();
+  </script>
+
   <div class="shell">
     <div class="bg-orb bg-orb--teal"></div>
     <div class="bg-orb bg-orb--amber"></div>
@@ -449,8 +478,8 @@
         </label>
 
         <div style="height:0.5rem"></div>
-      </div>
-    </div>
+      </div><!-- /inner -->
+    </div><!-- /scroll-area -->
 
     <!-- CTA -->
     <div class="cta-area">
@@ -469,7 +498,7 @@
         <a href="/privacy.html" style="color:var(--text-teal)">Privacy Policy</a>
       </p>
     </div>
-  </div>
+  </div><!-- /shell -->
 
   <!-- Loading overlay -->
   <div class="loading-overlay" id="loadingOverlay">
@@ -482,60 +511,72 @@
   <script src="/js/utils.js"></script>
 
   <script>
-    let currentUser = null;
-    let agreed = false;
+    // ================================================================
+    // DISCLAIMER PAGE (your preferred logic)
+    // ================================================================
 
-    // ── Init ──────────────────────────────────────────────
+    let currentUser  = null;
+    let agreed       = false;
+
     async function init() {
-      document.body.classList.add('loaded');
-      
-      // Check if already accepted
+      // Require auth — bounce to index if not logged in
+      const session = await Auth.requireAuth('/index.html');
+      if (!session) return;
+
+      currentUser = session.user;
+
+      // If already accepted, go straight to next step
       const alreadyAccepted = localStorage.getItem('innershadow_disclaimer_acknowledged');
       if (alreadyAccepted === 'true') {
-        window.location.href = '/app.html';
+        await routeAfterDisclaimer();
         return;
       }
+
+      UI.markLoaded();
     }
 
-    // ── Agreement checkbox ─────────────────────────────────
     function handleAgreementChange(checkbox) {
       agreed = checkbox.checked;
       const label = document.getElementById('agreementLabel');
-      const btn = document.getElementById('continueBtn');
-
+      const btn   = document.getElementById('continueBtn');
       label.classList.toggle('agreement--checked', agreed);
       btn.disabled = !agreed;
     }
 
-    // ── Continue button ────────────────────────────────────
     async function handleContinue() {
-      if (!agreed) return;
+      if (!agreed || !currentUser) return;
 
-      showLoading('Setting things up...');
+      UI.showLoading('Setting things up...');
 
-      // Save locally
-      localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
-      
-      // Redirect to assessment (first time user)
-      setTimeout(() => {
-        window.location.href = '/assessment.html';
-      }, 500);
+      try {
+        await DB.updateUserState(currentUser.id, {
+          disclaimer_accepted:    true,
+          disclaimer_accepted_at: new Date().toISOString()
+        });
+
+        localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+        await routeAfterDisclaimer();
+      } catch (err) {
+        console.error('Disclaimer acceptance failed:', err);
+        UI.hideLoading();
+        localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+        await routeAfterDisclaimer();
+      }
     }
 
-    // ── UI Helpers ─────────────────────────────────────────
-    function showLoading(message) {
-      const overlay = document.getElementById('loadingOverlay');
-      const text = document.getElementById('loadingText');
-      if (text) text.textContent = message || 'Loading...';
-      overlay.classList.add('show');
+    async function routeAfterDisclaimer() {
+      try {
+        const { data: userState } = await DB.getUserState(currentUser.id);
+        if (userState?.assessment_completed) {
+          Nav.go('/app.html', 'Welcome back...');
+        } else {
+          Nav.go('/assessment.html', 'Getting started...');
+        }
+      } catch (err) {
+        Nav.go('/assessment.html', 'Getting started...');
+      }
     }
 
-    function hideLoading() {
-      const overlay = document.getElementById('loadingOverlay');
-      overlay.classList.remove('show');
-    }
-
-    // ── Run ────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', init);
   </script>
 
