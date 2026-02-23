@@ -532,7 +532,13 @@
         }
     </style>
 </head>
-<body>
+<body><script>
+  window.onerror = function(msg, url, line, col, error) {
+    console.error('🔥 REAL ERROR:', {msg, url, line, col, error});
+    alert('Error: ' + msg + '\n in ' + url + '\n at line ' + line);
+    return true;
+  };
+</script>
     <!-- DEBUG SCRIPT - Forces page to show and catches errors -->
     <script>
         (function() {
