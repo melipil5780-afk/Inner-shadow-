@@ -532,45 +532,15 @@
         }
     </style>
 </head>
-<body><script>
-  window.onerror = function(msg, url, line, col, error) {
-    console.error('🔥 REAL ERROR:', {msg, url, line, col, error});
-    alert('Error: ' + msg + '\n in ' + url + '\n at line ' + line);
-    return true;
-  };
-</script>
-    <!-- DEBUG SCRIPT - Forces page to show and catches errors -->
+<body>
+    <!-- DEBUG SCRIPT - Shows real errors -->
     <script>
-        (function() {
-            console.log('🔍 DEBUG: Force showing page');
-            // Force show the page immediately
-            document.body.classList.add('loaded');
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = '1';
-            
-            // Catch and display any JavaScript errors
-            window.onerror = function(msg, url, line, col, error) {
-                console.error('❌ JavaScript Error:', msg, 'at line', line);
-                alert('Error: ' + msg + ' at line ' + line);
-                return true;
-            };
-            
-            // Check if we can access CSS variables
-            setTimeout(function() {
-                var testDiv = document.createElement('div');
-                testDiv.style.backgroundColor = 'var(--bg-dark)';
-                document.body.appendChild(testDiv);
-                var bgColor = window.getComputedStyle(testDiv).backgroundColor;
-                testDiv.remove();
-                
-                console.log('🔍 CSS Variables test:', bgColor);
-                if (bgColor === 'rgba(0, 0, 0, 0)' || bgColor === 'transparent') {
-                    console.error('❌ CSS variables not working!');
-                } else {
-                    console.log('✅ CSS variables working');
-                }
-            }, 500);
-        })();
+        window.onerror = function(msg, url, line, col, error) {
+            console.error('🔥 REAL ERROR:', {msg, url, line, col, error});
+            alert('Error: ' + msg + '\n in ' + (url || 'this file') + '\n at line ' + line);
+            return true;
+        };
+        console.log('✅ Debug script loaded');
     </script>
 
     <div class="container">
@@ -836,7 +806,6 @@
                 window.addEventListener('resize', setVH);
             }
 
-            // This will run, but our debug script already added the class
             setTimeout(() => document.body.classList.add('loaded'), 100);
         }
 
