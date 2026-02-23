@@ -494,48 +494,47 @@ return map[q3Answer] || 'medium';
 // Generate the personalized reflection paragraph
 // Shown at end of assessment — the “you’ve been seen” moment
 generateReflection(answers) {
-const { q1, q2, q3, q5 } = answers;
+  const { q1, q2, q3, q5 } = answers;
 
-// High distress — always acknowledge first
-if (q3 === 'very-difficult') {
-  return `You came here in a hard moment. That takes something. What you're going through is real — and the fact that you're looking for tools to work with it, rather than just waiting for it to pass, matters. InnerShadow isn't therapy and it isn't a crisis line. But it is a place to learn specific, evidence-based skills for exactly what you're describing. Start small. One module. One skill. That's enough for today.`;
-}
-
-// Emotion-based entry
-if (q1 === 'emotions') {
-  if (q2 === 'self-critical') {
-    return `You've been carrying a weight that most people don't see. Not a dramatic crisis — something quieter and more persistent. A voice inside that holds you to a standard nobody else would be held to. You've probably tried to figure this out on your own. You haven't stopped looking. That matters. What you're describing has a name and it has a path forward. You're not broken. You're someone who never learned the specific skills for this — and that's exactly what we're here for.`;
+  // High distress — always acknowledge first
+  if (q3 === 'very-difficult') {
+    return `You came here in a hard moment. That takes something. What you're going through is real — and the fact that you're looking for tools to work with it, rather than just waiting for it to pass, matters. InnerShadow isn't therapy and it isn't a crisis line. But it is a place to learn specific, evidence-based skills for exactly what you're describing. Start small. One module. One skill. That's enough for today.`;
   }
-  if (q2 === 'anxious') {
-    return `There's a part of your mind that never quite switches off. Always scanning — for what might go wrong, for what you might have done wrong, for what might be about to change. That kind of vigilance is exhausting. And the cruelest part is it doesn't feel like a choice. It feels like just how you are. It isn't. It's a learned response — and learned responses can be worked with, once you understand what's driving them.`;
+
+  // Emotion-based entry
+  if (q1 === 'emotions') {
+    if (q2 === 'self-critical') {
+      return `You've been carrying a weight that most people don't see. Not a dramatic crisis — something quieter and more persistent. A voice inside that holds you to a standard nobody else would be held to. You've probably tried to figure this out on your own. You haven't stopped looking. That matters. What you're describing has a name and it has a path forward. You're not broken. You're someone who never learned the specific skills for this — and that's exactly what we're here for.`;
+    }
+    if (q2 === 'anxious') {
+      return `There's a part of your mind that never quite switches off. Always scanning — for what might go wrong, for what you might have done wrong, for what might be about to change. That kind of vigilance is exhausting. And the cruelest part is it doesn't feel like a choice. It feels like just how you are. It isn't. It's a learned response — and learned responses can be worked with, once you understand what's driving them.`;
+    }
+    if (q2 === 'numb') {
+      return `Going numb is one of the least-talked-about ways of struggling. It doesn't look dramatic. It doesn't ask for help. It just quietly removes you from your own life until you're watching yourself from a distance. You noticed it. That's not nothing — most people just wait for it to pass. You're here because you want something different. That's exactly where this starts.`;
+    }
+    if (q2 === 'reactions') {
+      return `You know the pattern. You react in a way you didn't intend, and then you spend time afterward wondering why you can't seem to stop it. The reactions feel involuntary — because they are. They're not character flaws. They're responses your nervous system learned, and they can be unlearned once you understand the mechanism behind them. That's what this is designed to teach you.`;
+    }
   }
-  if (q2 === 'numb') {
-    return `Going numb is one of the least-talked-about ways of struggling. It doesn't look dramatic. It doesn't ask for help. It just quietly removes you from your own life until you're watching yourself from a distance. You noticed it. That's not nothing — most people just wait for it to pass. You're here because you want something different. That's exactly where this starts.`;
+
+  // Identity-based entry
+  if (q1 === 'identity' || q1 === 'growth') {
+    return `Most people spend their entire lives inside inherited stories, unchosen values, and unexamined assumptions about what they're supposed to want. The fact that you're here — asking the harder question of who you actually are and what you actually want — is rarer than it sounds. InnerShadow is designed for exactly this. Not abstract self-help, but specific, honest tools for understanding yourself more clearly. That clarity changes everything downstream.`;
   }
-  if (q2 === 'reactions') {
-    return `You know the pattern. You react in a way you didn't intend, and then you spend time afterward wondering why you can't seem to stop it. The reactions feel involuntary — because they are. They're not character flaws. They're responses your nervous system learned, and they can be unlearned once you understand the mechanism behind them. That's what this is designed to teach you.`;
+
+  // Connection-based entry
+  if (q1 === 'connection') {
+    return `You can be surrounded by people and still feel completely alone. You can love someone and still feel unseen by them. What you're describing isn't a social failure — it's a skills gap. The specific skills for genuine closeness, honest communication, and navigating the vulnerability that connection requires are learnable. Nobody is born knowing them. Most people never get taught. That's what this pathway is for.`;
   }
-}
 
-// Identity-based entry
-if (q1 === 'identity' || q1 === 'growth') {
-  return `Most people spend their entire lives inside inherited stories, unchosen values, and unexamined assumptions about what they're supposed to want. The fact that you're here — asking the harder question of who you actually are and what you actually want — is rarer than it sounds. InnerShadow is designed for exactly this. Not abstract self-help, but specific, honest tools for understanding yourself more clearly. That clarity changes everything downstream.`;
-}
+  // Heavy/can't explain entry
+  if (q1 === 'heavy') {
+    return `There's a particular kind of difficulty that doesn't have a dramatic name. Life is working, technically — but something essential feels absent. Like you're going through the motions of a life that doesn't quite feel like yours. That feeling is real, it's more common than people admit, and it has a path forward. It starts with understanding what a good life actually means for you specifically — not in the abstract, but in the particular texture of your days. That's what we're going to explore.`;
+  }
 
-// Connection-based entry
-if (q1 === 'connection') {
-  return `You can be surrounded by people and still feel completely alone. You can love someone and still feel unseen by them. What you're describing isn't a social failure — it's a skills gap. The specific skills for genuine closeness, honest communication, and navigating the vulnerability that connection requires are learnable. Nobody is born knowing them. Most people never get taught. That's what this pathway is for.`;
-}
-
-// Heavy/can't explain entry
-if (q1 === 'heavy') {
-  return `There's a particular kind of difficulty that doesn't have a dramatic name. Life is working, technically — but something essential feels absent. Like you're going through the motions of a life that doesn't quite feel like yours. That feeling is real, it's more common than people admit, and it has a path forward. It starts with understanding what a good life actually means for you specifically — not in the abstract, but in the particular texture of your days. That's what we're going to explore.`;
-}
-
-// Default
-return `You came here because something isn't quite right — maybe you can't name it exactly, maybe you just know that the way things are isn't the way you want them to be. That honest recognition is rarer than it sounds. Most people spend years avoiding it. You didn't. What you're describing isn't permanent and it isn't a character flaw. It's a gap — between where you are and where you could be — and that gap is exactly what InnerShadow is designed to close.`;
-}
-}
+  // Default
+  return `You came here because something isn't quite right — maybe you can't name it exactly, maybe you just know that the way things are isn't the way you want them to be. That honest recognition is rarer than it sounds. Most people spend years avoiding it. You didn't. What you're describing isn't permanent and it isn't a character flaw. It's a gap — between where you are and where you could be — and that gap is exactly what InnerShadow is designed to close.`;
+  }
 };
 
 // ================================================================
