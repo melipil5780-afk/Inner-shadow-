@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -19,442 +18,439 @@
       overflow: hidden;
     }
 
-```
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-dark);
-}
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
 
-.shell {
-  width: 100%;
-  max-width: 28rem;
-  height: 100vh;
-  height: -webkit-fill-available;
-  background: var(--bg-card);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  border-left: 1px solid var(--border-subtle);
-  border-right: 1px solid var(--border-subtle);
-}
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
 
-/* Progress bar at very top */
-.top-progress {
-  height: 3px;
-  background: var(--border-soft);
-  flex-shrink: 0;
-  position: relative;
-  z-index: 10;
-}
+    /* Progress bar at very top */
+    .top-progress {
+      height: 3px;
+      background: var(--border-soft);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
 
-.top-progress__fill {
-  height: 100%;
-  background: var(--gradient-main);
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
+    .top-progress__fill {
+      height: 100%;
+      background: var(--gradient-main);
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-/* Scroll area */
-.scroll-area {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
+    /* Scroll area */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
 
-.scroll-area::-webkit-scrollbar { display: none; }
+    .scroll-area::-webkit-scrollbar { display: none; }
 
-.inner {
-  padding: max(1.75rem, env(safe-area-inset-top)) 1.5rem 2rem;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-}
+    .inner {
+      padding: max(1.75rem, env(safe-area-inset-top)) 1.5rem 2rem;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
 
-/* Step counter */
-.step-counter {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 1.5rem;
-}
+    /* Step counter */
+    .step-counter {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
 
-.step-counter span {
-  color: var(--text-teal);
-}
+    .step-counter span {
+      color: var(--text-teal);
+    }
 
-/* Question block */
-.question-block {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+    /* Question block */
+    .question-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-.question-text {
-  font-family: var(--font-display);
-  font-size: 1.625rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.25;
-  letter-spacing: -0.015em;
-  margin-bottom: 0.625rem;
-}
+    .question-text {
+      font-family: var(--font-display);
+      font-size: 1.625rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+      margin-bottom: 0.625rem;
+    }
 
-.question-text em {
-  font-style: italic;
-  color: var(--text-teal);
-}
+    .question-text em {
+      font-style: italic;
+      color: var(--text-teal);
+    }
 
-.question-sub {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 1.75rem;
-}
+    .question-sub {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
 
-/* Options */
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  flex: 1;
-}
+    /* Options */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      flex: 1;
+    }
 
-.option {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.875rem;
-  padding: 1rem 1.125rem;
-  background: var(--bg-card-light);
-  border: 2px solid var(--border-soft);
-  border-radius: 1rem;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: left;
-  width: 100%;
-  font-family: var(--font-body);
-  position: relative;
-  overflow: hidden;
-}
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+      padding: 1rem 1.125rem;
+      background: var(--bg-card-light);
+      border: 2px solid var(--border-soft);
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: left;
+      width: 100%;
+      font-family: var(--font-body);
+      position: relative;
+      overflow: hidden;
+    }
 
-.option:hover {
-  border-color: var(--teal-border);
-  background: var(--teal-bg);
-  transform: translateX(3px);
-}
+    .option:hover {
+      border-color: var(--teal-border);
+      background: var(--teal-bg);
+      transform: translateX(3px);
+    }
 
-.option:active {
-  transform: scale(0.98);
-}
+    .option:active {
+      transform: scale(0.98);
+    }
 
-.option--selected {
-  border-color: var(--teal-border-strong);
-  background: var(--teal-bg-strong);
-  transform: translateX(3px);
-}
+    .option--selected {
+      border-color: var(--teal-border-strong);
+      background: var(--teal-bg-strong);
+      transform: translateX(3px);
+    }
 
-.option__emoji {
-  font-size: 1.375rem;
-  line-height: 1;
-  flex-shrink: 0;
-  margin-top: 0.0625rem;
-}
+    .option__emoji {
+      font-size: 1.375rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 0.0625rem;
+    }
 
-.option__body {
-  flex: 1;
-  min-width: 0;
-}
+    .option__body {
+      flex: 1;
+      min-width: 0;
+    }
 
-.option__label {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.3;
-  margin-bottom: 0.2rem;
-}
+    .option__label {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 0.2rem;
+    }
 
-.option__desc {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
+    .option__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
 
-.option__check {
-  width: 1.375rem;
-  height: 1.375rem;
-  border-radius: 50%;
-  border: 2px solid var(--border-softer);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  margin-top: 0.0625rem;
-}
+    .option__check {
+      width: 1.375rem;
+      height: 1.375rem;
+      border-radius: 50%;
+      border: 2px solid var(--border-softer);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      margin-top: 0.0625rem;
+    }
 
-.option--selected .option__check {
-  background: var(--teal);
-  border-color: var(--teal);
-  color: white;
-  font-size: 0.75rem;
-}
+    .option--selected .option__check {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: white;
+      font-size: 0.75rem;
+    }
 
-/* Text input for Q5 */
-.text-question {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+    /* Text input for Q5 */
+    .text-question {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-.big-textarea {
-  flex: 1;
-  min-height: 140px;
-  width: 100%;
-  padding: 1rem;
-  background: var(--bg-input);
-  border: 2px solid var(--border-soft);
-  border-radius: 1rem;
-  color: var(--text-primary);
-  font-size: 1rem;
-  font-family: var(--font-body);
-  line-height: 1.65;
-  resize: none;
-  transition: var(--transition-base);
-  -webkit-appearance: none;
-}
+    .big-textarea {
+      flex: 1;
+      min-height: 140px;
+      width: 100%;
+      padding: 1rem;
+      background: var(--bg-input);
+      border: 2px solid var(--border-soft);
+      border-radius: 1rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: var(--font-body);
+      line-height: 1.65;
+      resize: none;
+      transition: var(--transition-base);
+      -webkit-appearance: none;
+    }
 
-.big-textarea::placeholder {
-  color: var(--text-muted);
-}
+    .big-textarea::placeholder {
+      color: var(--text-muted);
+    }
 
-.big-textarea:focus {
-  outline: none;
-  border-color: var(--teal-border-strong);
-  background: var(--bg-input-focus);
-  box-shadow: 0 0 0 3px var(--teal-glow-soft);
-}
+    .big-textarea:focus {
+      outline: none;
+      border-color: var(--teal-border-strong);
+      background: var(--bg-input-focus);
+      box-shadow: 0 0 0 3px var(--teal-glow-soft);
+    }
 
-.textarea-hint {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  margin-top: 0.5rem;
-  line-height: 1.5;
-}
+    .textarea-hint {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      line-height: 1.5;
+    }
 
-/* CTA footer */
-.cta-area {
-  padding: 1.25rem 1.5rem max(1.25rem, env(safe-area-inset-bottom));
-  background: rgba(10,15,30,0.95);
-  border-top: 1px solid var(--border-subtle);
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  flex-shrink: 0;
-}
+    /* CTA footer */
+    .cta-area {
+      padding: 1.25rem 1.5rem max(1.25rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-shrink: 0;
+    }
 
-.back-btn-sm {
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-card-light);
-  border: 1px solid var(--border-soft);
-  border-radius: 0.875rem;
-  color: var(--text-secondary);
-  font-size: 1.125rem;
-  cursor: pointer;
-  transition: var(--transition-fast);
-  flex-shrink: 0;
-}
+    .back-btn-sm {
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
 
-.back-btn-sm:active {
-  transform: scale(0.92);
-  background: var(--bg-card-medium);
-}
+    .back-btn-sm:active {
+      transform: scale(0.92);
+      background: var(--bg-card-medium);
+    }
 
-.back-btn-sm:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
+    .back-btn-sm:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
 
-/* ── RESULTS SCREEN ─────────────────────── */
+    /* ── RESULTS SCREEN ─────────────────────── */
 
-.results-screen {
-  display: none;
-  flex-direction: column;
-  height: 100%;
-}
+    .results-screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
 
-.results-screen--show {
-  display: flex;
-}
+    .results-screen--show {
+      display: flex;
+    }
 
-.results-scroll {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
+    .results-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
 
-.results-scroll::-webkit-scrollbar { display: none; }
+    .results-scroll::-webkit-scrollbar { display: none; }
 
-.results-inner {
-  padding: max(2rem, env(safe-area-inset-top)) 1.5rem 2rem;
-}
+    .results-inner {
+      padding: max(2rem, env(safe-area-inset-top)) 1.5rem 2rem;
+    }
 
-/* Pathway reveal card */
-.pathway-reveal {
-  text-align: center;
-  padding: 2rem 1.5rem;
-  background: linear-gradient(135deg,
-    rgba(13,148,136,0.14),
-    rgba(217,119,6,0.10));
-  border: 1px solid var(--teal-border);
-  border-radius: 1.25rem;
-  margin-bottom: 1.25rem;
-  animation: scale-in 0.4s ease-out;
-}
+    /* Pathway reveal card */
+    .pathway-reveal {
+      text-align: center;
+      padding: 2rem 1.5rem;
+      background: linear-gradient(135deg,
+        rgba(13,148,136,0.14),
+        rgba(217,119,6,0.10));
+      border: 1px solid var(--teal-border);
+      border-radius: 1.25rem;
+      margin-bottom: 1.25rem;
+      animation: scale-in 0.4s ease-out;
+    }
 
-.pathway-reveal__emoji {
-  font-size: 3.5rem;
-  line-height: 1;
-  margin-bottom: 1rem;
-  display: block;
-  animation: float 3s ease-in-out infinite;
-}
+    .pathway-reveal__emoji {
+      font-size: 3.5rem;
+      line-height: 1;
+      margin-bottom: 1rem;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
 
-.pathway-reveal__label {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-teal);
-  margin-bottom: 0.5rem;
-}
+    .pathway-reveal__label {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-teal);
+      margin-bottom: 0.5rem;
+    }
 
-.pathway-reveal__name {
-  font-family: var(--font-display);
-  font-size: 1.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  margin-bottom: 0.625rem;
-}
+    .pathway-reveal__name {
+      font-family: var(--font-display);
+      font-size: 1.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.625rem;
+    }
 
-.pathway-reveal__name em {
-  font-style: italic;
-  color: var(--text-teal);
-}
+    .pathway-reveal__name em {
+      font-style: italic;
+      color: var(--text-teal);
+    }
 
-.pathway-reveal__sub {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
+    .pathway-reveal__sub {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
 
-/* Reflection card */
-.reflection-card {
-  background: var(--gradient-card);
-  border: 1px solid var(--border-soft);
-  border-radius: 1.25rem;
-  padding: 1.5rem;
-  margin-bottom: 1.25rem;
-  animation: fade-in-up 0.5s ease-out 0.2s both;
-}
+    /* Reflection card */
+    .reflection-card {
+      background: var(--gradient-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      animation: fade-in-up 0.5s ease-out 0.2s both;
+    }
 
-.reflection-card__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 0.875rem;
-}
+    .reflection-card__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.875rem;
+    }
 
-.reflection-card__text {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-  line-height: 1.8;
-}
+    .reflection-card__text {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
 
-/* What's next preview */
-.whats-next {
-  animation: fade-in-up 0.5s ease-out 0.35s both;
-  margin-bottom: 1.25rem;
-}
+    /* What's next preview */
+    .whats-next {
+      animation: fade-in-up 0.5s ease-out 0.35s both;
+      margin-bottom: 1.25rem;
+    }
 
-.whats-next__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 0.875rem;
-}
+    .whats-next__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.875rem;
+    }
 
-.first-module-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  background: var(--teal-bg);
-  border: 1px solid var(--teal-border-strong);
-  border-radius: 1rem;
-}
+    .first-module-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--teal-bg);
+      border: 1px solid var(--teal-border-strong);
+      border-radius: 1rem;
+    }
 
-.first-module-card__num {
-  width: 2.5rem;
-  height: 2.5rem;
-  background: var(--gradient-main);
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
-}
+    .first-module-card__num {
+      width: 2.5rem;
+      height: 2.5rem;
+      background: var(--gradient-main);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
 
-.first-module-card__body { flex: 1; }
+    .first-module-card__body { flex: 1; }
 
-.first-module-card__title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.15rem;
-}
+    .first-module-card__title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.15rem;
+    }
 
-.first-module-card__sub {
-  font-size: 0.8125rem;
-  color: var(--text-teal);
-}
+    .first-module-card__sub {
+      font-size: 0.8125rem;
+      color: var(--text-teal);
+    }
 
-.results-cta {
-  padding: 1.25rem 1.5rem max(1.25rem, env(safe-area-inset-bottom));
-  background: rgba(10,15,30,0.95);
-  border-top: 1px solid var(--border-subtle);
-  flex-shrink: 0;
-  animation: fade-in-up 0.4s ease-out 0.5s both;
-}
+    .results-cta {
+      padding: 1.25rem 1.5rem max(1.25rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95);
+      border-top: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      animation: fade-in-up 0.4s ease-out 0.5s both;
+    }
 
-@media (min-width: 640px) {
-  .shell {
-    height: 844px;
-    max-height: 92vh;
-    border-radius: 2.5rem;
-    border: 1px solid var(--border-subtle);
-  }
-}
-```
-
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
   </style>
 </head>
 <body>
@@ -462,73 +458,70 @@ body {
     <div class="bg-orb bg-orb--teal"></div>
     <div class="bg-orb bg-orb--amber"></div>
 
-```
-<!-- Top progress bar -->
-<div class="top-progress">
-  <div class="top-progress__fill" id="topProgress" style="width:20%"></div>
-</div>
-
-<!-- Assessment questions -->
-<div class="scroll-area" id="questionArea">
-  <div class="inner">
-    <p class="step-counter">Question <span id="stepNum">1</span> of 5</p>
-
-    <div class="question-block" id="questionBlock">
-      <!-- Rendered by JS -->
+    <!-- Top progress bar -->
+    <div class="top-progress">
+      <div class="top-progress__fill" id="topProgress" style="width:20%"></div>
     </div>
-  </div>
-</div>
 
-<!-- CTA -->
-<div class="cta-area">
-  <button class="back-btn-sm" id="backBtn" onclick="goBack()" disabled aria-label="Previous question">←</button>
-  <button class="btn btn--primary" id="nextBtn" onclick="goNext()" disabled>
-    Continue
-  </button>
-</div>
+    <!-- Assessment questions -->
+    <div class="scroll-area" id="questionArea">
+      <div class="inner">
+        <p class="step-counter">Question <span id="stepNum">1</span> of 5</p>
 
-<!-- Results screen -->
-<div class="results-screen" id="resultsScreen">
-  <div class="results-scroll">
-    <div class="results-inner">
-
-      <div class="pathway-reveal">
-        <span class="pathway-reveal__emoji" id="pathwayEmoji"></span>
-        <p class="pathway-reveal__label">Your starting pathway</p>
-        <h2 class="pathway-reveal__name" id="pathwayName"></h2>
-        <p class="pathway-reveal__sub" id="pathwaySub"></p>
+        <div class="question-block" id="questionBlock">
+          <!-- Rendered by JS -->
+        </div>
       </div>
+    </div>
 
-      <div class="reflection-card">
-        <p class="reflection-card__label">What we heard</p>
-        <p class="reflection-card__text" id="reflectionText"></p>
-      </div>
+    <!-- CTA -->
+    <div class="cta-area">
+      <button class="back-btn-sm" id="backBtn" onclick="goBack()" disabled aria-label="Previous question">←</button>
+      <button class="btn btn--primary" id="nextBtn" onclick="goNext()" disabled>
+        Continue
+      </button>
+    </div>
 
-      <div class="whats-next">
-        <p class="whats-next__label">Where you'll begin</p>
-        <div class="first-module-card">
-          <div class="first-module-card__num">1</div>
-          <div class="first-module-card__body">
-            <p class="first-module-card__title" id="firstModuleTitle"></p>
-            <p class="first-module-card__sub" id="firstModuleTime">About 15 minutes</p>
+    <!-- Results screen -->
+    <div class="results-screen" id="resultsScreen">
+      <div class="results-scroll">
+        <div class="results-inner">
+
+          <div class="pathway-reveal">
+            <span class="pathway-reveal__emoji" id="pathwayEmoji"></span>
+            <p class="pathway-reveal__label">Your starting pathway</p>
+            <h2 class="pathway-reveal__name" id="pathwayName"></h2>
+            <p class="pathway-reveal__sub" id="pathwaySub"></p>
           </div>
+
+          <div class="reflection-card">
+            <p class="reflection-card__label">What we heard</p>
+            <p class="reflection-card__text" id="reflectionText"></p>
+          </div>
+
+          <div class="whats-next">
+            <p class="whats-next__label">Where you'll begin</p>
+            <div class="first-module-card">
+              <div class="first-module-card__num">1</div>
+              <div class="first-module-card__body">
+                <p class="first-module-card__title" id="firstModuleTitle"></p>
+                <p class="first-module-card__sub" id="firstModuleTime">About 15 minutes</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
+      <div class="results-cta">
+        <button class="btn btn--primary btn--lg" id="startBtn" onclick="handleStart()">
+          Begin my journey →
+        </button>
+        <p style="text-align:center;font-size:0.8125rem;color:var(--text-muted);margin-top:0.75rem">
+          You can explore all four pathways at any time
+        </p>
+      </div>
     </div>
-  </div>
-
-  <div class="results-cta">
-    <button class="btn btn--primary btn--lg" id="startBtn" onclick="handleStart()">
-      Begin my journey →
-    </button>
-    <p style="text-align:center;font-size:0.8125rem;color:var(--text-muted);margin-top:0.75rem">
-      You can explore all four pathways at any time
-    </p>
-  </div>
-</div>
-```
-
   </div><!-- /shell -->
 
   <div class="loading-overlay" id="loadingOverlay">
@@ -537,13 +530,10 @@ body {
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script src="/js/supabase-client.js"></script>
-
   <script src="/js/utils.js"></script>
 
   <script>
-
     // ================================================================
     // ASSESSMENT ENGINE
     // ================================================================
@@ -554,10 +544,61 @@ body {
     let answers     = {};
     let selectedVal = null;
 
-    // ── Question definitions ───────────────────────────────
+    // Path constants (simplified for standalone)
+    const PATHWAY_ICONS = {
+      emotional: '🌊',
+      identity: '🪞',
+      connection: '💔',
+      living: '🌱'
+    };
+
+    const PATHWAY_MODULES = {
+      emotional: ['emotions-1', 'emotions-2', 'emotions-3'],
+      identity: ['identity-1', 'identity-2', 'identity-3'],
+      connection: ['connection-1', 'connection-2', 'connection-3'],
+      living: ['living-1', 'living-2', 'living-3']
+    };
+
+    const Assessment = {
+      getRoutedPathway: function(q1, q3) {
+        if (q3 === 'very-difficult') return 'emotional';
+        if (q1 === 'emotions') return 'emotional';
+        if (q1 === 'identity') return 'identity';
+        if (q1 === 'connection') return 'connection';
+        return 'living';
+      },
+      getIntensityLevel: function(q3) {
+        if (q3 === 'very-difficult') return 'high';
+        if (q3 === 'getting-harder') return 'moderate';
+        return 'low';
+      },
+      getExperienceLevel: function(q4) {
+        if (q4 === 'first-time') return 'beginner';
+        if (q4 === 'tried-own') return 'intermediate';
+        return 'advanced';
+      },
+      generateReflection: function(answers) {
+        if (answers.q3 === 'very-difficult') {
+          return "You're carrying something heavy right now, and you showed up anyway. That matters. We'll start with the skills that help most when it feels like too much — regulation, grounding, and finding some space inside.";
+        }
+        if (answers.q1 === 'emotions') {
+          return "Emotions feel intense and unpredictable — you want to understand them, not just manage them. The Emotional Foundations pathway is designed for exactly this.";
+        }
+        if (answers.q1 === 'identity') {
+          return "You're asking who you actually are beneath the roles and expectations. That question is the beginning of real self-knowledge. We'll start there.";
+        }
+        if (answers.q1 === 'connection') {
+          return "Connection feels hard — either to others or to yourself. You're not alone in that. The Connection pathway helps you understand why and how to change it.";
+        }
+        return "You're here because something deeper is calling you — meaning, growth, a life that feels more like yours. The Living Well pathway is where that begins.";
+      }
+    };
+
+    // ================================================================
+    // QUESTION DEFINITIONS
+    // ================================================================
 
     const QUESTIONS = {
-
       1: {
         text:    'What brings you to <em>InnerShadow</em>?',
         sub:     'Choose the one that resonates most right now. There is no wrong answer.',
@@ -595,8 +636,6 @@ body {
           }
         ]
       },
-
-      // Q2 adapts based on Q1 — five variants
       2: {
         emotions: {
           text:    'When your emotions feel hard, what does that usually look like?',
@@ -754,7 +793,6 @@ body {
           ]
         }
       },
-
       3: {
         text:    'How difficult is this feeling <em>right now</em>?',
         sub:     'Be honest. This helps us understand where to start.',
@@ -786,7 +824,6 @@ body {
           }
         ]
       },
-
       4: {
         text:    'Have you worked on your mental health <em>before</em>?',
         sub:     'No judgment — this helps us calibrate the language and pace.',
@@ -818,7 +855,6 @@ body {
           }
         ]
       },
-
       5: {
         text:    'If InnerShadow could give you one thing — what would it be?',
         sub:     'Write whatever comes first. There\'s no right answer. Nobody else will see this.',
@@ -842,7 +878,6 @@ body {
       connection: 'Why Connection Is So Hard',
       living:     'A Good Life vs a Full Calendar'
     };
-
 
     // ================================================================
     // RENDER ENGINE
@@ -938,290 +973,274 @@ body {
             placeholder="${q.placeholder}"
             maxlength="500"
           ></textarea>
-
-```
-      <p class="textarea-hint">
-        Take your time. This is just for you — it helps us understand what you need.
-      </p>
-    </div>
-  `;
-}
-
-function selectOption(value, animate = true) {
-  // Deselect all
-  document.querySelectorAll('.option').forEach(opt => {
-    opt.classList.remove('option--selected');
-  });
-
-  // Select chosen
-  const chosen = document.querySelector(`.option[data-value="${value}"]`);
-  if (chosen) {
-    chosen.classList.add('option--selected');
-    if (animate) {
-      chosen.style.transition = 'transform 0.15s ease';
-    }
-  }
-
-  selectedVal = value;
-  updateNextButton();
-
-  // Auto-advance on choice questions after brief delay
-  if (animate && currentStep < 5) {
-    setTimeout(() => goNext(), 380);
-  }
-}
-
-function updateNextButton() {
-  const q    = getQuestion();
-  const btn  = document.getElementById('nextBtn');
-  let valid  = false;
-
-  if (q.type === 'choice') {
-    valid = !!selectedVal;
-  } else {
-    const ta  = document.getElementById('textAnswer');
-    valid = ta ? ta.value.trim().length >= 3 : false;
-  }
-
-  btn.disabled    = !valid;
-  btn.textContent = currentStep === 5 ? 'See my results' : 'Continue';
-}
-
-
-// ================================================================
-// NAVIGATION
-// ================================================================
-
-function goNext() {
-  const q = getQuestion();
-  let value;
-
-  if (q.type === 'choice') {
-    if (!selectedVal) return;
-    value = selectedVal;
-  } else {
-    const ta = document.getElementById('textAnswer');
-    value = ta ? ta.value.trim() : '';
-    if (value.length < 3) return;
-  }
-
-  answers[currentStep] = value;
-
-  // Crisis override on Q3 — acknowledge but don't block
-  if (currentStep === 3 && value === 'very-difficult') {
-    showCrisisAcknowledgement();
-    return;
-  }
-
-  if (currentStep === 5) {
-    processResults();
-    return;
-  }
-
-  currentStep++;
-  selectedVal = null;
-  renderQuestion();
-  UI.scrollToTop();
-}
-
-function goBack() {
-  if (currentStep === 1) return;
-  currentStep--;
-  selectedVal = answers[currentStep] || null;
-  renderQuestion();
-  UI.scrollToTop();
-}
-
-// Crisis acknowledgement — shown before continuing
-function showCrisisAcknowledgement() {
-  const block = document.getElementById('questionBlock');
-  block.innerHTML = `
-    <div style="animation: fade-in 0.3s ease-out">
-      <div style="
-        background: var(--red-bg-strong);
-        border: 1px solid var(--red-border-strong);
-        border-radius: 1.25rem;
-        padding: 1.5rem;
-        margin-bottom: 1.25rem;
-      ">
-        <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem">
-          <span style="font-size:1.5rem">🆘</span>
-          <h3 style="font-size:1.0625rem;font-weight:700;color:var(--text-red)">
-            You said you're really struggling
-          </h3>
+          <p class="textarea-hint">
+            Take your time. This is just for you — it helps us understand what you need.
+          </p>
         </div>
-        <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.25rem">
-          That took courage to admit. InnerShadow has tools that can help — but if you're in crisis right now, please reach out to someone who can be there for you immediately.
-        </p>
-        <div style="display:flex;flex-direction:column;gap:0.5rem">
-          <a href="tel:988" style="
-            display:flex;align-items:center;justify-content:space-between;
-            padding:0.875rem 1rem;
-            background:rgba(220,38,38,0.15);
-            border:1px solid var(--red-border);
-            border-radius:0.75rem;
-            text-decoration:none;
-          ">
-            <span style="font-size:0.9375rem;font-weight:600;color:var(--text-red)">988 Crisis Lifeline</span>
-            <span style="font-size:0.8125rem;color:var(--text-muted)">Call or text</span>
-          </a>
-          <a href="sms:741741&body=HOME" style="
-            display:flex;align-items:center;justify-content:space-between;
-            padding:0.875rem 1rem;
-            background:rgba(220,38,38,0.15);
-            border:1px solid var(--red-border);
-            border-radius:0.75rem;
-            text-decoration:none;
-          ">
-            <span style="font-size:0.9375rem;font-weight:600;color:var(--text-red)">Crisis Text Line</span>
-            <span style="font-size:0.8125rem;color:var(--text-muted)">Text HOME to 741741</span>
-          </a>
-        </div>
-      </div>
-
-      <div style="
-        background:var(--teal-bg);
-        border:1px solid var(--teal-border);
-        border-radius:1rem;
-        padding:1.125rem;
-      ">
-        <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7">
-          <strong style="color:var(--text-teal)">InnerShadow will start you on Emotional Foundations</strong> — the pathway most relevant to where you are. You can use the breathing and grounding tools in your toolkit at any time, no modules required.
-        </p>
-      </div>
-    </div>
-  `;
-
-  // Update button to continue
-  const nextBtn = document.getElementById('nextBtn');
-  nextBtn.disabled    = false;
-  nextBtn.textContent = 'Continue to question 4';
-  nextBtn.onclick     = () => {
-    // Override routing — crisis always starts at emotional
-    answers[3]  = 'very-difficult';
-    currentStep = 4;
-    selectedVal = null;
-    nextBtn.onclick = goNext;
-    renderQuestion();
-    UI.scrollToTop();
-  };
-}
-
-
-// ================================================================
-// RESULTS
-// ================================================================
-
-async function processResults() {
-  UI.showLoading('Working out your pathway...');
-
-  // Derive pathway + levels
-  const primaryPathway  = Assessment.getRoutedPathway(answers[1], answers[3]);
-  const intensityLevel  = Assessment.getIntensityLevel(answers[3]);
-  const experienceLevel = Assessment.getExperienceLevel(answers[4]);
-  const reflectionBack  = Assessment.generateReflection({
-    q1: answers[1],
-    q2: answers[2],
-    q3: answers[3],
-    q5: answers[5]
-  });
-
-  // Save to Supabase
-  try {
-    await DB.saveAssessment(
-      currentUser.id,
-      answers,
-      primaryPathway,
-      intensityLevel,
-      experienceLevel,
-      reflectionBack
-    );
-  } catch (err) {
-    console.error('Assessment save failed:', err);
-    // Continue anyway — don't block the user
-  }
-
-  UI.hideLoading();
-
-  // Show results screen
-  showResults(primaryPathway, reflectionBack);
-}
-
-function showResults(pathway, reflection) {
-  // Hide question area + CTA
-  document.getElementById('questionArea').style.display  = 'none';
-  document.querySelector('.cta-area').style.display      = 'none';
-  document.getElementById('topProgress').style.width     = '100%';
-
-  // Populate results
-  document.getElementById('pathwayEmoji').textContent   = PATHWAY_ICONS[pathway];
-  document.getElementById('pathwayName').innerHTML      = formatPathwayName(pathway);
-  document.getElementById('pathwaySub').textContent     = PATHWAY_DESCRIPTIONS[pathway];
-  document.getElementById('reflectionText').textContent = reflection;
-  document.getElementById('firstModuleTitle').textContent = FIRST_MODULE_TITLES[pathway];
-
-  // Show results
-  document.getElementById('resultsScreen').classList.add('results-screen--show');
-
-  // Subtle celebration
-  setTimeout(() => UI.celebrate({ count: 50, spread: 50, origin: { y: 0.4 } }), 400);
-}
-
-function formatPathwayName(pathway) {
-  const names = {
-    emotional:  'Emotional <em>Foundations</em>',
-    identity:   'Knowing <em>Yourself</em>',
-    connection: '<em>Connection</em>',
-    living:     'Living <em>Well</em>'
-  };
-  return names[pathway] || pathway;
-}
-
-async function handleStart() {
-  const btn = document.getElementById('startBtn');
-  btn.disabled    = true;
-  btn.textContent = 'Starting...';
-
-  // Get their pathway from saved assessment
-  try {
-    const { data } = await DB.getUserState(currentUser.id);
-    const pathway  = data?.primary_pathway || 'emotional';
-    const firstModule = PATHWAY_MODULES[pathway][0];
-    Nav.go(`/pathways/${pathway.slice(0,2) === 'em' ? 'emotional' : pathway}/${firstModule}.html`, 'Loading your first module...');
-  } catch (err) {
-    Nav.go('/app.html', 'Loading...');
-  }
-}
-
-
-// ================================================================
-// INIT
-// ================================================================
-
-async function init() {
-  const session = await Auth.requireAuth('/index.html');
-  if (!session) return;
-
-  currentUser = session.user;
-
-  // Already completed? Go straight to app
-  try {
-    const { data } = await DB.getUserState(currentUser.id);
-    if (data?.assessment_completed) {
-      Nav.go('/app.html', 'Welcome back...');
-      return;
+      `;
     }
-  } catch (err) {
-    // Continue to assessment on error
-  }
 
-  renderQuestion();
-  UI.markLoaded();
-}
+    function selectOption(value, animate = true) {
+      // Deselect all
+      document.querySelectorAll('.option').forEach(opt => {
+        opt.classList.remove('option--selected');
+      });
 
-document.addEventListener('DOMContentLoaded', init);
-```
+      // Select chosen
+      const chosen = document.querySelector(`.option[data-value="${value}"]`);
+      if (chosen) {
+        chosen.classList.add('option--selected');
+        if (animate) {
+          chosen.style.transition = 'transform 0.15s ease';
+        }
+      }
 
+      selectedVal = value;
+      updateNextButton();
+
+      // Auto-advance on choice questions after brief delay
+      if (animate && currentStep < 5) {
+        setTimeout(() => goNext(), 380);
+      }
+    }
+
+    function updateNextButton() {
+      const q    = getQuestion();
+      const btn  = document.getElementById('nextBtn');
+      let valid  = false;
+
+      if (q.type === 'choice') {
+        valid = !!selectedVal;
+      } else {
+        const ta  = document.getElementById('textAnswer');
+        valid = ta ? ta.value.trim().length >= 3 : false;
+      }
+
+      btn.disabled    = !valid;
+      btn.textContent = currentStep === 5 ? 'See my results' : 'Continue';
+    }
+
+    // ================================================================
+    // NAVIGATION
+    // ================================================================
+
+    function goNext() {
+      const q = getQuestion();
+      let value;
+
+      if (q.type === 'choice') {
+        if (!selectedVal) return;
+        value = selectedVal;
+      } else {
+        const ta = document.getElementById('textAnswer');
+        value = ta ? ta.value.trim() : '';
+        if (value.length < 3) return;
+      }
+
+      answers[currentStep] = value;
+
+      // Crisis override on Q3 — acknowledge but don't block
+      if (currentStep === 3 && value === 'very-difficult') {
+        showCrisisAcknowledgement();
+        return;
+      }
+
+      if (currentStep === 5) {
+        processResults();
+        return;
+      }
+
+      currentStep++;
+      selectedVal = null;
+      renderQuestion();
+      scrollToTop();
+    }
+
+    function goBack() {
+      if (currentStep === 1) return;
+      currentStep--;
+      selectedVal = answers[currentStep] || null;
+      renderQuestion();
+      scrollToTop();
+    }
+
+    function scrollToTop() {
+      const area = document.getElementById('questionArea');
+      if (area) area.scrollTop = 0;
+    }
+
+    // Crisis acknowledgement — shown before continuing
+    function showCrisisAcknowledgement() {
+      const block = document.getElementById('questionBlock');
+      block.innerHTML = `
+        <div style="animation: fade-in 0.3s ease-out">
+          <div style="
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+          ">
+            <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem">
+              <span style="font-size:1.5rem">🆘</span>
+              <h3 style="font-size:1.0625rem;font-weight:700;color:#fca5a5">
+                You said you're really struggling
+              </h3>
+            </div>
+            <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.25rem">
+              That took courage to admit. InnerShadow has tools that can help — but if you're in crisis right now, please reach out to someone who can be there for you immediately.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem">
+              <a href="tel:988" style="
+                display:flex;align-items:center;justify-content:space-between;
+                padding:0.875rem 1rem;
+                background:rgba(220,38,38,0.15);
+                border:1px solid rgba(220,38,38,0.4);
+                border-radius:0.75rem;
+                text-decoration:none;
+              ">
+                <span style="font-size:0.9375rem;font-weight:600;color:#fca5a5">988 Crisis Lifeline</span>
+                <span style="font-size:0.8125rem;color:var(--text-muted)">Call or text</span>
+              </a>
+              <a href="sms:741741&body=HOME" style="
+                display:flex;align-items:center;justify-content:space-between;
+                padding:0.875rem 1rem;
+                background:rgba(220,38,38,0.15);
+                border:1px solid rgba(220,38,38,0.4);
+                border-radius:0.75rem;
+                text-decoration:none;
+              ">
+                <span style="font-size:0.9375rem;font-weight:600;color:#fca5a5">Crisis Text Line</span>
+                <span style="font-size:0.8125rem;color:var(--text-muted)">Text HOME to 741741</span>
+              </a>
+            </div>
+          </div>
+
+          <div style="
+            background:rgba(13,148,136,0.1);
+            border:1px solid rgba(13,148,136,0.3);
+            border-radius:1rem;
+            padding:1.125rem;
+          ">
+            <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7">
+              <strong style="color:#5eead4">InnerShadow will start you on Emotional Foundations</strong> — the pathway most relevant to where you are. You can use the breathing and grounding tools in your toolkit at any time, no modules required.
+            </p>
+          </div>
+        </div>
+      `;
+
+      // Update button to continue
+      const nextBtn = document.getElementById('nextBtn');
+      nextBtn.disabled    = false;
+      nextBtn.textContent = 'Continue to question 4';
+      nextBtn.onclick     = () => {
+        // Override routing — crisis always starts at emotional
+        answers[3]  = 'very-difficult';
+        currentStep = 4;
+        selectedVal = null;
+        nextBtn.onclick = goNext;
+        renderQuestion();
+        scrollToTop();
+      };
+    }
+
+    // ================================================================
+    // RESULTS
+    // ================================================================
+
+    async function processResults() {
+      showLoading('Working out your pathway...');
+
+      // Derive pathway + levels
+      const primaryPathway  = Assessment.getRoutedPathway(answers[1], answers[3]);
+      const intensityLevel  = Assessment.getIntensityLevel(answers[3]);
+      const experienceLevel = Assessment.getExperienceLevel(answers[4]);
+      const reflectionBack  = Assessment.generateReflection({
+        q1: answers[1],
+        q2: answers[2],
+        q3: answers[3],
+        q5: answers[5]
+      });
+
+      // Simulate saving
+      setTimeout(() => {
+        hideLoading();
+
+        // Show results screen
+        showResults(primaryPathway, reflectionBack);
+      }, 1000);
+    }
+
+    function showResults(pathway, reflection) {
+      // Hide question area + CTA
+      document.getElementById('questionArea').style.display  = 'none';
+      document.querySelector('.cta-area').style.display      = 'none';
+      document.getElementById('topProgress').style.width     = '100%';
+
+      // Populate results
+      document.getElementById('pathwayEmoji').textContent   = PATHWAY_ICONS[pathway] || '🌊';
+      
+      const pathwayNames = {
+        emotional: 'Emotional <em>Foundations</em>',
+        identity: 'Knowing <em>Yourself</em>',
+        connection: '<em>Connection</em>',
+        living: 'Living <em>Well</em>'
+      };
+      
+      document.getElementById('pathwayName').innerHTML      = pathwayNames[pathway] || pathway;
+      document.getElementById('pathwaySub').textContent     = PATHWAY_DESCRIPTIONS[pathway] || '';
+      document.getElementById('reflectionText').textContent = reflection;
+      document.getElementById('firstModuleTitle').textContent = FIRST_MODULE_TITLES[pathway] || 'Getting Started';
+
+      // Show results
+      document.getElementById('resultsScreen').classList.add('results-screen--show');
+    }
+
+    async function handleStart() {
+      const btn = document.getElementById('startBtn');
+      btn.disabled    = true;
+      btn.textContent = 'Starting...';
+
+      // Navigate to app
+      setTimeout(() => {
+        window.location.href = '/app.html';
+      }, 500);
+    }
+
+    // ================================================================
+    // UI HELPERS
+    // ================================================================
+
+    function showLoading(message) {
+      const overlay = document.getElementById('loadingOverlay');
+      const text = document.getElementById('loadingText');
+      if (text) text.textContent = message || 'Loading...';
+      overlay.classList.add('show');
+    }
+
+    function hideLoading() {
+      const overlay = document.getElementById('loadingOverlay');
+      overlay.classList.remove('show');
+    }
+
+    // ================================================================
+    // INIT
+    // ================================================================
+
+    async function init() {
+      // Check disclaimer
+      const disclaimerOk = localStorage.getItem('innershadow_disclaimer_acknowledged');
+      if (disclaimerOk !== 'true') {
+        window.location.href = '/disclaimer.html';
+        return;
+      }
+
+      // Start assessment
+      renderQuestion();
+      document.body.classList.add('loaded');
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 
   <script>
