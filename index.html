@@ -18,7 +18,7 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌑</text></svg>">
 
     <!-- Google Fonts – Fraunces & DM Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
 
     <title>InnerShadow – Welcome</title>
 
@@ -533,15 +533,8 @@
     </style>
 </head>
 <body>
-    <!-- DEBUG SCRIPT - Shows real errors -->
-    <script>
-        window.onerror = function(msg, url, line, col, error) {
-            console.error('🔥 REAL ERROR:', {msg, url, line, col, error});
-            alert('Error: ' + msg + '\n in ' + (url || 'this file') + '\n at line ' + line);
-            return true;
-        };
-        console.log('✅ Debug script loaded');
-    </script>
+    <!-- SAFETY: Ensure page becomes visible even if JS errors occur -->
+    <script>document.body.classList.add('loaded');</script>
 
     <div class="container">
         <div class="bg-blur-1"></div>
@@ -550,6 +543,7 @@
         <div class="content">
             <div class="logo">
                 <div class="logo-icon">
+                    <!-- Moon / inner shadow icon -->
                     <svg width="40" height="40" preserveAspectRatio="xMidYMid meet"
                          fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -652,9 +646,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/supabase-client.js"></script>
-    <script src="/js/utils.js"></script>
-    
     <script>
         // ========== AUTH STATE MANAGEMENT ==========
         let isInitialized = false;
@@ -840,10 +831,13 @@
                 navigator.serviceWorker.register('/sw.js')
                     .then(reg => {
                         console.log('[InnerShadow] SW registered:', reg.scope);
+
+                        // Check for updates every time app loads
                         reg.addEventListener('updatefound', () => {
                             const newWorker = reg.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New version available — could show update banner here
                                     console.log('[InnerShadow] New version available');
                                 }
                             });
