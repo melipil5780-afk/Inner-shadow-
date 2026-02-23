@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -12,953 +11,949 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
   <style>
-
-```
-html, body {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-dark);
-}
-
-.shell {
-  width: 100%;
-  max-width: 28rem;
-  height: 100vh;
-  height: -webkit-fill-available;
-  background: var(--bg-card);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  border-left: 1px solid var(--border-subtle);
-  border-right: 1px solid var(--border-subtle);
-}
-
-/* Tab content areas */
-.tab-panel {
-  display: none;
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  position: relative;
-}
-
-.tab-panel::-webkit-scrollbar { display: none; }
-
-.tab-panel--active {
-  display: flex;
-  flex-direction: column;
-}
-
-.panel-inner {
-  padding: max(1.5rem, env(safe-area-inset-top)) 1.25rem 1.5rem;
-  flex: 1;
-}
-
-/* ── TODAY TAB ──────────────────────────────────────── */
-
-.today-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-
-.today-greeting {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-.today-greeting em {
-  font-style: italic;
-  color: var(--text-teal);
-}
-
-.today-date {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  margin-top: 0.2rem;
-}
-
-.settings-btn {
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-card-light);
-  border: 1px solid var(--border-soft);
-  border-radius: 0.875rem;
-  color: var(--text-secondary);
-  font-size: 1.125rem;
-  cursor: pointer;
-  transition: var(--transition-fast);
-  flex-shrink: 0;
-  text-decoration: none;
-}
-
-.settings-btn:active { transform: scale(0.92); }
-
-/* Check-in card */
-.checkin-card {
-  background: linear-gradient(135deg,
-    rgba(13,148,136,0.12),
-    rgba(217,119,6,0.08));
-  border: 1px solid var(--teal-border);
-  border-radius: 1.25rem;
-  padding: 1.375rem;
-  margin-bottom: 1.25rem;
-}
-
-.checkin-card--done {
-  background: var(--teal-bg);
-}
-
-.checkin-label {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-teal);
-  margin-bottom: 0.875rem;
-}
-
-.checkin-question {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 1.125rem;
-  line-height: 1.3;
-}
-
-/* Mood grid — 5 across */
-.mood-row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.mood-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.625rem 0.25rem;
-  background: rgba(255,255,255,0.04);
-  border: 2px solid transparent;
-  border-radius: 0.875rem;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  font-family: var(--font-body);
-}
-
-.mood-btn:active { transform: scale(0.9); }
-
-.mood-btn--selected {
-  border-color: var(--teal-border-strong);
-  background: var(--teal-bg-strong);
-}
-
-.mood-emoji { font-size: 1.625rem; line-height: 1; }
-
-.mood-label {
-  font-size: 0.625rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.mood-btn--selected .mood-label { color: var(--text-teal); }
-
-/* Note input */
-.note-section {
-  display: none;
-  animation: fade-in 0.25s ease-out;
-}
-
-.note-section--show { display: block; }
-
-.note-input {
-  width: 100%;
-  padding: 0.75rem 0.875rem;
-  background: var(--bg-input);
-  border: 1px solid var(--border-soft);
-  border-radius: 0.875rem;
-  color: var(--text-primary);
-  font-size: 15px;
-  font-family: var(--font-body);
-  resize: none;
-  min-height: 70px;
-  transition: var(--transition-base);
-  -webkit-appearance: none;
-}
-
-.note-input::placeholder { color: var(--text-muted); }
-
-.note-input:focus {
-  outline: none;
-  border-color: var(--teal-border-strong);
-  background: var(--bg-input-focus);
-  box-shadow: 0 0 0 3px var(--teal-glow-soft);
-}
-
-/* Done state */
-.checkin-done {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.checkin-done__emoji { font-size: 2rem; line-height: 1; }
-
-.checkin-done__text {
-  flex: 1;
-}
-
-.checkin-done__title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.15rem;
-}
-
-.checkin-done__sub {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-/* Streak bar */
-.streak-row {
-  display: flex;
-  gap: 0.875rem;
-  margin-bottom: 1.25rem;
-}
-
-.streak-chip {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.875rem 1rem;
-  background: var(--amber-bg);
-  border: 1px solid var(--amber-border);
-  border-radius: 1rem;
-}
-
-.streak-chip__icon { font-size: 1.375rem; }
-
-.streak-chip__count {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-amber);
-  font-family: var(--font-display);
-  line-height: 1;
-}
-
-.streak-chip__label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.modules-chip {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.875rem 1rem;
-  background: var(--teal-bg);
-  border: 1px solid var(--teal-border);
-  border-radius: 1rem;
-}
-
-.modules-chip__icon { font-size: 1.375rem; }
-
-.modules-chip__count {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-teal);
-  font-family: var(--font-display);
-  line-height: 1;
-}
-
-.modules-chip__label {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-/* Continue learning card */
-.continue-card {
-  background: var(--gradient-card);
-  border: 1px solid var(--border-soft);
-  border-radius: 1.25rem;
-  padding: 1.25rem;
-  margin-bottom: 1.25rem;
-  cursor: pointer;
-  transition: var(--transition-spring);
-}
-
-.continue-card:hover {
-  border-color: var(--teal-border);
-  transform: translateY(-2px);
-}
-
-.continue-card:active { transform: scale(0.98); }
-
-.continue-card__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
-}
-
-.continue-card__row {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-}
-
-.continue-card__num {
-  width: 2.75rem;
-  height: 2.75rem;
-  background: var(--gradient-main);
-  border-radius: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1rem;
-  color: white;
-  flex-shrink: 0;
-}
-
-.continue-card__body { flex: 1; min-width: 0; }
-
-.continue-card__title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.3;
-  margin-bottom: 0.2rem;
-}
-
-.continue-card__pathway {
-  font-size: 0.8125rem;
-  color: var(--text-teal);
-}
-
-.continue-card__arrow {
-  font-size: 1.125rem;
-  color: var(--text-muted);
-}
-
-/* Suggested tool */
-.suggested-tool {
-  background: var(--amber-bg);
-  border: 1px solid var(--amber-border);
-  border-radius: 1.25rem;
-  padding: 1.125rem 1.25rem;
-  margin-bottom: 1.25rem;
-  cursor: pointer;
-  transition: var(--transition-spring);
-}
-
-.suggested-tool:hover {
-  border-color: var(--amber-border-strong);
-  transform: translateY(-2px);
-}
-
-.suggested-tool:active { transform: scale(0.98); }
-
-.suggested-tool__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-amber);
-  margin-bottom: 0.625rem;
-}
-
-.suggested-tool__row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.suggested-tool__emoji { font-size: 1.75rem; line-height: 1; }
-
-.suggested-tool__body { flex: 1; }
-
-.suggested-tool__name {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.15rem;
-}
-
-.suggested-tool__why {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-/* Pending reflection */
-.reflection-nudge {
-  background: linear-gradient(135deg,
-    rgba(13,148,136,0.10),
-    rgba(217,119,6,0.08));
-  border: 1px solid var(--teal-border);
-  border-radius: 1.25rem;
-  padding: 1.125rem 1.25rem;
-  margin-bottom: 1.25rem;
-  cursor: pointer;
-  transition: var(--transition-spring);
-}
-
-.reflection-nudge:hover { transform: translateY(-2px); }
-.reflection-nudge:active { transform: scale(0.98); }
-
-.reflection-nudge__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-teal);
-  margin-bottom: 0.5rem;
-}
-
-.reflection-nudge__text {
-  font-size: 0.9375rem;
-  color: var(--text-primary);
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-/* ── LEARN TAB ───────────────────────────────────────── */
-
-.learn-header {
-  margin-bottom: 1.5rem;
-}
-
-.learn-title {
-  font-family: var(--font-display);
-  font-size: 1.625rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: 0.25rem;
-}
-
-.learn-title em {
-  font-style: italic;
-  color: var(--text-teal);
-}
-
-.learn-sub {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-/* Pathway cards */
-.pw-card {
-  background: var(--gradient-card);
-  border: 1px solid var(--border-soft);
-  border-radius: 1.25rem;
-  padding: 1.25rem;
-  margin-bottom: 0.875rem;
-  cursor: pointer;
-  transition: var(--transition-spring);
-  position: relative;
-  overflow: hidden;
-}
-
-.pw-card:hover {
-  border-color: var(--teal-border);
-  transform: translateY(-2px);
-}
-
-.pw-card:active { transform: scale(0.98); }
-
-.pw-card--locked {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.pw-card--locked:hover {
-  transform: none;
-  border-color: var(--border-soft);
-}
-
-.pw-card--active {
-  border-color: var(--teal-border-strong);
-  background: var(--teal-bg);
-}
-
-.pw-card__header {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  margin-bottom: 0.875rem;
-}
-
-.pw-card__emoji { font-size: 2rem; line-height: 1; }
-
-.pw-card__meta { flex: 1; min-width: 0; }
-
-.pw-card__name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.15rem;
-}
-
-.pw-card__sub {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
-
-.pw-card__lock {
-  font-size: 1rem;
-  color: var(--text-muted);
-}
-
-.pw-card__progress {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.pw-card__bar {
-  flex: 1;
-  height: 5px;
-  background: var(--border-soft);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.pw-card__bar-fill {
-  height: 100%;
-  background: var(--gradient-main);
-  border-radius: 999px;
-  transition: width 0.6s ease;
-}
-
-.pw-card__pct {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  min-width: 2.5rem;
-  text-align: right;
-}
-
-.pw-card__pct--active { color: var(--text-teal); }
-
-/* ── TOOLS TAB ───────────────────────────────────────── */
-
-.tools-header {
-  margin-bottom: 1.25rem;
-}
-
-.tools-title {
-  font-family: var(--font-display);
-  font-size: 1.625rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  margin-bottom: 0.25rem;
-}
-
-.tools-title em {
-  font-style: italic;
-  color: var(--text-teal);
-}
-
-.tools-sub {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.tools-section-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 1.125rem 0 0.625rem;
-}
-
-.tool-row {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  padding: 0.875rem 1rem;
-  background: var(--bg-card-light);
-  border: 1px solid var(--border-soft);
-  border-radius: 1rem;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  transition: var(--transition-spring);
-}
-
-.tool-row:hover {
-  border-color: var(--teal-border);
-  background: var(--teal-bg);
-  transform: translateX(3px);
-}
-
-.tool-row:active { transform: scale(0.98); }
-
-.tool-row--locked {
-  opacity: 0.38;
-  cursor: default;
-  filter: grayscale(0.4);
-}
-
-.tool-row--locked:hover {
-  transform: none;
-  border-color: var(--border-soft);
-  background: var(--bg-card-light);
-}
-
-.tool-row--crisis {
-  background: var(--red-bg);
-  border-color: var(--red-border);
-}
-
-.tool-row--crisis:hover {
-  background: var(--red-bg-strong);
-  border-color: var(--red-border-strong);
-}
-
-.tool-row__emoji { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
-
-.tool-row__body { flex: 1; min-width: 0; }
-
-.tool-row__name {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.3;
-  margin-bottom: 0.15rem;
-}
-
-.tool-row__desc {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-.tool-row__lock { font-size: 0.9375rem; color: var(--text-muted); }
-
-/* ── YOU TAB ─────────────────────────────────────────── */
-
-.you-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.avatar {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 1rem;
-  background: var(--gradient-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.you-name {
-  font-family: var(--font-display);
-  font-size: 1.375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.015em;
-}
-
-.you-since {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
-}
-
-/* Stats grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.625rem;
-  margin-bottom: 1.25rem;
-}
-
-.stat-chip {
-  background: var(--bg-card-light);
-  border: 1px solid var(--border-soft);
-  border-radius: 1rem;
-  padding: 0.875rem 0.75rem;
-  text-align: center;
-}
-
-.stat-chip__num {
-  font-family: var(--font-display);
-  font-size: 1.625rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1;
-  margin-bottom: 0.25rem;
-}
-
-.stat-chip__label {
-  font-size: 0.6875rem;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-/* Settings list */
-.settings-list {
-  background: var(--gradient-card);
-  border: 1px solid var(--border-soft);
-  border-radius: 1.25rem;
-  overflow: hidden;
-  margin-bottom: 1.25rem;
-}
-
-.settings-item {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  padding: 1rem 1.125rem;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  border-bottom: 1px solid var(--border-subtle);
-  text-decoration: none;
-}
-
-.settings-item:last-child { border-bottom: none; }
-
-.settings-item:hover { background: var(--bg-card-light); }
-.settings-item:active { background: var(--bg-card-medium); }
-
-.settings-item__icon {
-  font-size: 1.125rem;
-  width: 1.75rem;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.settings-item__label {
-  flex: 1;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.settings-item__arrow {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-}
-
-.settings-item--danger .settings-item__label { color: var(--text-red); }
-
-/* Pro banner */
-.pro-banner {
-  background: var(--gradient-main);
-  border-radius: 1.25rem;
-  padding: 1.25rem;
-  margin-bottom: 1.25rem;
-  cursor: pointer;
-  transition: var(--transition-spring);
-}
-
-.pro-banner:hover { transform: translateY(-2px); }
-.pro-banner:active { transform: scale(0.98); }
-
-.pro-banner__title {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: white;
-  margin-bottom: 0.375rem;
-}
-
-.pro-banner__sub {
-  font-size: 0.875rem;
-  color: rgba(255,255,255,0.8);
-  line-height: 1.5;
-}
-
-.pro-banner__cta {
-  margin-top: 0.875rem;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: white;
-  opacity: 0.9;
-}
-
-/* ── TOOL MODAL ──────────────────────────────────────── */
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  z-index: var(--z-modal);
-  display: none;
-  align-items: flex-end;
-  justify-content: center;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-.modal-overlay--show { display: flex; }
-
-.modal-sheet {
-  width: 100%;
-  max-width: 28rem;
-  background: var(--bg-card);
-  border-radius: 1.5rem 1.5rem 0 0;
-  border: 1px solid var(--border-soft);
-  border-bottom: none;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.modal-handle {
-  width: 2.5rem;
-  height: 4px;
-  background: var(--border-softer);
-  border-radius: 999px;
-  margin: 0.875rem auto 0;
-  flex-shrink: 0;
-}
-
-.modal-scroll {
-  flex: 1;
-  overflow-y: auto;
-  scrollbar-width: none;
-  padding: 1.25rem 1.5rem 1.5rem;
-}
-
-.modal-scroll::-webkit-scrollbar { display: none; }
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  margin-bottom: 1.25rem;
-}
-
-.modal-icon { font-size: 2.5rem; line-height: 1; }
-
-.modal-title {
-  font-family: var(--font-display);
-  font-size: 1.375rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.015em;
-  line-height: 1.2;
-}
-
-.modal-tagline {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-top: 0.2rem;
-}
-
-.modal-section-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
-}
-
-.tool-step {
-  display: flex;
-  gap: 0.875rem;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-.tool-step__num {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.5rem;
-  background: var(--gradient-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
-}
-
-.tool-step__text {
-  font-size: 0.9375rem;
-  color: var(--text-secondary);
-  line-height: 1.65;
-  padding-top: 0.25rem;
-}
-
-.tool-step__text strong { color: var(--text-primary); }
-
-.modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 2rem;
-  height: 2rem;
-  background: var(--bg-card-light);
-  border: 1px solid var(--border-soft);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.modal-close:active { transform: scale(0.9); }
-
-.modal-footer {
-  padding: 0 1.5rem 0.5rem;
-  flex-shrink: 0;
-}
-
-@media (min-width: 640px) {
-  .shell {
-    height: 844px;
-    max-height: 92vh;
-    border-radius: 2.5rem;
-    border: 1px solid var(--border-subtle);
-  }
-}
-```
-
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    /* Tab content areas */
+    .tab-panel {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      position: relative;
+    }
+
+    .tab-panel::-webkit-scrollbar { display: none; }
+
+    .tab-panel--active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-inner {
+      padding: max(1.5rem, env(safe-area-inset-top)) 1.25rem 1.5rem;
+      flex: 1;
+    }
+
+    /* ── TODAY TAB ──────────────────────────────────────── */
+
+    .today-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .today-greeting {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .today-greeting em {
+      font-style: italic;
+      color: var(--text-teal);
+    }
+
+    .today-date {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .settings-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+
+    .settings-btn:active { transform: scale(0.92); }
+
+    /* Check-in card */
+    .checkin-card {
+      background: linear-gradient(135deg,
+        rgba(13,148,136,0.12),
+        rgba(217,119,6,0.08));
+      border: 1px solid var(--teal-border);
+      border-radius: 1.25rem;
+      padding: 1.375rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .checkin-card--done {
+      background: var(--teal-bg);
+    }
+
+    .checkin-label {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-teal);
+      margin-bottom: 0.875rem;
+    }
+
+    .checkin-question {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 1.125rem;
+      line-height: 1.3;
+    }
+
+    /* Mood grid — 5 across */
+    .mood-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .mood-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.625rem 0.25rem;
+      background: rgba(255,255,255,0.04);
+      border: 2px solid transparent;
+      border-radius: 0.875rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: var(--font-body);
+    }
+
+    .mood-btn:active { transform: scale(0.9); }
+
+    .mood-btn--selected {
+      border-color: var(--teal-border-strong);
+      background: var(--teal-bg-strong);
+    }
+
+    .mood-emoji { font-size: 1.625rem; line-height: 1; }
+
+    .mood-label {
+      font-size: 0.625rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .mood-btn--selected .mood-label { color: var(--text-teal); }
+
+    /* Note input */
+    .note-section {
+      display: none;
+      animation: fade-in 0.25s ease-out;
+    }
+
+    .note-section--show { display: block; }
+
+    .note-input {
+      width: 100%;
+      padding: 0.75rem 0.875rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: var(--font-body);
+      resize: none;
+      min-height: 70px;
+      transition: var(--transition-base);
+      -webkit-appearance: none;
+    }
+
+    .note-input::placeholder { color: var(--text-muted); }
+
+    .note-input:focus {
+      outline: none;
+      border-color: var(--teal-border-strong);
+      background: var(--bg-input-focus);
+      box-shadow: 0 0 0 3px var(--teal-glow-soft);
+    }
+
+    /* Done state */
+    .checkin-done {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .checkin-done__emoji { font-size: 2rem; line-height: 1; }
+
+    .checkin-done__text {
+      flex: 1;
+    }
+
+    .checkin-done__title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.15rem;
+    }
+
+    .checkin-done__sub {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    /* Streak bar */
+    .streak-row {
+      display: flex;
+      gap: 0.875rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .streak-chip {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.875rem 1rem;
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      border-radius: 1rem;
+    }
+
+    .streak-chip__icon { font-size: 1.375rem; }
+
+    .streak-chip__count {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-amber);
+      font-family: var(--font-display);
+      line-height: 1;
+    }
+
+    .streak-chip__label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .modules-chip {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.875rem 1rem;
+      background: var(--teal-bg);
+      border: 1px solid var(--teal-border);
+      border-radius: 1rem;
+    }
+
+    .modules-chip__icon { font-size: 1.375rem; }
+
+    .modules-chip__count {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-teal);
+      font-family: var(--font-display);
+      line-height: 1;
+    }
+
+    .modules-chip__label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* Continue learning card */
+    .continue-card {
+      background: var(--gradient-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      cursor: pointer;
+      transition: var(--transition-spring);
+    }
+
+    .continue-card:hover {
+      border-color: var(--teal-border);
+      transform: translateY(-2px);
+    }
+
+    .continue-card:active { transform: scale(0.98); }
+
+    .continue-card__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .continue-card__row {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+    }
+
+    .continue-card__num {
+      width: 2.75rem;
+      height: 2.75rem;
+      background: var(--gradient-main);
+      border-radius: 0.875rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .continue-card__body { flex: 1; min-width: 0; }
+
+    .continue-card__title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 0.2rem;
+    }
+
+    .continue-card__pathway {
+      font-size: 0.8125rem;
+      color: var(--text-teal);
+    }
+
+    .continue-card__arrow {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+    }
+
+    /* Suggested tool */
+    .suggested-tool {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      border-radius: 1.25rem;
+      padding: 1.125rem 1.25rem;
+      margin-bottom: 1.25rem;
+      cursor: pointer;
+      transition: var(--transition-spring);
+    }
+
+    .suggested-tool:hover {
+      border-color: var(--amber-border-strong);
+      transform: translateY(-2px);
+    }
+
+    .suggested-tool:active { transform: scale(0.98); }
+
+    .suggested-tool__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-amber);
+      margin-bottom: 0.625rem;
+    }
+
+    .suggested-tool__row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .suggested-tool__emoji { font-size: 1.75rem; line-height: 1; }
+
+    .suggested-tool__body { flex: 1; }
+
+    .suggested-tool__name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.15rem;
+    }
+
+    .suggested-tool__why {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    /* Pending reflection */
+    .reflection-nudge {
+      background: linear-gradient(135deg,
+        rgba(13,148,136,0.10),
+        rgba(217,119,6,0.08));
+      border: 1px solid var(--teal-border);
+      border-radius: 1.25rem;
+      padding: 1.125rem 1.25rem;
+      margin-bottom: 1.25rem;
+      cursor: pointer;
+      transition: var(--transition-spring);
+    }
+
+    .reflection-nudge:hover { transform: translateY(-2px); }
+    .reflection-nudge:active { transform: scale(0.98); }
+
+    .reflection-nudge__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-teal);
+      margin-bottom: 0.5rem;
+    }
+
+    .reflection-nudge__text {
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* ── LEARN TAB ───────────────────────────────────────── */
+
+    .learn-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .learn-title {
+      font-family: var(--font-display);
+      font-size: 1.625rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+    }
+
+    .learn-title em {
+      font-style: italic;
+      color: var(--text-teal);
+    }
+
+    .learn-sub {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Pathway cards */
+    .pw-card {
+      background: var(--gradient-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      margin-bottom: 0.875rem;
+      cursor: pointer;
+      transition: var(--transition-spring);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pw-card:hover {
+      border-color: var(--teal-border);
+      transform: translateY(-2px);
+    }
+
+    .pw-card:active { transform: scale(0.98); }
+
+    .pw-card--locked {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .pw-card--locked:hover {
+      transform: none;
+      border-color: var(--border-soft);
+    }
+
+    .pw-card--active {
+      border-color: var(--teal-border-strong);
+      background: var(--teal-bg);
+    }
+
+    .pw-card__header {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .pw-card__emoji { font-size: 2rem; line-height: 1; }
+
+    .pw-card__meta { flex: 1; min-width: 0; }
+
+    .pw-card__name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.15rem;
+    }
+
+    .pw-card__sub {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .pw-card__lock {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .pw-card__progress {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .pw-card__bar {
+      flex: 1;
+      height: 5px;
+      background: var(--border-soft);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .pw-card__bar-fill {
+      height: 100%;
+      background: var(--gradient-main);
+      border-radius: 999px;
+      transition: width 0.6s ease;
+    }
+
+    .pw-card__pct {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 2.5rem;
+      text-align: right;
+    }
+
+    .pw-card__pct--active { color: var(--text-teal); }
+
+    /* ── TOOLS TAB ───────────────────────────────────────── */
+
+    .tools-header {
+      margin-bottom: 1.25rem;
+    }
+
+    .tools-title {
+      font-family: var(--font-display);
+      font-size: 1.625rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+    }
+
+    .tools-title em {
+      font-style: italic;
+      color: var(--text-teal);
+    }
+
+    .tools-sub {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .tools-section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 1.125rem 0 0.625rem;
+    }
+
+    .tool-row {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.875rem 1rem;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 1rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: var(--transition-spring);
+    }
+
+    .tool-row:hover {
+      border-color: var(--teal-border);
+      background: var(--teal-bg);
+      transform: translateX(3px);
+    }
+
+    .tool-row:active { transform: scale(0.98); }
+
+    .tool-row--locked {
+      opacity: 0.38;
+      cursor: default;
+      filter: grayscale(0.4);
+    }
+
+    .tool-row--locked:hover {
+      transform: none;
+      border-color: var(--border-soft);
+      background: var(--bg-card-light);
+    }
+
+    .tool-row--crisis {
+      background: var(--red-bg);
+      border-color: var(--red-border);
+    }
+
+    .tool-row--crisis:hover {
+      background: var(--red-bg-strong);
+      border-color: var(--red-border-strong);
+    }
+
+    .tool-row__emoji { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+
+    .tool-row__body { flex: 1; min-width: 0; }
+
+    .tool-row__name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 0.15rem;
+    }
+
+    .tool-row__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .tool-row__lock { font-size: 0.9375rem; color: var(--text-muted); }
+
+    /* ── YOU TAB ─────────────────────────────────────────── */
+
+    .you-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .avatar {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 1rem;
+      background: var(--gradient-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .you-name {
+      font-family: var(--font-display);
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.015em;
+    }
+
+    .you-since {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.625rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .stat-chip {
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 1rem;
+      padding: 0.875rem 0.75rem;
+      text-align: center;
+    }
+
+    .stat-chip__num {
+      font-family: var(--font-display);
+      font-size: 1.625rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-chip__label {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Settings list */
+    .settings-list {
+      background: var(--gradient-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+
+    .settings-item {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 1rem 1.125rem;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      border-bottom: 1px solid var(--border-subtle);
+      text-decoration: none;
+    }
+
+    .settings-item:last-child { border-bottom: none; }
+
+    .settings-item:hover { background: var(--bg-card-light); }
+    .settings-item:active { background: var(--bg-card-medium); }
+
+    .settings-item__icon {
+      font-size: 1.125rem;
+      width: 1.75rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .settings-item__label {
+      flex: 1;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .settings-item__arrow {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .settings-item--danger .settings-item__label { color: var(--text-red); }
+
+    /* Pro banner */
+    .pro-banner {
+      background: var(--gradient-main);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      cursor: pointer;
+      transition: var(--transition-spring);
+    }
+
+    .pro-banner:hover { transform: translateY(-2px); }
+    .pro-banner:active { transform: scale(0.98); }
+
+    .pro-banner__title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 0.375rem;
+    }
+
+    .pro-banner__sub {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.5;
+    }
+
+    .pro-banner__cta {
+      margin-top: 0.875rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: white;
+      opacity: 0.9;
+    }
+
+    /* ── TOOL MODAL ──────────────────────────────────────── */
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: var(--z-modal);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay--show { display: flex; }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 28rem;
+      background: var(--bg-card);
+      border-radius: 1.5rem 1.5rem 0 0;
+      border: 1px solid var(--border-soft);
+      border-bottom: none;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .modal-handle {
+      width: 2.5rem;
+      height: 4px;
+      background: var(--border-softer);
+      border-radius: 999px;
+      margin: 0.875rem auto 0;
+      flex-shrink: 0;
+    }
+
+    .modal-scroll {
+      flex: 1;
+      overflow-y: auto;
+      scrollbar-width: none;
+      padding: 1.25rem 1.5rem 1.5rem;
+    }
+
+    .modal-scroll::-webkit-scrollbar { display: none; }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-icon { font-size: 2.5rem; line-height: 1; }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.015em;
+      line-height: 1.2;
+    }
+
+    .modal-tagline {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+    }
+
+    .modal-section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .tool-step {
+      display: flex;
+      gap: 0.875rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .tool-step__num {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      background: var(--gradient-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .tool-step__text {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      padding-top: 0.25rem;
+    }
+
+    .tool-step__text strong { color: var(--text-primary); }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2rem;
+      height: 2rem;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .modal-close:active { transform: scale(0.9); }
+
+    .modal-footer {
+      padding: 0 1.5rem 0.5rem;
+      flex-shrink: 0;
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
   </style>
 </head>
 <body>
@@ -966,267 +961,263 @@ body {
     <div class="bg-orb bg-orb--teal"></div>
     <div class="bg-orb bg-orb--amber"></div>
 
-```
-<!-- ── TODAY TAB ─────────────────────────────────── -->
-<div class="tab-panel tab-panel--active" id="panel-today">
-  <div class="panel-inner">
+    <!-- ── TODAY TAB ─────────────────────────────────── -->
+    <div class="tab-panel tab-panel--active" id="panel-today">
+      <div class="panel-inner">
 
-    <div class="today-header">
-      <div>
-        <h1 class="today-greeting" id="greeting">Good <em>morning</em></h1>
-        <p class="today-date" id="todayDate"></p>
-      </div>
-      <a href="/settings.html" class="settings-btn" aria-label="Settings">⚙</a>
-    </div>
-
-    <!-- Check-in card -->
-    <div class="checkin-card" id="checkinCard">
-      <p class="checkin-label">Daily check-in</p>
-      <p class="checkin-question">How are you feeling right now?</p>
-
-      <div class="mood-row" id="moodRow">
-        <button class="mood-btn" data-mood="rough"   onclick="selectMood('rough')"  >
-          <span class="mood-emoji">😞</span>
-          <span class="mood-label">Rough</span>
-        </button>
-        <button class="mood-btn" data-mood="anxious" onclick="selectMood('anxious')">
-          <span class="mood-emoji">😰</span>
-          <span class="mood-label">Anxious</span>
-        </button>
-        <button class="mood-btn" data-mood="okay"    onclick="selectMood('okay')"   >
-          <span class="mood-emoji">😐</span>
-          <span class="mood-label">Okay</span>
-        </button>
-        <button class="mood-btn" data-mood="good"    onclick="selectMood('good')"   >
-          <span class="mood-emoji">🙂</span>
-          <span class="mood-label">Good</span>
-        </button>
-        <button class="mood-btn" data-mood="great"   onclick="selectMood('great')"  >
-          <span class="mood-emoji">😊</span>
-          <span class="mood-label">Great</span>
-        </button>
-      </div>
-
-      <div class="note-section" id="noteSection">
-        <textarea
-          class="note-input"
-          id="noteInput"
-          placeholder="Anything else on your mind? (optional)"
-          maxlength="300"
-          rows="2"
-        ></textarea>
-        <button
-          class="btn btn--primary btn--sm"
-          style="margin-top:0.625rem"
-          onclick="submitCheckin()"
-          id="checkinSubmitBtn"
-        >
-          Log check-in
-        </button>
-      </div>
-    </div>
-
-    <!-- Streak + modules row -->
-    <div class="streak-row">
-      <div class="streak-chip">
-        <span class="streak-chip__icon">🔥</span>
-        <div>
-          <div class="streak-chip__count" id="streakCount">0</div>
-          <div class="streak-chip__label">day streak</div>
+        <div class="today-header">
+          <div>
+            <h1 class="today-greeting" id="greeting">Good <em>morning</em></h1>
+            <p class="today-date" id="todayDate"></p>
+          </div>
+          <a href="/settings.html" class="settings-btn" aria-label="Settings">⚙</a>
         </div>
-      </div>
-      <div class="modules-chip">
-        <span class="modules-chip__icon">✅</span>
-        <div>
-          <div class="modules-chip__count" id="modulesCount">0</div>
-          <div class="modules-chip__label">modules done</div>
+
+        <!-- Check-in card -->
+        <div class="checkin-card" id="checkinCard">
+          <p class="checkin-label">Daily check-in</p>
+          <p class="checkin-question">How are you feeling right now?</p>
+
+          <div class="mood-row" id="moodRow">
+            <button class="mood-btn" data-mood="rough"   onclick="selectMood('rough')"  >
+              <span class="mood-emoji">😞</span>
+              <span class="mood-label">Rough</span>
+            </button>
+            <button class="mood-btn" data-mood="anxious" onclick="selectMood('anxious')">
+              <span class="mood-emoji">😰</span>
+              <span class="mood-label">Anxious</span>
+            </button>
+            <button class="mood-btn" data-mood="okay"    onclick="selectMood('okay')"   >
+              <span class="mood-emoji">😐</span>
+              <span class="mood-label">Okay</span>
+            </button>
+            <button class="mood-btn" data-mood="good"    onclick="selectMood('good')"   >
+              <span class="mood-emoji">🙂</span>
+              <span class="mood-label">Good</span>
+            </button>
+            <button class="mood-btn" data-mood="great"   onclick="selectMood('great')"  >
+              <span class="mood-emoji">😊</span>
+              <span class="mood-label">Great</span>
+            </button>
+          </div>
+
+          <div class="note-section" id="noteSection">
+            <textarea
+              class="note-input"
+              id="noteInput"
+              placeholder="Anything else on your mind? (optional)"
+              maxlength="300"
+              rows="2"
+            ></textarea>
+            <button
+              class="btn btn--primary btn--sm"
+              style="margin-top:0.625rem"
+              onclick="submitCheckin()"
+              id="checkinSubmitBtn"
+            >
+              Log check-in
+            </button>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Pending reflection nudge -->
-    <div class="reflection-nudge" id="reflectionNudge" style="display:none" onclick="goToReflection()">
-      <p class="reflection-nudge__label">3-day reflection ready</p>
-      <p class="reflection-nudge__text" id="reflectionNudgeText">
-        How's that commitment landing in real life?
-      </p>
-    </div>
-
-    <!-- Continue learning -->
-    <div class="continue-card" id="continueCard" onclick="goToNextModule()">
-      <p class="continue-card__label">Continue learning</p>
-      <div class="continue-card__row">
-        <div class="continue-card__num" id="nextModuleNum">1</div>
-        <div class="continue-card__body">
-          <p class="continue-card__title" id="nextModuleTitle">Loading...</p>
-          <p class="continue-card__pathway" id="nextModulePathway"></p>
+        <!-- Streak + modules row -->
+        <div class="streak-row">
+          <div class="streak-chip">
+            <span class="streak-chip__icon">🔥</span>
+            <div>
+              <div class="streak-chip__count" id="streakCount">0</div>
+              <div class="streak-chip__label">day streak</div>
+            </div>
+          </div>
+          <div class="modules-chip">
+            <span class="modules-chip__icon">✅</span>
+            <div>
+              <div class="modules-chip__count" id="modulesCount">0</div>
+              <div class="modules-chip__label">modules done</div>
+            </div>
+          </div>
         </div>
-        <span class="continue-card__arrow">→</span>
-      </div>
-    </div>
 
-    <!-- Suggested tool (shown after check-in) -->
-    <div class="suggested-tool" id="suggestedTool" style="display:none" onclick="openSuggestedTool()">
-      <p class="suggested-tool__label">Try this now</p>
-      <div class="suggested-tool__row">
-        <span class="suggested-tool__emoji" id="suggestedToolEmoji">🌬</span>
-        <div class="suggested-tool__body">
-          <p class="suggested-tool__name" id="suggestedToolName"></p>
-          <p class="suggested-tool__why" id="suggestedToolWhy"></p>
+        <!-- Pending reflection nudge -->
+        <div class="reflection-nudge" id="reflectionNudge" style="display:none" onclick="goToReflection()">
+          <p class="reflection-nudge__label">3-day reflection ready</p>
+          <p class="reflection-nudge__text" id="reflectionNudgeText">
+            How's that commitment landing in real life?
+          </p>
         </div>
-        <span style="color:var(--text-muted)">→</span>
+
+        <!-- Continue learning -->
+        <div class="continue-card" id="continueCard" onclick="goToNextModule()">
+          <p class="continue-card__label">Continue learning</p>
+          <div class="continue-card__row">
+            <div class="continue-card__num" id="nextModuleNum">1</div>
+            <div class="continue-card__body">
+              <p class="continue-card__title" id="nextModuleTitle">Loading...</p>
+              <p class="continue-card__pathway" id="nextModulePathway"></p>
+            </div>
+            <span class="continue-card__arrow">→</span>
+          </div>
+        </div>
+
+        <!-- Suggested tool (shown after check-in) -->
+        <div class="suggested-tool" id="suggestedTool" style="display:none" onclick="openSuggestedTool()">
+          <p class="suggested-tool__label">Try this now</p>
+          <div class="suggested-tool__row">
+            <span class="suggested-tool__emoji" id="suggestedToolEmoji">🌬</span>
+            <div class="suggested-tool__body">
+              <p class="suggested-tool__name" id="suggestedToolName"></p>
+              <p class="suggested-tool__why" id="suggestedToolWhy"></p>
+            </div>
+            <span style="color:var(--text-muted)">→</span>
+          </div>
+        </div>
+
       </div>
     </div>
 
-  </div>
-</div>
+    <!-- ── LEARN TAB ──────────────────────────────────── -->
+    <div class="tab-panel" id="panel-learn">
+      <div class="panel-inner">
 
-<!-- ── LEARN TAB ──────────────────────────────────── -->
-<div class="tab-panel" id="panel-learn">
-  <div class="panel-inner">
+        <div class="learn-header">
+          <h2 class="learn-title">Your <em>pathways</em></h2>
+          <p class="learn-sub">Four pathways. 24 modules. Start with yours.</p>
+        </div>
 
-    <div class="learn-header">
-      <h2 class="learn-title">Your <em>pathways</em></h2>
-      <p class="learn-sub">Four pathways. 24 modules. Start with yours.</p>
-    </div>
+        <div id="pathwaysList">
+          <!-- Rendered by JS -->
+        </div>
 
-    <div id="pathwaysList">
-      <!-- Rendered by JS -->
-    </div>
-
-  </div>
-</div>
-
-<!-- ── TOOLS TAB ──────────────────────────────────── -->
-<div class="tab-panel" id="panel-tools">
-  <div class="panel-inner">
-
-    <div class="tools-header">
-      <h2 class="tools-title">Your <em>toolkit</em></h2>
-      <p class="tools-sub">Skills you've unlocked. Always available.</p>
-    </div>
-
-    <!-- Crisis tools always visible -->
-    <p class="tools-section-label">🆘 Always available — crisis tools</p>
-    <div id="crisisToolsList">
-      <!-- Rendered by JS -->
-    </div>
-
-    <!-- Earned tools -->
-    <p class="tools-section-label" id="earnedToolsLabel">✨ Earned tools</p>
-    <div id="earnedToolsList">
-      <!-- Rendered by JS -->
-    </div>
-
-    <!-- Locked tools -->
-    <p class="tools-section-label" id="lockedToolsLabel" style="display:none">🔒 Unlock by completing modules</p>
-    <div id="lockedToolsList">
-      <!-- Rendered by JS -->
-    </div>
-
-  </div>
-</div>
-
-<!-- ── YOU TAB ────────────────────────────────────── -->
-<div class="tab-panel" id="panel-you">
-  <div class="panel-inner">
-
-    <!-- Profile header -->
-    <div class="you-header">
-      <div class="avatar">🌑</div>
-      <div>
-        <p class="you-name" id="userName">Welcome</p>
-        <p class="you-since" id="userSince">Member since today</p>
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-chip">
-        <div class="stat-chip__num" id="statStreak">0</div>
-        <div class="stat-chip__label">Day streak</div>
-      </div>
-      <div class="stat-chip">
-        <div class="stat-chip__num" id="statModules">0</div>
-        <div class="stat-chip__label">Modules done</div>
-      </div>
-      <div class="stat-chip">
-        <div class="stat-chip__num" id="statTools">0</div>
-        <div class="stat-chip__label">Tools earned</div>
-      </div>
-    </div>
+    <!-- ── TOOLS TAB ──────────────────────────────────── -->
+    <div class="tab-panel" id="panel-tools">
+      <div class="panel-inner">
 
-    <!-- Pro upgrade banner (hidden for pro users) -->
-    <div class="pro-banner" id="proBanner" onclick="Nav.go('/upgrade.html')">
-      <p class="pro-banner__title">Unlock the full journey</p>
-      <p class="pro-banner__sub">All 24 modules, all 4 pathways, every tool you earn — no limits.</p>
-      <p class="pro-banner__cta">Upgrade to Pro →</p>
-    </div>
+        <div class="tools-header">
+          <h2 class="tools-title">Your <em>toolkit</em></h2>
+          <p class="tools-sub">Skills you've unlocked. Always available.</p>
+        </div>
 
-    <!-- Settings list -->
-    <div class="settings-list">
-      <a href="/settings.html" class="settings-item">
-        <span class="settings-item__icon">⚙️</span>
-        <span class="settings-item__label">Settings</span>
-        <span class="settings-item__arrow">›</span>
-      </a>
-      <a href="/privacy.html" class="settings-item">
-        <span class="settings-item__icon">🔒</span>
-        <span class="settings-item__label">Privacy Policy</span>
-        <span class="settings-item__arrow">›</span>
-      </a>
-      <a href="/terms.html" class="settings-item">
-        <span class="settings-item__icon">📄</span>
-        <span class="settings-item__label">Terms of Service</span>
-        <span class="settings-item__arrow">›</span>
-      </a>
-      <div class="settings-item settings-item--danger" onclick="handleSignOut()">
-        <span class="settings-item__icon">🚪</span>
-        <span class="settings-item__label">Sign out</span>
-        <span class="settings-item__arrow">›</span>
+        <!-- Crisis tools always visible -->
+        <p class="tools-section-label">🆘 Always available — crisis tools</p>
+        <div id="crisisToolsList">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Earned tools -->
+        <p class="tools-section-label" id="earnedToolsLabel">✨ Earned tools</p>
+        <div id="earnedToolsList">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Locked tools -->
+        <p class="tools-section-label" id="lockedToolsLabel" style="display:none">🔒 Unlock by completing modules</p>
+        <div id="lockedToolsList">
+          <!-- Rendered by JS -->
+        </div>
+
       </div>
     </div>
 
-    <p style="text-align:center;font-size:0.75rem;color:var(--text-dim);line-height:1.6">
-      InnerShadow — educational content only.<br>Not a substitute for professional mental health care.
-    </p>
+    <!-- ── YOU TAB ────────────────────────────────────── -->
+    <div class="tab-panel" id="panel-you">
+      <div class="panel-inner">
 
-  </div>
-</div>
+        <!-- Profile header -->
+        <div class="you-header">
+          <div class="avatar">🌑</div>
+          <div>
+            <p class="you-name" id="userName">Welcome</p>
+            <p class="you-since" id="userSince">Member since today</p>
+          </div>
+        </div>
 
-<!-- ── BOTTOM NAV ─────────────────────────────────── -->
-<nav class="bottom-nav">
-  <button class="nav-tab nav-tab--active" id="tab-today" onclick="switchTab('today')">
-    <div class="nav-tab__icon">
-      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    </div>
-    <span class="nav-tab__label">Today</span>
-  </button>
-  <button class="nav-tab" id="tab-learn" onclick="switchTab('learn')">
-    <div class="nav-tab__icon">
-      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-    </div>
-    <span class="nav-tab__label">Learn</span>
-  </button>
-  <button class="nav-tab" id="tab-tools" onclick="switchTab('tools')">
-    <div class="nav-tab__icon">
-      <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-    </div>
-    <span class="nav-tab__label">Tools</span>
-  </button>
-  <button class="nav-tab" id="tab-you" onclick="switchTab('you')">
-    <div class="nav-tab__icon">
-      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </div>
-    <span class="nav-tab__label">You</span>
-  </button>
-</nav>
-```
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-chip">
+            <div class="stat-chip__num" id="statStreak">0</div>
+            <div class="stat-chip__label">Day streak</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-chip__num" id="statModules">0</div>
+            <div class="stat-chip__label">Modules done</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-chip__num" id="statTools">0</div>
+            <div class="stat-chip__label">Tools earned</div>
+          </div>
+        </div>
 
+        <!-- Pro upgrade banner (hidden for pro users) -->
+        <div class="pro-banner" id="proBanner" onclick="window.location.href='/upgrade.html'">
+          <p class="pro-banner__title">Unlock the full journey</p>
+          <p class="pro-banner__sub">All 24 modules, all 4 pathways, every tool you earn — no limits.</p>
+          <p class="pro-banner__cta">Upgrade to Pro →</p>
+        </div>
+
+        <!-- Settings list -->
+        <div class="settings-list">
+          <a href="/settings.html" class="settings-item">
+            <span class="settings-item__icon">⚙️</span>
+            <span class="settings-item__label">Settings</span>
+            <span class="settings-item__arrow">›</span>
+          </a>
+          <a href="/privacy.html" class="settings-item">
+            <span class="settings-item__icon">🔒</span>
+            <span class="settings-item__label">Privacy Policy</span>
+            <span class="settings-item__arrow">›</span>
+          </a>
+          <a href="/terms.html" class="settings-item">
+            <span class="settings-item__icon">📄</span>
+            <span class="settings-item__label">Terms of Service</span>
+            <span class="settings-item__arrow">›</span>
+          </a>
+          <div class="settings-item settings-item--danger" onclick="handleSignOut()">
+            <span class="settings-item__icon">🚪</span>
+            <span class="settings-item__label">Sign out</span>
+            <span class="settings-item__arrow">›</span>
+          </div>
+        </div>
+
+        <p style="text-align:center;font-size:0.75rem;color:var(--text-dim);line-height:1.6">
+          InnerShadow — educational content only.<br>Not a substitute for professional mental health care.
+        </p>
+
+      </div>
+    </div>
+
+    <!-- ── BOTTOM NAV ─────────────────────────────────── -->
+    <nav class="bottom-nav">
+      <button class="nav-tab nav-tab--active" id="tab-today" onclick="switchTab('today')">
+        <div class="nav-tab__icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <span class="nav-tab__label">Today</span>
+      </button>
+      <button class="nav-tab" id="tab-learn" onclick="switchTab('learn')">
+        <div class="nav-tab__icon">
+          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        </div>
+        <span class="nav-tab__label">Learn</span>
+      </button>
+      <button class="nav-tab" id="tab-tools" onclick="switchTab('tools')">
+        <div class="nav-tab__icon">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <span class="nav-tab__label">Tools</span>
+      </button>
+      <button class="nav-tab" id="tab-you" onclick="switchTab('you')">
+        <div class="nav-tab__icon">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <span class="nav-tab__label">You</span>
+      </button>
+    </nav>
   </div><!-- /shell -->
 
   <!-- Tool modal -->
-
   <div class="modal-overlay" id="toolModal" onclick="closeToolModal(event)">
     <div class="modal-sheet" style="position:relative">
       <div class="modal-handle"></div>
@@ -1251,13 +1242,10 @@ body {
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script src="/js/supabase-client.js"></script>
-
   <script src="/js/utils.js"></script>
 
   <script>
-
     // ================================================================
     // APP STATE
     // ================================================================
@@ -1461,7 +1449,6 @@ body {
       document.getElementById('tab-' + tab).classList.add('nav-tab--active');
 
       activeTab = tab;
-      Nav.setTab(tab);
 
       // Scroll to top of new tab
       const panel = document.getElementById('panel-' + tab);
@@ -1484,42 +1471,50 @@ body {
       greetingEl.innerHTML = `Good <em>${time}</em>`;
 
       // Date
-      document.getElementById('todayDate').textContent =
-        DateTime.formatDate(DateTime.today(), 'long');
+      const today = new Date();
+      document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        month: 'long', 
+        day: 'numeric' 
+      });
 
       // Streak + modules
       document.getElementById('streakCount').textContent =
-        userState.streak_current || 0;
-      document.getElementById('modulesCount').textContent =
-        Object.values(appState.modules || {}).filter(m => m.completed).length;
+        (userState && userState.streak_current) || 0;
+      
+      let modulesDone = 0;
+      if (appState.modules) {
+        modulesDone = Object.values(appState.modules).filter(m => m && m.completed).length;
+      }
+      document.getElementById('modulesCount').textContent = modulesDone;
 
       // Check-in state
       if (todayCheckin) {
         renderCheckinDone(todayCheckin);
       }
-
-      // Next module
-      renderNextModule();
-
-      // Pending reflections
-      if (appState.pendingReflections?.length > 0) {
-        const nudge = document.getElementById('reflectionNudge');
-        const text  = document.getElementById('reflectionNudgeText');
-        const mod   = appState.pendingReflections[0];
-        text.textContent = `Your commitment from ${MODULE_LABELS[mod.module_id] || 'a module'} — how's it going?`;
-        nudge.style.display = 'block';
-      }
     }
 
     function renderCheckinDone(checkin) {
       const card = document.getElementById('checkinCard');
-      const emoji = Mood.getEmoji(checkin.mood);
-      const label = Mood.getLabel(checkin.mood);
-      const msg   = Mood.getCheckinMessage(
-        checkin.mood,
-        appState?.userState?.streak_current || 0,
-        appState?.userState?.tools_unlocked?.length > 0
-      );
+      
+      const moodEmojis = {
+        'rough': '😞',
+        'anxious': '😰',
+        'okay': '😐',
+        'good': '🙂',
+        'great': '😊'
+      };
+      
+      const moodLabels = {
+        'rough': 'Rough',
+        'anxious': 'Anxious',
+        'okay': 'Okay',
+        'good': 'Good',
+        'great': 'Great'
+      };
+      
+      const emoji = moodEmojis[checkin.mood] || '😐';
+      const label = moodLabels[checkin.mood] || 'Okay';
 
       card.classList.add('checkin-card--done');
       card.innerHTML = `
@@ -1528,52 +1523,10 @@ body {
           <span class="checkin-done__emoji">${emoji}</span>
           <div class="checkin-done__text">
             <p class="checkin-done__title">${label} — logged</p>
-            <p class="checkin-done__sub">${msg}</p>
+            <p class="checkin-done__sub">Thanks for checking in today.</p>
           </div>
         </div>
       `;
-
-      // Show suggested tool
-      showSuggestedTool(checkin.mood);
-    }
-
-    function renderNextModule() {
-      const modules  = appState?.modules || {};
-      const pathways = appState?.pathways || {};
-
-      // Find first incomplete, unlocked module
-      const ORDER = [
-        ...PATHWAY_MODULES.emotional,
-        ...PATHWAY_MODULES.identity,
-        ...PATHWAY_MODULES.connection,
-        ...PATHWAY_MODULES.living
-      ];
-
-      let nextMod = null;
-      for (const modId of ORDER) {
-        const m = modules[modId];
-        if (m && m.unlocked && !m.completed) {
-          nextMod = { id: modId, ...m };
-          break;
-        }
-      }
-
-      if (!nextMod) {
-        // All done
-        document.getElementById('continueCard').style.display = 'none';
-        return;
-      }
-
-      const pathwayKey = MODULE_PATHWAY_MAP[nextMod.id];
-      const modNum     = PATHWAY_MODULES[pathwayKey].indexOf(nextMod.id) + 1;
-
-      document.getElementById('nextModuleNum').textContent    = modNum;
-      document.getElementById('nextModuleTitle').textContent  = MODULE_LABELS[nextMod.id] || '';
-      document.getElementById('nextModulePathway').textContent = PATHWAY_LABELS[pathwayKey] || '';
-
-      // Store for click handler
-      document.getElementById('continueCard').dataset.moduleId = nextMod.id;
-      document.getElementById('continueCard').dataset.pathway  = pathwayKey;
     }
 
     // ── Check-in ──────────────────────────────────────────
@@ -1600,210 +1553,49 @@ body {
       btn.disabled    = true;
       btn.textContent = 'Saving...';
 
-      const { error } = await DB.saveCheckin(currentUser.id, selectedMood, note);
-
-      if (error) {
+      // Simulate saving (replace with actual DB call)
+      setTimeout(() => {
         btn.disabled    = false;
         btn.textContent = 'Log check-in';
-        UI.showToast('Could not save check-in. Try again.', 'error');
-        return;
-      }
+        
+        // Update local state
+        appState = appState || {};
+        appState.todayCheckin = { mood: selectedMood, note, date: new Date().toISOString() };
+        if (!appState.userState) appState.userState = {};
+        appState.userState.streak_current = (appState.userState.streak_current || 0) + 1;
 
-      // Update local state
-      appState.todayCheckin = { mood: selectedMood, note, date: DateTime.today() };
-      appState.userState.streak_current = (appState.userState.streak_current || 0) + 1;
+        // Re-render
+        renderCheckinDone(appState.todayCheckin);
 
-      // Re-render
-      renderCheckinDone(appState.todayCheckin);
+        // Update streak chips
+        document.getElementById('streakCount').textContent =
+          appState.userState.streak_current;
 
-      // Update streak chips
-      document.getElementById('streakCount').textContent =
-        appState.userState.streak_current;
-
-      UI.showToast('Check-in saved 🌑');
+        alert('Check-in saved!');
+      }, 500);
     }
 
     // ── Suggested tool ────────────────────────────────────
 
-    function showSuggestedTool(mood) {
-      const suggestions = Mood.getToolSuggestions(mood);
-      const unlocked    = new Set(appState?.userState?.tools_unlocked || []);
-      const freeCrisis  = new Set(CRISIS_TOOLS.map(t => t.id));
-
-      // Find first available suggestion
-      let tool = null;
-      for (const toolId of suggestions) {
-        if (unlocked.has(toolId) || freeCrisis.has(toolId) || FREE_TOOLS.has(toolId)) {
-          const def = EARNED_TOOL_DEFS[toolId] ||
-                      CRISIS_TOOLS.find(t => t.id === toolId);
-          if (def) { tool = { id: toolId, ...def }; break; }
-        }
-      }
-
-      if (!tool) return;
-
-      document.getElementById('suggestedToolEmoji').textContent = tool.emoji;
-      document.getElementById('suggestedToolName').textContent  = tool.name;
-      document.getElementById('suggestedToolWhy').textContent   =
-        `Based on your ${Mood.getLabel(mood).toLowerCase()} check-in`;
-
-      document.getElementById('suggestedTool').style.display = 'block';
-      document.getElementById('suggestedTool').dataset.toolId = tool.id;
-    }
-
     function openSuggestedTool() {
-      const toolId = document.getElementById('suggestedTool').dataset.toolId;
-      if (toolId) openToolModal(toolId, 'checkin-suggestion');
+      alert('Open suggested tool - to be implemented');
     }
 
     function goToNextModule() {
-      const card     = document.getElementById('continueCard');
-      const moduleId = card.dataset.moduleId;
-      const pathway  = card.dataset.pathway;
-      if (!moduleId) return;
-      Nav.go(`/pathways/${pathway}/${moduleId}.html`);
+      alert('Go to next module - to be implemented');
     }
 
     function goToReflection() {
-      const mod = appState?.pendingReflections?.[0];
-      if (mod) Nav.go(`/pathways/${MODULE_PATHWAY_MAP[mod.module_id]}/${mod.module_id}.html?reflect=true`);
+      alert('Go to reflection - to be implemented');
     }
 
     // ================================================================
-    // LEARN TAB
+    // SIGN OUT
     // ================================================================
 
-    function renderLearn() {
-      if (!appState) return;
-
-      const { pathways, modules } = appState;
-      const list = document.getElementById('pathwaysList');
-
-      const pathwayOrder = ['emotional', 'identity', 'connection', 'living'];
-
-      list.innerHTML = pathwayOrder.map(key => {
-        const pw      = pathways[key] || {};
-        const mods    = PATHWAY_MODULES[key];
-        const done    = mods.filter(id => modules[id]?.completed).length;
-        const total   = mods.length;
-        const pct     = Math.round((done / total) * 100);
-        const locked  = !pw.unlocked;
-        const active  = pw.started && !pw.completed;
-
-        return `
-          <div class="pw-card ${locked ? 'pw-card--locked' : ''} ${active ? 'pw-card--active' : ''}"
-               onclick="${locked ? '' : `goToPathway('${key}')`}">
-            <div class="pw-card__header">
-              <span class="pw-card__emoji">${PATHWAY_ICONS[key]}</span>
-              <div class="pw-card__meta">
-                <p class="pw-card__name">${PATHWAY_LABELS[key]}</p>
-                <p class="pw-card__sub">${done} of ${total} modules complete</p>
-              </div>
-              ${locked ? '<span class="pw-card__lock">🔒</span>' : ''}
-            </div>
-            <div class="pw-card__progress">
-              <div class="pw-card__bar">
-                <div class="pw-card__bar-fill" style="width:${pct}%"></div>
-              </div>
-              <span class="pw-card__pct ${active ? 'pw-card__pct--active' : ''}">${pct}%</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function goToPathway(key) {
-      Nav.go(`/pathways/${key}/overview.html`);
-    }
-
-    // ================================================================
-    // TOOLS TAB
-    // ================================================================
-
-    function renderTools() {
-      if (!appState) return;
-
-      const unlocked = new Set(appState?.userState?.tools_unlocked || []);
-
-      // Crisis tools
-      document.getElementById('crisisToolsList').innerHTML =
-        CRISIS_TOOLS.map(t => renderToolRow(t, 'crisis')).join('');
-
-      // Earned tools
-      const earned = Object.entries(EARNED_TOOL_DEFS)
-        .filter(([id]) => unlocked.has(id));
-
-      const locked = Object.entries(EARNED_TOOL_DEFS)
-        .filter(([id]) => !unlocked.has(id));
-
-      if (earned.length > 0) {
-        document.getElementById('earnedToolsList').innerHTML =
-          earned.map(([id, t]) => renderToolRow({ id, ...t }, 'earned')).join('');
-      } else {
-        document.getElementById('earnedToolsList').innerHTML = `
-          <div style="padding:1rem;text-align:center;color:var(--text-muted);font-size:0.875rem;line-height:1.6">
-            Complete modules to earn tools.<br>Your first one is waiting.
-          </div>
-        `;
-      }
-
-      if (locked.length > 0) {
-        document.getElementById('lockedToolsLabel').style.display = 'block';
-        document.getElementById('lockedToolsList').innerHTML =
-          locked.map(([id, t]) => renderToolRow({ id, ...t }, 'locked')).join('');
-      }
-    }
-
-    function renderToolRow(tool, type) {
-      const isLocked = type === 'locked';
-      const isCrisis = type === 'crisis';
-
-      return `
-        <div class="tool-row ${isLocked ? 'tool-row--locked' : ''} ${isCrisis ? 'tool-row--crisis' : ''}"
-             onclick="${isLocked ? '' : `openToolModal('${tool.id}', '${type}')`}">
-          <span class="tool-row__emoji">${tool.emoji}</span>
-          <div class="tool-row__body">
-            <p class="tool-row__name">${tool.name}</p>
-            <p class="tool-row__desc">${tool.tagline}</p>
-          </div>
-          ${isLocked ? '<span class="tool-row__lock">🔒</span>' : '<span style="color:var(--text-muted);font-size:0.875rem">→</span>'}
-        </div>
-      `;
-    }
-
-    // ================================================================
-    // YOU TAB
-    // ================================================================
-
-    function renderYou() {
-      if (!appState || !currentUser) return;
-
-      const { userState, modules } = appState;
-
-      // Name from email
-      const email    = currentUser.email || '';
-      const name     = currentUser.user_metadata?.full_name ||
-                       email.split('@')[0] || 'You';
-      document.getElementById('userName').textContent = name;
-
-      // Member since
-      const since = currentUser.created_at
-        ? DateTime.formatDate(currentUser.created_at.slice(0,10), 'medium')
-        : 'today';
-      document.getElementById('userSince').textContent = `Member since ${since}`;
-
-      // Stats
-      document.getElementById('statStreak').textContent =
-        userState?.streak_current || 0;
-      document.getElementById('statModules').textContent =
-        Object.values(modules || {}).filter(m => m.completed).length;
-      document.getElementById('statTools').textContent =
-        (userState?.tools_unlocked || []).length;
-
-      // Hide pro banner if already pro
-      if (userState?.is_pro) {
-        document.getElementById('proBanner').style.display = 'none';
-      }
+    async function handleSignOut() {
+      if (!confirm('Sign out of InnerShadow?')) return;
+      window.location.href = '/index.html';
     }
 
     // ================================================================
@@ -1816,7 +1608,10 @@ body {
                      ? { id: toolId, ...EARNED_TOOL_DEFS[toolId] }
                      : null);
 
-      if (!tool) return;
+      if (!tool) {
+        alert('Tool not found');
+        return;
+      }
 
       activeToolId = toolId;
 
@@ -1854,11 +1649,6 @@ body {
       `;
 
       document.getElementById('toolModal').classList.add('modal-overlay--show');
-
-      // Record usage
-      if (currentUser) {
-        DB.recordToolUsage(currentUser.id, toolId, triggeredFrom).catch(() => {});
-      }
     }
 
     function closeToolModal(e) {
@@ -1869,19 +1659,8 @@ body {
 
     function markToolDone() {
       document.getElementById('toolModal').classList.remove('modal-overlay--show');
-      UI.showToast('Good work. That takes practice.', 'success');
+      alert('Good work. That takes practice.');
       activeToolId = null;
-    }
-
-    // ================================================================
-    // SIGN OUT
-    // ================================================================
-
-    async function handleSignOut() {
-      if (!confirm('Sign out of InnerShadow?')) return;
-      UI.showLoading('Signing out...');
-      await Auth.signOut();
-      window.location.href = '/index.html';
     }
 
     // ================================================================
@@ -1889,10 +1668,12 @@ body {
     // ================================================================
 
     async function init() {
-      const session = await Auth.requireAuth('/index.html');
-      if (!session) return;
-
-      currentUser = session.user;
+      // Simulate loading user (replace with actual auth check)
+      currentUser = { 
+        id: 'test-user',
+        email: 'user@example.com',
+        created_at: new Date().toISOString()
+      };
 
       // Check disclaimer
       const disclaimerOk = localStorage.getItem('innershadow_disclaimer_acknowledged');
@@ -1901,62 +1682,38 @@ body {
         return;
       }
 
-      // Load from cache instantly for perceived speed
-      const cached = Cache.load();
-      if (cached) {
-        appState = cached;
-        renderAll();
-        UI.markLoaded(0);
-      }
-
-      // Load fresh from Supabase
-      try {
-        const fresh = await DB.loadFullState(currentUser.id);
-        if (fresh) {
-          appState = fresh;
-          Cache.save(fresh);
-          renderAll();
+      // Initialize app state
+      appState = {
+        userState: {
+          streak_current: 3,
+          tools_unlocked: ['tool-name-it', 'tool-body-check']
+        },
+        modules: {
+          'mod-1': { completed: true },
+          'mod-2': { completed: false, unlocked: true }
+        },
+        pathways: {
+          emotional: { unlocked: true, started: true, completed: false },
+          identity: { unlocked: false },
+          connection: { unlocked: false },
+          living: { unlocked: false }
         }
-      } catch (err) {
-        console.error('[App] State load failed:', err);
-      }
+      };
 
-      if (!cached) UI.markLoaded();
+      renderAll();
 
-      // Handle tab from URL param
-      const tab = Nav.getCurrentTab('today');
-      if (tab !== 'today') switchTab(tab);
-
-      // Handle action param (e.g. ?action=checkin)
-      const action = Nav.getParam('action');
-      if (action === 'checkin') {
-        switchTab('today');
-        document.getElementById('checkinCard').scrollIntoView({ behavior: 'smooth' });
-      }
+      // Hide loading
+      document.body.classList.add('loaded');
     }
 
     function renderAll() {
       renderToday();
-      renderLearn();
-      renderTools();
-      renderYou();
+      // renderLearn();
+      // renderTools();
+      // renderYou();
     }
 
     document.addEventListener('DOMContentLoaded', init);
-
-    // Refresh state when app comes back into focus
-    document.addEventListener('visibilitychange', async () => {
-      if (document.visibilityState === 'visible' && currentUser) {
-        try {
-          const fresh = await DB.loadFullState(currentUser.id);
-          if (fresh) {
-            appState = fresh;
-            Cache.save(fresh);
-            renderAll();
-          }
-        } catch (err) {}
-      }
-    });
   </script>
 
   <script>
