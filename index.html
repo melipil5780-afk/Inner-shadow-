@@ -533,6 +533,14 @@
     // ── Redirect helper ─────────────────────────────────────────────
 
     function goAfterAuth() {
+        // Prevent redirect loops
+        const redirectCount = parseInt(sessionStorage.getItem('_authRedirects') || '0');
+        if (redirectCount > 2) {
+            sessionStorage.removeItem('_authRedirects');
+            showPage();
+            return;
+        }
+        sessionStorage.setItem('_authRedirects', redirectCount + 1);
         const seen = localStorage.getItem('innershadow_disclaimer_acknowledged') === 'true';
         window.location.replace(seen ? '/app.html' : '/disclaimer.html');
     }
