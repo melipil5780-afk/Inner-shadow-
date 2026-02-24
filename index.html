@@ -19,11 +19,6 @@
 
     <style>
         html { background: #0a0f1e; }
-        body { opacity: 0; }
-        body.ready { opacity: 1; transition: opacity 0.25s ease; }
-        /* Guaranteed fallback — page always visible after 3s no matter what */
-        body { animation: guarantee-visible 0s 3s forwards; }
-        @keyframes guarantee-visible { to { opacity: 1; } }
 
         /* ── DESIGN TOKENS ── */
         :root {
@@ -354,13 +349,13 @@
             flex-direction: column;
             gap: 1rem;
             z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
+            /* Visible by default — JS hides it once page is ready */
+        }
+        .loading-overlay.hidden {
+            display: none;
         }
         .loading-overlay.show {
-            opacity: 1;
-            pointer-events: all;
+            display: flex;
         }
         .loading-spinner {
             width: 2.5rem;
@@ -505,13 +500,14 @@
     }
 
     function hideOverlay() {
-        document.getElementById('loadingOverlay').classList.remove('show');
+        const el = document.getElementById('loadingOverlay');
+        el.classList.remove('show');
+        el.classList.add('hidden');
         clearTimeout(safetyTimer);
     }
 
     function showPage() {
-        // Reveal the page with a gentle fade
-        document.body.classList.add('ready');
+        document.getElementById('loadingOverlay').classList.add('hidden');
     }
 
     function showError(msg) {
