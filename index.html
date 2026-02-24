@@ -536,6 +536,18 @@
     <!-- SAFETY: Ensure page becomes visible even if JS errors occur -->
     <script>document.body.classList.add('loaded');</script>
 
+    <!-- Service Worker Unregistration – temporary debugging -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for (const reg of registrations) {
+                    reg.unregister();
+                    console.log('[InnerShadow] SW unregistered:', reg.scope);
+                }
+            });
+        }
+    </script>
+
     <div class="container">
         <div class="bg-blur-1"></div>
         <div class="bg-blur-2"></div>
@@ -824,20 +836,18 @@
         });
     </script>
 
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration – temporarily disabled for debugging -->
+    <!--
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then(reg => {
                         console.log('[InnerShadow] SW registered:', reg.scope);
-
-                        // Check for updates every time app loads
                         reg.addEventListener('updatefound', () => {
                             const newWorker = reg.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // New version available — could show update banner here
                                     console.log('[InnerShadow] New version available');
                                 }
                             });
@@ -847,5 +857,6 @@
             });
         }
     </script>
+    -->
 </body>
 </html>
