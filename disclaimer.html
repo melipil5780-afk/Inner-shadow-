@@ -512,7 +512,7 @@
 
   <script>
     // ================================================================
-    // DISCLAIMER PAGE (your preferred logic)
+    // DISCLAIMER PAGE (FIXED - NO MORE LOOP)
     // ================================================================
 
     let currentUser  = null;
@@ -543,28 +543,39 @@
       btn.disabled = !agreed;
     }
 
+    // ========== FIXED: Set flag IMMEDIATELY when user clicks ==========
     async function handleContinue() {
       if (!agreed || !currentUser) return;
 
       UI.showLoading('Setting things up...');
 
+      // CRITICAL FIX: Set flag IMMEDIATELY before any async operations
+      localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+
       try {
+        // Try to update database, but don't wait for it
         await DB.updateUserState(currentUser.id, {
           disclaimer_accepted:    true,
           disclaimer_accepted_at: new Date().toISOString()
+        }).catch(err => {
+          console.warn('DB update failed but continuing:', err);
         });
 
-        localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+        // Go to next page
         await routeAfterDisclaimer();
       } catch (err) {
-        console.error('Disclaimer acceptance failed:', err);
+        console.error('Error in handleContinue:', err);
         UI.hideLoading();
-        localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+        // Still proceed - flag is already set
         await routeAfterDisclaimer();
       }
     }
 
+    // ========== FIXED: Ensure flag is set before routing ==========
     async function routeAfterDisclaimer() {
+      // Double-check flag is set
+      localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+      
       try {
         const { data: userState } = await DB.getUserState(currentUser.id);
         if (userState?.assessment_completed) {
@@ -573,6 +584,7 @@
           Nav.go('/assessment.html', 'Getting started...');
         }
       } catch (err) {
+        // If DB fails, still go to assessment
         Nav.go('/assessment.html', 'Getting started...');
       }
     }
