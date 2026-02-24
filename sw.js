@@ -1,15 +1,14 @@
 // ================================================================
-// INNERSHADOW — SERVICE WORKER
-// Handles caching, offline support, and background sync
+// INNERSHADOW — SERVICE WORKER (v1.0.5)
+// Handles caching, offline support, background sync, and Safari OAuth fix
 // ================================================================
 
-const APP_VERSION = 'v1.0.3'; // Bumped to force update
+const APP_VERSION = 'v1.0.5';
 const CACHE_NAME = `innershadow-${APP_VERSION}`;
 const RUNTIME_CACHE = `innershadow-runtime-${APP_VERSION}`;
 
-// Files to cache immediately on install – using final URLs (no redirects)
+// Files to precache – use final URLs that DO NOT redirect
 const PRECACHE_URLS = [
-  '/',
   '/index.html',
   '/disclaimer.html',
   '/signup.html',
@@ -21,11 +20,10 @@ const PRECACHE_URLS = [
   '/js/supabase-client.js',
   '/js/utils.js',
   '/js/module-engine.js',
-  // Google Fonts – cache so they work offline
   'https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap'
 ];
 
-// Module pages – cached when visited
+// Module pages pattern
 const MODULE_PATTERN = /\/pathways\//;
 
 // External resources
@@ -35,7 +33,6 @@ const FONTS_PATTERN = /fonts\.(googleapis|gstatic)\.com/;
 // ================================================================
 // INSTALL – precache the app shell
 // ================================================================
-
 self.addEventListener('install', event => {
   console.log(`[SW] Installing ${CACHE_NAME}`);
   event.waitUntil(
@@ -55,7 +52,6 @@ self.addEventListener('install', event => {
 // ================================================================
 // ACTIVATE – clean up old caches
 // ================================================================
-
 self.addEventListener('activate', event => {
   console.log(`[SW] Activating ${CACHE_NAME}`);
   event.waitUntil(
@@ -72,9 +68,8 @@ self.addEventListener('activate', event => {
 });
 
 // ================================================================
-// FETCH – handle all network requests
+// FETCH – with Safari OAuth fix and redirect following
 // ================================================================
-
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
@@ -82,7 +77,20 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   if (!request.url.startsWith('http')) return;
 
-  // Supabase API – network only
+  // NEVER intercept OAuth callbacks – let browser handle them natively
+  if (url.searchParams.has('code') ||
+      url.searchParams.has('error') ||
+      url.searchParams.has('access_token') ||
+      url.hash.includes('access_token')) {
+    return;
+  }
+
+  // Also skip disclaimer with code param (additional safety)
+  if (url.pathname === '/disclaimer.html' && url.searchParams.has('code')) {
+    return;
+  }
+
+  // Supabase API – network only (never cache)
   if (SUPABASE_PATTERN.test(request.url)) {
     event.respondWith(fetch(request));
     return;
@@ -94,13 +102,13 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Module pages – stale while revalidate
+  // Module pages – stale‑while‑revalidate
   if (MODULE_PATTERN.test(request.url)) {
     event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE));
     return;
   }
 
-  // App shell (HTML, CSS, JS) – cache first
+  // App shell (HTML, CSS, JS, images) – cache first
   if (
     request.destination === 'document' ||
     request.destination === 'style' ||
@@ -122,17 +130,14 @@ self.addEventListener('fetch', event => {
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
-
   if (cached) return cached;
 
   try {
     const response = await fetch(request);
-
-    // SAFARI FIX: Follow redirects by fetching the final URL
+    // Safari fix: if response is a redirect, fetch the final URL
     if (response.redirected) {
       return fetch(response.url);
     }
-
     if (response.ok) {
       cache.put(request, response.clone());
     }
@@ -145,14 +150,11 @@ async function cacheFirst(request, cacheName) {
 
 async function networkFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
-
   try {
     const response = await fetch(request);
-
     if (response.redirected) {
       return fetch(response.url);
     }
-
     if (response.ok) {
       cache.put(request, response.clone());
     }
@@ -181,19 +183,16 @@ async function staleWhileRevalidate(request, cacheName) {
 }
 
 // ================================================================
-// PUSH NOTIFICATIONS (placeholder – expand later)
+// PUSH NOTIFICATIONS (optional, keep as is)
 // ================================================================
-
 self.addEventListener('push', event => {
   if (!event.data) return;
-
   let data;
   try {
     data = event.data.json();
   } catch (e) {
     data = { title: 'InnerShadow', body: event.data.text() || 'Your daily check-in is ready.' };
   }
-
   const options = {
     body: data.body || 'Your daily check-in is ready.',
     icon: '/assets/icons/icon-192.png',
@@ -207,7 +206,6 @@ self.addEventListener('push', event => {
       { action: 'dismiss', title: 'Later' }
     ]
   };
-
   event.waitUntil(self.registration.showNotification(data.title || 'InnerShadow', options));
 });
 
@@ -216,7 +214,6 @@ self.addEventListener('notificationclick', event => {
   const action = event.action;
   const data = event.notification.data || {};
   let targetUrl = '/app.html';
-
   if (action === 'checkin') {
     targetUrl = '/app.html?tab=today&action=checkin';
   } else if (action === 'dismiss') {
@@ -224,7 +221,6 @@ self.addEventListener('notificationclick', event => {
   } else if (data.url) {
     targetUrl = data.url;
   }
-
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
       for (const client of clientList) {
@@ -242,10 +238,8 @@ self.addEventListener('notificationclick', event => {
 // ================================================================
 // MESSAGE HANDLING
 // ================================================================
-
 self.addEventListener('message', event => {
   const { type, payload } = event.data || {};
-
   switch (type) {
     case 'SKIP_WAITING':
       self.skipWaiting();
@@ -267,7 +261,6 @@ self.addEventListener('message', event => {
 // ================================================================
 // UTILITIES
 // ================================================================
-
 async function getCacheStatus() {
   const shellCache = await caches.open(CACHE_NAME);
   const runtimeCache = await caches.open(RUNTIME_CACHE);
