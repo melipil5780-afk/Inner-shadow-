@@ -3,35 +3,35 @@
 // Handles caching, offline support, and background sync
 // ================================================================
 
-const APP_VERSION = ‘v1.0.0’;
+const APP_VERSION = 'v1.0.0';
 const CACHE_NAME = `innershadow-${APP_VERSION}`;
 const RUNTIME_CACHE = `innershadow-runtime-${APP_VERSION}`;
 
 // Files to cache immediately on install
 // These are the shell of the app — everything needed to load
 const PRECACHE_URLS = [
-‘/’,
-‘/index.html’,
-‘/disclaimer.html’,
-‘/signup.html’,
-‘/login.html’,
-‘/assessment.html’,
-‘/app.html’,
-‘/manifest.json’,
-‘/css/main.css’,
-‘/js/supabase-client.js’,
-‘/js/state.js’,
-‘/js/utils.js’,
-‘/js/checkin.js’,
-‘/js/tools.js’,
-‘/js/module-engine.js’,
-// Google Fonts — cache so they work offline
-‘https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap’
+  '/',
+  '/index.html',
+  '/disclaimer.html',
+  '/signup.html',
+  '/login.html',
+  '/assessment.html',
+  '/app.html',
+  '/manifest.json',
+  '/css/main.css',
+  '/js/supabase-client.js',
+  '/js/state.js',
+  '/js/utils.js',
+  '/js/checkin.js',
+  '/js/tools.js',
+  '/js/module-engine.js',
+  // Google Fonts — cache so they work offline
+  'https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap'
 ];
 
 // Module pages — cached when visited, not on install
 // Too many to precache, cache on demand instead
-const MODULE_PATTERN = //pathways//;
+const MODULE_PATTERN = /\/pathways\//;
 
 // External resources — cache with network-first strategy
 const SUPABASE_PATTERN = /supabase.co/;
@@ -41,109 +41,109 @@ const FONTS_PATTERN = /fonts.(googleapis|gstatic).com/;
 // INSTALL — precache the app shell
 // ================================================================
 
-self.addEventListener(‘install’, event => {
-console.log(`[SW] Installing ${CACHE_NAME}`);
+self.addEventListener('install', event => {
+  console.log(`[SW] Installing ${CACHE_NAME}`);
 
-event.waitUntil(
-caches.open(CACHE_NAME)
-.then(cache => {
-console.log(’[SW] Precaching app shell’);
-// Cache what we can — don’t fail install if one resource fails
-return Promise.allSettled(
-PRECACHE_URLS.map(url =>
-cache.add(url).catch(err => {
-console.warn(`[SW] Failed to cache ${url}:`, err);
-})
-)
-);
-})
-.then(() => {
-console.log(’[SW] Install complete’);
-// Take control immediately — don’t wait for old SW to die
-return self.skipWaiting();
-})
-);
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('[SW] Precaching app shell');
+        // Cache what we can — don't fail install if one resource fails
+        return Promise.allSettled(
+          PRECACHE_URLS.map(url =>
+            cache.add(url).catch(err => {
+              console.warn(`[SW] Failed to cache ${url}:`, err);
+            })
+          )
+        );
+      })
+      .then(() => {
+        console.log('[SW] Install complete');
+        // Take control immediately — don't wait for old SW to die
+        return self.skipWaiting();
+      })
+  );
 });
 
 // ================================================================
 // ACTIVATE — clean up old caches
 // ================================================================
 
-self.addEventListener(‘activate’, event => {
-console.log(`[SW] Activating ${CACHE_NAME}`);
+self.addEventListener('activate', event => {
+  console.log(`[SW] Activating ${CACHE_NAME}`);
 
-event.waitUntil(
-caches.keys()
-.then(cacheNames => {
-return Promise.all(
-cacheNames
-.filter(name => {
-// Delete old InnerShadow caches
-return name.startsWith(‘innershadow-’) &&
-name !== CACHE_NAME &&
-name !== RUNTIME_CACHE;
-})
-.map(name => {
-console.log(`[SW] Deleting old cache: ${name}`);
-return caches.delete(name);
-})
-);
-})
-.then(() => {
-console.log(’[SW] Activation complete’);
-// Take control of all open clients immediately
-return self.clients.claim();
-})
-);
+  event.waitUntil(
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames
+            .filter(name => {
+              // Delete old InnerShadow caches
+              return name.startsWith('innershadow-') &&
+                name !== CACHE_NAME &&
+                name !== RUNTIME_CACHE;
+            })
+            .map(name => {
+              console.log(`[SW] Deleting old cache: ${name}`);
+              return caches.delete(name);
+            })
+        );
+      })
+      .then(() => {
+        console.log('[SW] Activation complete');
+        // Take control of all open clients immediately
+        return self.clients.claim();
+      })
+  );
 });
 
 // ================================================================
 // FETCH — handle all network requests
 // ================================================================
 
-self.addEventListener(‘fetch’, event => {
-const { request } = event;
-const url = new URL(request.url);
+self.addEventListener('fetch', event => {
+  const { request } = event;
+  const url = new URL(request.url);
 
-// Skip non-GET requests
-if (request.method !== ‘GET’) return;
+  // Skip non-GET requests
+  if (request.method !== 'GET') return;
 
-// Skip chrome-extension and other non-http requests
-if (!request.url.startsWith(‘http’)) return;
+  // Skip chrome-extension and other non-http requests
+  if (!request.url.startsWith('http')) return;
 
-// Supabase API calls — network only, never cache
-// User data must always be fresh
-if (SUPABASE_PATTERN.test(request.url)) {
-event.respondWith(fetch(request));
-return;
-}
+  // Supabase API calls — network only, never cache
+  // User data must always be fresh
+  if (SUPABASE_PATTERN.test(request.url)) {
+    event.respondWith(fetch(request));
+    return;
+  }
 
-// Google Fonts — cache first, then network
-if (FONTS_PATTERN.test(request.url)) {
-event.respondWith(cacheFirst(request, RUNTIME_CACHE));
-return;
-}
+  // Google Fonts — cache first, then network
+  if (FONTS_PATTERN.test(request.url)) {
+    event.respondWith(cacheFirst(request, RUNTIME_CACHE));
+    return;
+  }
 
-// Module pages — cache on first visit, serve from cache after
-if (MODULE_PATTERN.test(request.url)) {
-event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE));
-return;
-}
+  // Module pages — cache on first visit, serve from cache after
+  if (MODULE_PATTERN.test(request.url)) {
+    event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE));
+    return;
+  }
 
-// App shell (HTML, CSS, JS) — cache first
-// These only change on new deploys which bump APP_VERSION
-if (
-request.destination === ‘document’ ||
-request.destination === ‘style’ ||
-request.destination === ‘script’ ||
-request.destination === ‘image’
-) {
-event.respondWith(cacheFirst(request, CACHE_NAME));
-return;
-}
+  // App shell (HTML, CSS, JS) — cache first
+  // These only change on new deploys which bump APP_VERSION
+  if (
+    request.destination === 'document' ||
+    request.destination === 'style' ||
+    request.destination === 'script' ||
+    request.destination === 'image'
+  ) {
+    event.respondWith(cacheFirst(request, CACHE_NAME));
+    return;
+  }
 
-// Everything else — network first with cache fallback
-event.respondWith(networkFirst(request, RUNTIME_CACHE));
+  // Everything else — network first with cache fallback
+  event.respondWith(networkFirst(request, RUNTIME_CACHE));
 });
 
 // ================================================================
@@ -153,150 +153,150 @@ event.respondWith(networkFirst(request, RUNTIME_CACHE));
 // Cache First — serve from cache, fall back to network
 // Best for: app shell, fonts, static assets
 async function cacheFirst(request, cacheName) {
-const cache = await caches.open(cacheName);
-const cached = await cache.match(request);
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
 
-if (cached) {
-return cached;
-}
+  if (cached) {
+    return cached;
+  }
 
-try {
-const response = await fetch(request);
-if (response.ok) {
-cache.put(request, response.clone());
-}
-return response;
-} catch (err) {
-// Return offline page if we have one
-const offlinePage = await cache.match(’/offline.html’);
-return offlinePage || new Response(
-offlineHTML(),
-{ headers: { ‘Content-Type’: ‘text/html’ } }
-);
-}
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (err) {
+    // Return offline page if we have one
+    const offlinePage = await cache.match('/offline.html');
+    return offlinePage || new Response(
+      offlineHTML(),
+      { headers: { 'Content-Type': 'text/html' } }
+    );
+  }
 }
 
 // Network First — try network, fall back to cache
 // Best for: dynamic content
 async function networkFirst(request, cacheName) {
-const cache = await caches.open(cacheName);
+  const cache = await caches.open(cacheName);
 
-try {
-const response = await fetch(request);
-if (response.ok) {
-cache.put(request, response.clone());
-}
-return response;
-} catch (err) {
-const cached = await cache.match(request);
-return cached || new Response(
-‘Network error. Please check your connection.’,
-{ status: 503 }
-);
-}
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch (err) {
+    const cached = await cache.match(request);
+    return cached || new Response(
+      'Network error. Please check your connection.',
+      { status: 503 }
+    );
+  }
 }
 
 // Stale While Revalidate — serve cache immediately, update in background
 // Best for: module pages (fast load, eventually consistent)
 async function staleWhileRevalidate(request, cacheName) {
-const cache = await caches.open(cacheName);
-const cached = await cache.match(request);
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
 
-// Fetch in background regardless
-const fetchPromise = fetch(request).then(response => {
-if (response.ok) {
-cache.put(request, response.clone());
-}
-return response;
-}).catch(() => null);
+  // Fetch in background regardless
+  const fetchPromise = fetch(request).then(response => {
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  }).catch(() => null);
 
-// Return cache immediately if we have it
-return cached || fetchPromise;
+  // Return cache immediately if we have it
+  return cached || fetchPromise;
 }
 
 // ================================================================
 // PUSH NOTIFICATIONS
 // ================================================================
 
-self.addEventListener(‘push’, event => {
-if (!event.data) return;
+self.addEventListener('push', event => {
+  if (!event.data) return;
 
-let data;
-try {
-data = event.data.json();
-} catch (e) {
-data = {
-title: ‘InnerShadow’,
-body: event.data.text() || ‘Your daily check-in is ready.’
-};
-}
+  let data;
+  try {
+    data = event.data.json();
+  } catch (e) {
+    data = {
+      title: 'InnerShadow',
+      body: event.data.text() || 'Your daily check-in is ready.'
+    };
+  }
 
-const options = {
-body: data.body || ‘Your daily check-in is ready.’,
-icon: ‘/assets/icons/icon-192.png’,
-badge: ‘/assets/icons/icon-72.png’,
-tag: data.tag || ‘innershadow-daily’,
-renotify: false,
-silent: false,
-data: {
-url: data.url || ‘/app.html’,
-timestamp: Date.now()
-},
-actions: data.actions || [
-{
-action: ‘checkin’,
-title: ‘Check In Now’
-},
-{
-action: ‘dismiss’,
-title: ‘Later’
-}
-]
-};
+  const options = {
+    body: data.body || 'Your daily check-in is ready.',
+    icon: '/assets/icons/icon-192.png',
+    badge: '/assets/icons/icon-72.png',
+    tag: data.tag || 'innershadow-daily',
+    renotify: false,
+    silent: false,
+    data: {
+      url: data.url || '/app.html',
+      timestamp: Date.now()
+    },
+    actions: data.actions || [
+      {
+        action: 'checkin',
+        title: 'Check In Now'
+      },
+      {
+        action: 'dismiss',
+        title: 'Later'
+      }
+    ]
+  };
 
-event.waitUntil(
-self.registration.showNotification(
-data.title || ‘InnerShadow’,
-options
-)
-);
+  event.waitUntil(
+    self.registration.showNotification(
+      data.title || 'InnerShadow',
+      options
+    )
+  );
 });
 
 // ================================================================
 // NOTIFICATION CLICK
 // ================================================================
 
-self.addEventListener(‘notificationclick’, event => {
-event.notification.close();
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
 
-const action = event.action;
-const data = event.notification.data || {};
+  const action = event.action;
+  const data = event.notification.data || {};
 
-let targetUrl = ‘/app.html’;
+  let targetUrl = '/app.html';
 
-if (action === ‘checkin’) {
-targetUrl = ‘/app.html?tab=today&action=checkin’;
-} else if (action === ‘dismiss’) {
-return; // Do nothing
-} else if (data.url) {
-targetUrl = data.url;
-}
+  if (action === 'checkin') {
+    targetUrl = '/app.html?tab=today&action=checkin';
+  } else if (action === 'dismiss') {
+    return; // Do nothing
+  } else if (data.url) {
+    targetUrl = data.url;
+  }
 
-event.waitUntil(
-clients.matchAll({ type: ‘window’, includeUncontrolled: true })
-.then(clientList => {
-// If app is already open, focus it and navigate
-for (const client of clientList) {
-if (client.url.includes(self.location.origin)) {
-client.focus();
-client.navigate(targetUrl);
-return;
-}
-}
-// Otherwise open a new window
-return clients.openWindow(targetUrl);
-})
-);
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(clientList => {
+        // If app is already open, focus it and navigate
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin)) {
+            client.focus();
+            client.navigate(targetUrl);
+            return;
+          }
+        }
+        // Otherwise open a new window
+        return clients.openWindow(targetUrl);
+      })
+  );
 });
 
 // ================================================================
@@ -304,45 +304,42 @@ return clients.openWindow(targetUrl);
 // From app pages to service worker
 // ================================================================
 
-self.addEventListener(‘message’, event => {
-const { type, payload } = event.data || {};
+self.addEventListener('message', event => {
+  const { type, payload } = event.data || {};
 
-switch (type) {
+  switch (type) {
 
-```
-// Force update — skip waiting and take control
-case 'SKIP_WAITING':
-  self.skipWaiting();
-  break;
+    // Force update — skip waiting and take control
+    case 'SKIP_WAITING':
+      self.skipWaiting();
+      break;
 
-// Cache a specific module page proactively
-case 'CACHE_MODULE':
-  if (payload?.url) {
-    caches.open(RUNTIME_CACHE).then(cache => {
-      cache.add(payload.url).catch(() => {});
-    });
+    // Cache a specific module page proactively
+    case 'CACHE_MODULE':
+      if (payload?.url) {
+        caches.open(RUNTIME_CACHE).then(cache => {
+          cache.add(payload.url).catch(() => {});
+        });
+      }
+      break;
+
+    // Clear runtime cache (e.g. after Pro upgrade)
+    case 'CLEAR_RUNTIME_CACHE':
+      caches.delete(RUNTIME_CACHE).then(() => {
+        event.source?.postMessage({ type: 'CACHE_CLEARED' });
+      });
+      break;
+
+    // Report cache status
+    case 'GET_CACHE_STATUS':
+      getCacheStatus().then(status => {
+        event.source?.postMessage({
+          type: 'CACHE_STATUS',
+          payload: status
+        });
+      });
+      break;
   }
-  break;
-
-// Clear runtime cache (e.g. after Pro upgrade)
-case 'CLEAR_RUNTIME_CACHE':
-  caches.delete(RUNTIME_CACHE).then(() => {
-    event.source?.postMessage({ type: 'CACHE_CLEARED' });
-  });
-  break;
-
-// Report cache status
-case 'GET_CACHE_STATUS':
-  getCacheStatus().then(status => {
-    event.source?.postMessage({
-      type: 'CACHE_STATUS',
-      payload: status
-    });
-  });
-  break;
-```
-
-}
 });
 
 // ================================================================
@@ -350,24 +347,23 @@ case 'GET_CACHE_STATUS':
 // ================================================================
 
 async function getCacheStatus() {
-const shellCache = await caches.open(CACHE_NAME);
-const runtimeCache = await caches.open(RUNTIME_CACHE);
+  const shellCache = await caches.open(CACHE_NAME);
+  const runtimeCache = await caches.open(RUNTIME_CACHE);
 
-const shellKeys = await shellCache.keys();
-const runtimeKeys = await runtimeCache.keys();
+  const shellKeys = await shellCache.keys();
+  const runtimeKeys = await runtimeCache.keys();
 
-return {
-version: APP_VERSION,
-shellCached: shellKeys.length,
-runtimeCached: runtimeKeys.length,
-totalCached: shellKeys.length + runtimeKeys.length
-};
+  return {
+    version: APP_VERSION,
+    shellCached: shellKeys.length,
+    runtimeCached: runtimeKeys.length,
+    totalCached: shellKeys.length + runtimeKeys.length
+  };
 }
 
 // Minimal offline fallback page
 function offlineHTML() {
-return `<!DOCTYPE html>
-
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
