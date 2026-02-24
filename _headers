@@ -1,10 +1,2 @@
-/js/*
-  Content-Type: application/javascript
-  X-Content-Type-Options: nosniff
-
-/css/*
-  Content-Type: text/css
-  X-Content-Type-Options: nosniff
-
-/*.html
-  Content-Type: text/html
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
