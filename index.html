@@ -536,18 +536,6 @@
     <!-- SAFETY: Ensure page becomes visible even if JS errors occur -->
     <script>document.body.classList.add('loaded');</script>
 
-    <!-- Service Worker Unregistration – temporary debugging (optional) -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-                for (const reg of registrations) {
-                    reg.unregister();
-                    console.log('[InnerShadow] SW unregistered:', reg.scope);
-                }
-            });
-        }
-    </script>
-
     <div class="container">
         <div class="bg-blur-1"></div>
         <div class="bg-blur-2"></div>
@@ -555,7 +543,6 @@
         <div class="content">
             <div class="logo">
                 <div class="logo-icon">
-                    <!-- Moon / inner shadow icon -->
                     <svg width="40" height="40" preserveAspectRatio="xMidYMid meet"
                          fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -717,7 +704,7 @@
             showLoading('Connecting to Google...');
 
             try {
-                // 🔥 FIX: redirect to index.html so we can catch the code
+                // 🔁 FIX: Redirect back to index.html to catch the code
                 const redirectTo = window.location.origin + '/index.html';
                 const { data, error } = await sbClient.auth.signInWithOAuth({
                     provider: 'google',
@@ -784,24 +771,6 @@
             if (isInitialized) return;
             isInitialized = true;
 
-            // 🔥 NEW: Check for OAuth return code first (Safari PKCE fix)
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('code')) {
-                showLoading('Completing sign in...');
-                // Give Supabase a moment to exchange the code
-                setTimeout(async () => {
-                    const { data: { session } } = await sbClient.auth.getSession();
-                    if (session) {
-                        const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
-                        window.location.href = disclaimerAcknowledged === 'true' ? '/app.html' : '/disclaimer.html';
-                    } else {
-                        // Something went wrong – fallback
-                        window.location.href = '/index.html';
-                    }
-                }, 500);
-                return; // stop further initialization
-            }
-
             try {
                 sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     auth: {
@@ -813,8 +782,45 @@
                 });
             } catch (error) {
                 showError('Unable to initialize. Please refresh the page.');
+                resetAuthState();
+                return;
             }
 
+            // ---------- 🔁 FIX: OAuth callback handling ----------
+            const params = new URLSearchParams(window.location.search);
+            const hash = window.location.hash;
+
+            if (params.has('code') || hash.includes('access_token')) {
+                showLoading('Completing sign in...');
+                // iOS PKCE needs a moment
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                try {
+                    const { data: { session }, error } = await sbClient.auth.getSession();
+                    if (error) throw error;
+
+                    if (session) {
+                        const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
+                        window.history.replaceState({}, '', '/');
+                        window.location.href = disclaimerAcknowledged === 'true' ? '/app.html' : '/disclaimer.html';
+                        return;
+                    } else {
+                        window.history.replaceState({}, '', '/');
+                        resetAuthState();
+                        hideLoading();
+                        showError('Sign in failed. Please try again.');
+                    }
+                } catch (err) {
+                    console.error('OAuth callback error:', err);
+                    window.history.replaceState({}, '', '/');
+                    resetAuthState();
+                    hideLoading();
+                    showError('Sign in failed. Please try again.');
+                }
+                return;
+            }
+
+            // Normal init
             document.getElementById('googleBtn')?.addEventListener('click', handleGoogleSignIn);
             document.getElementById('signupBtn')?.addEventListener('click', handleSignUp);
             document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
@@ -851,12 +857,14 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             await initializeApp();
-            setTimeout(checkSession, 1000);
+            // Only check session if there's no code in URL
+            if (!window.location.search.includes('code') && !isProcessingAuth) {
+                setTimeout(checkSession, 1000);
+            }
         });
     </script>
 
-    <!-- Service Worker Registration – temporarily disabled for debugging -->
-    <!--
+    <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -876,6 +884,5 @@
             });
         }
     </script>
-    -->
 </body>
 </html>
