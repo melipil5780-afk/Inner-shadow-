@@ -160,11 +160,13 @@ const Auth = {
   // Guard — redirect to app if already logged in
   // Call at top of auth pages (login, signup)
 async redirectIfLoggedIn(redirectTo = '/app.html') {
-  // Get current page name
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  // Get current page filename
+  const currentPath = window.location.pathname;
+  const currentPage = currentPath.split('/').pop() || 'index.html';
   
-  // STOP if already on disclaimer page
+  // IMPORTANT: Don't redirect if already on disclaimer page
   if (currentPage === 'disclaimer.html') {
+    console.log('[Auth] On disclaimer page - no redirect');
     return false;
   }
   
@@ -172,19 +174,21 @@ async redirectIfLoggedIn(redirectTo = '/app.html') {
   if (session) {
     const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
     
-    // Determine where to go
+    // Determine target page
     const targetPage = disclaimerAcknowledged === 'true' ? redirectTo : '/disclaimer.html';
     const targetFileName = targetPage.split('/').pop();
     
-    // Only redirect if not already there
+    // Only redirect if we're not already on the target page
     if (currentPage !== targetFileName) {
+      console.log(`[Auth] Redirecting from ${currentPage} to ${targetPage}`);
       window.location.href = targetPage;
+    } else {
+      console.log(`[Auth] Already on ${currentPage} - no redirect needed`);
     }
     return true;
   }
   return false;
 },
-
   // Listen for auth state changes
   onAuthStateChange(callback) {
     return sb.auth.onAuthStateChange((event, session) => {
