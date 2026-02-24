@@ -3,7 +3,7 @@
 // Handles caching, offline support, and background sync
 // ================================================================
 
-const APP_VERSION = 'v1.0.2'; // Bumped to force update
+const APP_VERSION = 'v1.0.3'; // Bumped to force update
 const CACHE_NAME = `innershadow-${APP_VERSION}`;
 const RUNTIME_CACHE = `innershadow-runtime-${APP_VERSION}`;
 
@@ -128,9 +128,9 @@ async function cacheFirst(request, cacheName) {
   try {
     const response = await fetch(request);
 
-    // SAFARI FIX: Tell browser to follow redirects
+    // SAFARI FIX: Follow redirects by fetching the final URL
     if (response.redirected) {
-      return Response.redirect(response.url, 301);
+      return fetch(response.url);
     }
 
     if (response.ok) {
@@ -150,7 +150,7 @@ async function networkFirst(request, cacheName) {
     const response = await fetch(request);
 
     if (response.redirected) {
-      return Response.redirect(response.url, 301);
+      return fetch(response.url);
     }
 
     if (response.ok) {
@@ -169,7 +169,7 @@ async function staleWhileRevalidate(request, cacheName) {
 
   const fetchPromise = fetch(request).then(response => {
     if (response.redirected) {
-      return Response.redirect(response.url, 301);
+      return fetch(response.url);
     }
     if (response.ok) {
       cache.put(request, response.clone());
