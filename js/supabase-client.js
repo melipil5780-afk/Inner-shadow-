@@ -159,19 +159,31 @@ const Auth = {
 
   // Guard — redirect to app if already logged in
   // Call at top of auth pages (login, signup)
-  async redirectIfLoggedIn(redirectTo = '/app.html') {
-    const session = await this.getSession();
-    if (session) {
-      const disclaimerAcknowledged = localStorage.getItem(
-        'innershadow_disclaimer_acknowledged'
-      );
-      window.location.href = disclaimerAcknowledged === 'true'
-        ? redirectTo
-        : '/disclaimer.html';
-      return true;
-    }
+async redirectIfLoggedIn(redirectTo = '/app.html') {
+  // Get current page name
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  
+  // STOP if already on disclaimer page
+  if (currentPage === 'disclaimer.html') {
     return false;
-  },
+  }
+  
+  const session = await this.getSession();
+  if (session) {
+    const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
+    
+    // Determine where to go
+    const targetPage = disclaimerAcknowledged === 'true' ? redirectTo : '/disclaimer.html';
+    const targetFileName = targetPage.split('/').pop();
+    
+    // Only redirect if not already there
+    if (currentPage !== targetFileName) {
+      window.location.href = targetPage;
+    }
+    return true;
+  }
+  return false;
+},
 
   // Listen for auth state changes
   onAuthStateChange(callback) {
