@@ -18,13 +18,12 @@
     <title>InnerShadow – Welcome</title>
 
     <style>
-        /* ── THE ONLY FLASH FIX YOU NEED ──
-           Hide the page by default. JS reveals it only when
-           we know there's no session to redirect to.
-           This is a clean, single-responsibility approach. */
         html { background: #0a0f1e; }
         body { opacity: 0; }
         body.ready { opacity: 1; transition: opacity 0.25s ease; }
+        /* Guaranteed fallback — page always visible after 3s no matter what */
+        body { animation: guarantee-visible 0s 3s forwards; }
+        @keyframes guarantee-visible { to { opacity: 1; } }
 
         /* ── DESIGN TOKENS ── */
         :root {
