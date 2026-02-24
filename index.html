@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
-    <!-- FIXED: Removed deprecated apple-mobile-web-app-capable -->
-    <!-- Use only the modern standard -->
     <meta name="mobile-web-app-capable" content="yes">
-    
-    <!-- iOS specific (these are still valid) -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="InnerShadow">
     <meta name="apple-touch-fullscreen" content="yes">
@@ -17,34 +13,12 @@
     <meta name="theme-color" content="#0a0f1e">
     <meta name="description" content="Your journey to authentic wellbeing. Emotional skills, self-knowledge, and a life that feels like yours.">
 
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-
-    <!-- FIXED: Added comprehensive icon fallbacks with data URI as backup -->
-    <!-- Primary Apple Touch Icons (try to load from files) -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+    <link rel="manifest" href="manifest.json">
     
-    <!-- FIXED: Data URI fallback for when files don't exist -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230d9488'/%3E%3Ctext x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'%3E🌑%3C/text%3E%3C/svg%3E">
-    
-    <!-- Favicon for older browsers -->
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    
-    <!-- Ultimate fallback - emoji favicon -->
+    <!-- Simple icon fallback - no errors -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌑</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌑</text></svg>">
 
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
 
     <title>InnerShadow – Welcome</title>
@@ -117,7 +91,6 @@
             --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
             --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             
-            /* iOS height variable */
             --vh: 1vh;
         }
 
@@ -559,7 +532,6 @@
         <div class="content">
             <div class="logo">
                 <div class="logo-icon">
-                    <!-- Moon / inner shadow icon -->
                     <svg width="40" height="40" preserveAspectRatio="xMidYMid meet"
                          fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -796,8 +768,22 @@
             window.location.href = 'login.html';
         }
 
+        // ========== FIXED: No more redirect loop ==========
         async function checkSession() {
             if (!sbClient) return false;
+            
+            // Get current page filename
+            const currentPath = window.location.pathname;
+            const currentPage = currentPath.split('/').pop() || 'index.html';
+            
+            console.log('Current page:', currentPage);
+            
+            // Don't run checks on certain pages
+            const noRedirectPages = ['login.html', 'signup.html', 'disclaimer.html'];
+            if (noRedirectPages.includes(currentPage)) {
+                console.log('On no-redirect page, skipping session check');
+                return false;
+            }
             
             try {
                 const { data: { session }, error } = await sbClient.auth.getSession();
@@ -807,15 +793,15 @@
                 }
                 
                 if (session) {
-                    console.log('Active session found, redirecting...');
+                    console.log('Active session found');
                     const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
                     
-                    try {
+                    // Only redirect if we're on index page
+                    if (currentPage === 'index.html') {
+                        console.log('On index with session, redirecting...');
                         window.location.href = disclaimerAcknowledged === 'true'
                             ? 'app.html'
                             : 'disclaimer.html';
-                    } catch (redirectError) {
-                        console.error('Redirect failed:', redirectError);
                     }
                     return true;
                 }
@@ -926,7 +912,8 @@
                 const callbackHandled = await handleOAuthCallback();
                 
                 if (!callbackHandled) {
-                    setTimeout(() => checkSession(), 500);
+                    // Wait a bit before checking session to avoid race conditions
+                    setTimeout(() => checkSession(), 1000);
                 }
                 
             } catch (error) {
@@ -934,18 +921,6 @@
                 showError('Unable to initialize. Please refresh the page.');
             }
         }
-
-        // FIXED: Icon error suppression
-        (function suppressIconErrors() {
-            const originalError = console.error;
-            console.error = function(...args) {
-                if (args[0] && typeof args[0] === 'string' && 
-                    (args[0].includes('icon') || args[0].includes('favicon'))) {
-                    return;
-                }
-                originalError.apply(console, args);
-            };
-        })();
 
         // Service Worker
         if ('serviceWorker' in navigator) {
