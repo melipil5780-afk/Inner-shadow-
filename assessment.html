@@ -544,20 +544,7 @@
     let answers     = {};
     let selectedVal = null;
 
-    // Path constants (simplified for standalone)
-    const PATHWAY_ICONS = {
-      emotional: '🌊',
-      identity: '🪞',
-      connection: '💔',
-      living: '🌱'
-    };
-
-    const PATHWAY_MODULES = {
-      emotional: ['emotions-1', 'emotions-2', 'emotions-3'],
-      identity: ['identity-1', 'identity-2', 'identity-3'],
-      connection: ['connection-1', 'connection-2', 'connection-3'],
-      living: ['living-1', 'living-2', 'living-3']
-    };
+    // ⚠️ REMOVED DUPLICATE PATHWAY_ICONS and PATHWAY_MODULES - now using from supabase-client.js
 
     const Assessment = {
       getRoutedPathway: function(q1, q3) {
@@ -1177,8 +1164,8 @@
       document.querySelector('.cta-area').style.display      = 'none';
       document.getElementById('topProgress').style.width     = '100%';
 
-      // Populate results
-      document.getElementById('pathwayEmoji').textContent   = PATHWAY_ICONS[pathway] || '🌊';
+      // Populate results - using PATHWAY_ICONS from supabase-client.js
+      document.getElementById('pathwayEmoji').textContent   = window.PATHWAY_ICONS[pathway] || '🌊';
       
       const pathwayNames = {
         emotional: 'Emotional <em>Foundations</em>',
