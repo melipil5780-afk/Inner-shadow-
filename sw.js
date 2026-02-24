@@ -1,13 +1,14 @@
 // ================================================================
-// INNERSHADOW — SERVICE WORKER (v1.0.5)
+// INNERSHADOW — SERVICE WORKER (v1.0.6)
 // Handles caching, offline support, background sync, and Safari OAuth fix
 // ================================================================
 
-const APP_VERSION = 'v1.0.5';
+const APP_VERSION = 'v1.0.6';
 const CACHE_NAME = `innershadow-${APP_VERSION}`;
 const RUNTIME_CACHE = `innershadow-runtime-${APP_VERSION}`;
 
-// Files to precache – use final URLs that DO NOT redirect
+// ✅ PRECACHE ONLY STATIC ASSETS THAT DON'T REDIRECT
+// Google Fonts removed – it redirects and would break install
 const PRECACHE_URLS = [
   '/index.html',
   '/disclaimer.html',
@@ -19,8 +20,7 @@ const PRECACHE_URLS = [
   '/css/main.css',
   '/js/supabase-client.js',
   '/js/utils.js',
-  '/js/module-engine.js',
-  'https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap'
+  '/js/module-engine.js'
 ];
 
 // Module pages pattern
@@ -96,7 +96,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Google Fonts – cache first
+  // Google Fonts – cache first (now handled at runtime, not during install)
   if (FONTS_PATTERN.test(request.url)) {
     event.respondWith(cacheFirst(request, RUNTIME_CACHE));
     return;
@@ -183,7 +183,7 @@ async function staleWhileRevalidate(request, cacheName) {
 }
 
 // ================================================================
-// PUSH NOTIFICATIONS (optional, keep as is)
+// PUSH NOTIFICATIONS (keep as is)
 // ================================================================
 self.addEventListener('push', event => {
   if (!event.data) return;
