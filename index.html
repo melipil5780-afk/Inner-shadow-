@@ -650,6 +650,7 @@
         let isInitialized = false;
         let isProcessingAuth = false;
         let loadTimer = null;
+        let isOAuthHandled = false; // 🔁 NEW flag
 
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -802,8 +803,10 @@
                     if (session) {
                         const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
                         window.history.replaceState({}, '', '/');
-                        window.location.href = disclaimerAcknowledged === 'true' ? '/app.html' : '/disclaimer.html';
-                        return;
+                        isOAuthHandled = true; // 🔁 mark as handled
+                        // 🔁 Use replace to avoid history issues and return immediately
+                        window.location.replace(disclaimerAcknowledged === 'true' ? '/app.html' : '/disclaimer.html');
+                        return; // stop further execution
                     } else {
                         window.history.replaceState({}, '', '/');
                         resetAuthState();
@@ -817,7 +820,7 @@
                     hideLoading();
                     showError('Sign in failed. Please try again.');
                 }
-                return;
+                return; // ensure we don't proceed to normal init
             }
 
             // Normal init
@@ -857,8 +860,8 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             await initializeApp();
-            // Only check session if there's no code in URL
-            if (!window.location.search.includes('code') && !isProcessingAuth) {
+            // Only check session if no OAuth code and not already handled
+            if (!window.location.search.includes('code') && !isProcessingAuth && !isOAuthHandled) {
                 setTimeout(checkSession, 1000);
             }
         });
