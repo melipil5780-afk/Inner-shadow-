@@ -764,7 +764,9 @@
                         autoRefreshToken: true,
                         persistSession: true,
                         detectSessionInUrl: true,
-                        flowType: 'pkce'
+                        flowType: 'pkce',
+                        storage: window.localStorage,
+                        storageKey: 'sb-innershadow-auth-token'  // ✅ MUST match supabase-client.js
                     }
                 });
 
