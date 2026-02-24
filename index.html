@@ -778,10 +778,9 @@
             
             console.log('Current page:', currentPage);
             
-            // Don't run checks on certain pages
-            const noRedirectPages = ['login.html', 'signup.html', 'disclaimer.html'];
-            if (noRedirectPages.includes(currentPage)) {
-                console.log('On no-redirect page, skipping session check');
+            // CRITICAL: Only run on index page
+            if (currentPage !== 'index.html') {
+                console.log('Not on index page, skipping session check');
                 return false;
             }
             
@@ -796,12 +795,13 @@
                     console.log('Active session found');
                     const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
                     
-                    // Only redirect if we're on index page
-                    if (currentPage === 'index.html') {
-                        console.log('On index with session, redirecting...');
-                        window.location.href = disclaimerAcknowledged === 'true'
-                            ? 'app.html'
-                            : 'disclaimer.html';
+                    // Redirect based on disclaimer status
+                    const targetPage = disclaimerAcknowledged === 'true' ? 'app.html' : 'disclaimer.html';
+                    
+                    // Don't redirect if already on target page
+                    if (currentPage !== targetPage) {
+                        console.log(`Redirecting from ${currentPage} to ${targetPage}`);
+                        window.location.href = targetPage;
                     }
                     return true;
                 }
@@ -909,11 +909,19 @@
                 if (signupBtn) signupBtn.addEventListener('click', handleSignUp);
                 if (loginBtn) loginBtn.addEventListener('click', handleLogin);
                 
+                // CRITICAL FIX: Get current page
+                const currentPath = window.location.pathname;
+                const currentPage = currentPath.split('/').pop() || 'index.html';
+                
+                // Handle OAuth callback if needed
                 const callbackHandled = await handleOAuthCallback();
                 
-                if (!callbackHandled) {
+                // Only check session on index page, and only if not already handling callback
+                if (!callbackHandled && currentPage === 'index.html') {
                     // Wait a bit before checking session to avoid race conditions
                     setTimeout(() => checkSession(), 1000);
+                } else {
+                    console.log(`[App] On ${currentPage} - skipping auth redirect`);
                 }
                 
             } catch (error) {
