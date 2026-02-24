@@ -10,30 +10,8 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
-  
-  <!-- EMERGENCY FIX: Set flag immediately on any button click -->
-  <script>
-    // This runs FIRST - before anything else
-    (function() {
-      // If we're on disclaimer page, prepare the emergency flag setter
-      window.addEventListener('DOMContentLoaded', function() {
-        // Find ALL buttons and add click handler
-        setTimeout(function() {
-          const buttons = document.querySelectorAll('button');
-          buttons.forEach(btn => {
-            btn.addEventListener('click', function() {
-              console.log('Button clicked - setting flag immediately');
-              localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
-            });
-          });
-          console.log('Emergency fix applied to', buttons.length, 'buttons');
-        }, 100);
-      });
-    })();
-  </script>
 
   <style>
-    /* Your original CSS – unchanged */
     html, body {
       position: fixed;
       width: 100%;
@@ -76,7 +54,6 @@
       padding: max(2rem, env(safe-area-inset-top)) 1.5rem 2rem;
     }
 
-    /* Hero */
     .hero {
       text-align: center;
       padding: 2rem 0 1.5rem;
@@ -121,7 +98,6 @@
       line-height: 1.6;
     }
 
-    /* What InnerShadow is */
     .is-section {
       margin-bottom: 1rem;
     }
@@ -179,11 +155,8 @@
       font-weight: 600;
     }
 
-    /* Crisis box */
     .crisis-box {
-      background: linear-gradient(135deg,
-        rgba(220,38,38,0.12),
-        rgba(220,38,38,0.06));
+      background: linear-gradient(135deg, rgba(220,38,38,0.12), rgba(220,38,38,0.06));
       border: 1px solid var(--red-border-strong);
       border-radius: 1rem;
       padding: 1.25rem;
@@ -249,7 +222,6 @@
       color: var(--text-muted);
     }
 
-    /* Privacy note */
     .privacy-note {
       background: var(--teal-bg);
       border: 1px solid var(--teal-border);
@@ -277,7 +249,6 @@
       color: var(--text-teal);
     }
 
-    /* Checkbox agreement */
     .agreement {
       display: flex;
       gap: 0.875rem;
@@ -320,7 +291,6 @@
       color: var(--text-primary);
     }
 
-    /* CTA footer */
     .cta-area {
       padding: 1.25rem 1.5rem max(1.5rem, env(safe-area-inset-bottom));
       background: rgba(10,15,30,0.95);
@@ -348,33 +318,9 @@
   </style>
 </head>
 <body>
-  <!-- ========== SESSION RECOVERY – MUST RUN FIRST ========== -->
-  <script>
-    (async function() {
-      try {
-        // Wait a tick to ensure Supabase client is loaded
-        await new Promise(resolve => setTimeout(resolve, 50));
-        if (typeof sb === 'undefined') {
-          console.warn('Supabase client not yet ready, retrying...');
-          await new Promise(resolve => setTimeout(resolve, 200));
-        }
-        const { data: { session }, error } = await sb.auth.getSession();
-        if (error || !session) {
-          // Try PKCE recovery from URL hash
-          const { data, error: refreshError } = await sb.auth.refreshSession();
-          if (refreshError || !data?.session) {
-            // No session – user shouldn't be here, redirect to index
-            window.location.href = '/index.html';
-            return;
-          }
-        }
-        // Session exists – continue
-      } catch (err) {
-        console.error('Session recovery failed:', err);
-        window.location.href = '/index.html';
-      }
-    })();
-  </script>
+  <!-- ✅ REMOVED: The broken inline session recovery script that was causing the redirect loop.
+       It referenced `sb` before supabase-client.js was loaded, so it always threw an error
+       and redirected back to index.html. Auth is handled correctly by Auth.requireAuth() below. -->
 
   <div class="shell">
     <div class="bg-orb bg-orb--teal"></div>
@@ -382,7 +328,6 @@
 
     <div class="scroll-area" id="scrollArea">
       <div class="inner">
-        <!-- Hero -->
         <div class="hero animate-fade-in">
           <div class="hero-icon">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -394,7 +339,6 @@
           <p class="hero-sub">A few honest things you should know about InnerShadow and what it is — and isn't.</p>
         </div>
 
-        <!-- What InnerShadow IS -->
         <div class="card card--gradient mb-lg">
           <p class="section-label">What InnerShadow is</p>
 
@@ -440,7 +384,6 @@
           </div>
         </div>
 
-        <!-- Crisis resources -->
         <div class="crisis-box">
           <div class="crisis-box__header">
             <span class="crisis-box__icon">🆘</span>
@@ -465,7 +408,6 @@
           </div>
         </div>
 
-        <!-- Who InnerShadow is for -->
         <div class="card mb-lg">
           <p class="section-label">Who this is for</p>
           <p class="text-secondary text-sm" style="line-height:1.75">
@@ -478,7 +420,6 @@
           </div>
         </div>
 
-        <!-- Privacy -->
         <div class="privacy-note mb-lg">
           <span class="privacy-note__icon">🔒</span>
           <p class="privacy-note__text">
@@ -486,7 +427,6 @@
           </p>
         </div>
 
-        <!-- Agreement -->
         <label class="agreement" id="agreementLabel" for="agreementCheckbox">
           <input
             type="checkbox"
@@ -500,10 +440,9 @@
         </label>
 
         <div style="height:0.5rem"></div>
-      </div><!-- /inner -->
-    </div><!-- /scroll-area -->
+      </div>
+    </div>
 
-    <!-- CTA -->
     <div class="cta-area">
       <button
         class="btn btn--primary btn--lg"
@@ -520,34 +459,30 @@
         <a href="/privacy.html" style="color:var(--text-teal)">Privacy Policy</a>
       </p>
     </div>
-  </div><!-- /shell -->
+  </div>
 
-  <!-- Loading overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
     <div class="loading-text" id="loadingText">Loading...</div>
   </div>
 
+  <!-- ✅ Scripts load here, in order, before any auth logic runs -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/utils.js"></script>
 
   <script>
-    // ================================================================
-    // DISCLAIMER PAGE (FIXED - NO MORE LOOP)
-    // ================================================================
-
-    let currentUser  = null;
-    let agreed       = false;
+    let currentUser = null;
+    let agreed = false;
 
     async function init() {
-      // Require auth — bounce to index if not logged in
+      // Auth.requireAuth waits for supabase-client.js — safe to call here
       const session = await Auth.requireAuth('/index.html');
       if (!session) return;
 
       currentUser = session.user;
 
-      // If already accepted, go straight to next step
+      // Already accepted? Skip straight through
       const alreadyAccepted = localStorage.getItem('innershadow_disclaimer_acknowledged');
       if (alreadyAccepted === 'true') {
         await routeAfterDisclaimer();
@@ -565,40 +500,32 @@
       btn.disabled = !agreed;
     }
 
-    // ========== FIXED: Set flag IMMEDIATELY when user clicks ==========
     async function handleContinue() {
       if (!agreed || !currentUser) return;
 
       UI.showLoading('Setting things up...');
 
-      // CRITICAL FIX: Set flag IMMEDIATELY before any async operations
+      // Set flag immediately — before any async work
       localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
-      console.log('Flag set to true');
 
       try {
-        // Try to update database, but don't wait for it
         await DB.updateUserState(currentUser.id, {
           disclaimer_accepted:    true,
           disclaimer_accepted_at: new Date().toISOString()
-        }).catch(err => {
-          console.warn('DB update failed but continuing:', err);
-        });
+        }).catch(err => console.warn('DB update failed but continuing:', err));
 
-        // Go to next page
         await routeAfterDisclaimer();
       } catch (err) {
         console.error('Error in handleContinue:', err);
         UI.hideLoading();
-        // Still proceed - flag is already set
         await routeAfterDisclaimer();
       }
     }
 
-    // ========== FIXED: Ensure flag is set before routing ==========
     async function routeAfterDisclaimer() {
-      // Double-check flag is set
+      // Always ensure flag is set before leaving this page
       localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
-      
+
       try {
         const { data: userState } = await DB.getUserState(currentUser.id);
         if (userState?.assessment_completed) {
@@ -607,7 +534,6 @@
           Nav.go('/assessment.html', 'Getting started...');
         }
       } catch (err) {
-        // If DB fails, still go to assessment
         Nav.go('/assessment.html', 'Getting started...');
       }
     }
