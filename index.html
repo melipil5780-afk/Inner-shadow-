@@ -15,7 +15,6 @@
 
     <link rel="manifest" href="manifest.json">
     
-    <!-- Simple icon fallback - no errors -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌑</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌑</text></svg>">
 
@@ -46,7 +45,6 @@
             word-spacing: 0.05em !important;
         }
 
-        /* ========== DESIGN TOKENS ========== */
         :root {
             --bg-dark: #0a0f1e;
             --bg-card: rgba(12, 18, 34, 0.97);
@@ -94,7 +92,6 @@
             --vh: 1vh;
         }
 
-        /* ========== BASE & LAYOUT ========== */
         * {
             margin: 0;
             padding: 0;
@@ -151,9 +148,7 @@
             will-change: transform;
         }
 
-        .container::-webkit-scrollbar {
-            display: none;
-        }
+        .container::-webkit-scrollbar { display: none; }
 
         .bg-blur-1 {
             position: absolute;
@@ -276,14 +271,8 @@
             background: transparent;
         }
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn:active:not(:disabled) {
-            transform: scale(0.98);
-        }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn:active:not(:disabled) { transform: scale(0.98); }
 
         .btn-primary {
             background: var(--gradient-main);
@@ -391,17 +380,9 @@
             line-height: 1.6;
         }
 
-        .feature:nth-child(1) .feature-icon {
-            background: linear-gradient(135deg, var(--primary-teal), var(--primary-teal-dark));
-        }
-
-        .feature:nth-child(2) .feature-icon {
-            background: linear-gradient(135deg, var(--success-emerald), #059669);
-        }
-
-        .feature:nth-child(3) .feature-icon {
-            background: linear-gradient(135deg, var(--primary-teal), var(--accent-amber));
-        }
+        .feature:nth-child(1) .feature-icon { background: linear-gradient(135deg, var(--primary-teal), var(--primary-teal-dark)); }
+        .feature:nth-child(2) .feature-icon { background: linear-gradient(135deg, var(--success-emerald), #059669); }
+        .feature:nth-child(3) .feature-icon { background: linear-gradient(135deg, var(--primary-teal), var(--accent-amber)); }
 
         .footer {
             text-align: center;
@@ -411,26 +392,14 @@
             flex-shrink: 0;
         }
 
-        .footer a {
-            color: var(--text-teal);
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-            color: var(--text-teal-light);
-        }
-
-        .footer p {
-            line-height: 1.6;
-        }
+        .footer a { color: var(--text-teal); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; color: var(--text-teal-light); }
+        .footer p { line-height: 1.6; }
 
         .loading-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.9);
             display: none;
             align-items: center;
@@ -444,13 +413,10 @@
             -webkit-backdrop-filter: blur(10px);
         }
 
-        .loading-overlay.show {
-            display: flex;
-        }
+        .loading-overlay.show { display: flex; }
 
         .loading-spinner {
-            width: 3rem;
-            height: 3rem;
+            width: 3rem; height: 3rem;
             border: 3px solid var(--border-softer);
             border-top: 3px solid var(--primary-teal);
             border-radius: 50%;
@@ -462,11 +428,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        .loading-text {
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-weight: 500;
-        }
+        .loading-text { color: var(--text-primary); font-size: 1rem; font-weight: 500; }
 
         .error-message {
             background: rgba(239, 68, 68, 0.2);
@@ -480,9 +442,7 @@
             line-height: 1.6;
         }
 
-        .error-message.show {
-            display: block;
-        }
+        .error-message.show { display: block; }
 
         @media (min-width: 640px) {
             .container {
@@ -491,35 +451,18 @@
                 border-radius: 2.5rem;
                 margin: 20px;
             }
-            .content {
-                padding: 3rem 2rem;
-            }
-            .logo-icon {
-                width: 5rem;
-                height: 5rem;
-            }
-            .logo-icon svg {
-                width: 48px !important;
-                height: 48px !important;
-            }
+            .content { padding: 3rem 2rem; }
+            .logo-icon { width: 5rem; height: 5rem; }
+            .logo-icon svg { width: 48px !important; height: 48px !important; }
             h1 { font-size: 3rem; }
             .tagline { font-size: 1.125rem; }
-            .btn {
-                padding: 1rem 1.5rem;
-                font-size: 1rem;
-            }
-            .btn svg {
-                width: 24px !important;
-                height: 24px !important;
-            }
+            .btn { padding: 1rem 1.5rem; font-size: 1rem; }
+            .btn svg { width: 24px !important; height: 24px !important; }
         }
 
         @supports (-webkit-touch-callout: none) {
             body { height: -webkit-fill-available; }
-            .container {
-                height: -webkit-fill-available;
-                max-height: -webkit-fill-available;
-            }
+            .container { height: -webkit-fill-available; max-height: -webkit-fill-available; }
             .btn { min-height: 44px; }
         }
     </style>
@@ -545,8 +488,7 @@
 
             <div class="auth-buttons">
                 <button type="button" class="btn btn-google" id="googleBtn">
-                    <svg width="20" height="20" preserveAspectRatio="xMidYMid meet"
-                         viewBox="0 0 24 24" fill="currentColor">
+                    <svg width="20" height="20" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -635,7 +577,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ========== AUTH STATE MANAGEMENT ==========
         let isInitialized = false;
         let isProcessingAuth = false;
         let loadTimer = null;
@@ -670,10 +611,7 @@
         function hideLoading() {
             const overlay = safeGetElement('loadingOverlay');
             if (overlay) overlay.classList.remove('show');
-            if (loadTimer) { 
-                clearTimeout(loadTimer); 
-                loadTimer = null; 
-            }
+            if (loadTimer) { clearTimeout(loadTimer); loadTimer = null; }
         }
 
         function showError(message) {
@@ -694,19 +632,13 @@
         }
 
         function cleanupAuthSubscription() {
-            if (authSubscription) {
-                authSubscription.unsubscribe();
-                authSubscription = null;
-            }
+            if (authSubscription) { authSubscription.unsubscribe(); authSubscription = null; }
         }
 
         async function handleGoogleSignIn() {
             if (isProcessingAuth) return;
-            
             const googleBtn = safeGetElement('googleBtn');
-            if (!googleBtn) return;
-
-            if (!sbClient) {
+            if (!googleBtn || !sbClient) {
                 showError('Authentication service not available. Please refresh the page.');
                 return;
             }
@@ -717,37 +649,20 @@
 
             try {
                 const redirectTo = window.location.origin + '/';
-                
-                console.log('Starting Google OAuth with redirect:', redirectTo);
-                
                 const { data, error } = await sbClient.auth.signInWithOAuth({
                     provider: 'google',
-                    options: {
-                        redirectTo: redirectTo,
-                        skipBrowserRedirect: isIOS
-                    }
+                    options: { redirectTo, skipBrowserRedirect: isIOS }
                 });
-                
                 if (error) throw error;
-                
-                if (isIOS && data?.url) {
-                    window.location.href = data.url;
-                }
-                
+                if (isIOS && data?.url) window.location.href = data.url;
             } catch (error) {
                 console.error('Google sign-in error:', error);
                 resetAuthState();
-                
                 let msg = 'Unable to sign in with Google. ';
-                if (error.message?.includes('popup')) {
-                    msg += 'Please allow popups for this site.';
-                } else if (error.message?.includes('redirect_uri')) {
-                    msg += 'Redirect URI mismatch. Please contact support.';
-                } else if (isIOS) {
-                    msg += 'Please ensure Safari cookies are enabled.';
-                } else {
-                    msg += error.message || 'Please try again.';
-                }
+                if (error.message?.includes('popup')) msg += 'Please allow popups for this site.';
+                else if (error.message?.includes('redirect_uri')) msg += 'Redirect URI mismatch. Please contact support.';
+                else if (isIOS) msg += 'Please ensure Safari cookies are enabled.';
+                else msg += error.message || 'Please try again.';
                 showError(msg);
             }
         }
@@ -768,41 +683,21 @@
             window.location.href = 'login.html';
         }
 
-        // ========== FIXED: No more redirect loop ==========
         async function checkSession() {
             if (!sbClient) return false;
-            
-            // Get current page filename
-            const currentPath = window.location.pathname;
-            const currentPage = currentPath.split('/').pop() || 'index.html';
-            
-            console.log('Current page:', currentPage);
-            
-            // CRITICAL: Only run on index page
-            if (currentPage !== 'index.html') {
-                console.log('Not on index page, skipping session check');
-                return false;
-            }
-            
+
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            if (currentPage !== 'index.html') return false;
+
             try {
                 const { data: { session }, error } = await sbClient.auth.getSession();
-                if (error) {
-                    console.error('Session check error:', error);
-                    return false;
-                }
-                
+                if (error) { console.error('Session check error:', error); return false; }
+
                 if (session) {
-                    console.log('Active session found');
                     const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
-                    
-                    // Redirect based on disclaimer status
                     const targetPage = disclaimerAcknowledged === 'true' ? 'app.html' : 'disclaimer.html';
-                    
-                    // Don't redirect if already on target page
-                    if (currentPage !== targetPage) {
-                        console.log(`Redirecting from ${currentPage} to ${targetPage}`);
-                        window.location.href = targetPage;
-                    }
+                    console.log(`Session found → redirecting to ${targetPage}`);
+                    window.location.href = targetPage;
                     return true;
                 }
                 return false;
@@ -815,31 +710,24 @@
         async function handleOAuthCallback() {
             const hasCode = window.location.search.includes('code');
             const hasFragment = window.location.hash.includes('access_token');
-            
             if (!hasCode && !hasFragment) return false;
-            
+
             showLoading('Completing sign in...');
-            
             cleanupAuthSubscription();
-            
+
             return new Promise((resolve) => {
                 const { data: { subscription } } = sbClient.auth.onAuthStateChange((event, session) => {
-                    console.log('Auth state changed:', event);
-                    
                     if (event === 'SIGNED_IN' && session) {
                         subscription.unsubscribe();
                         hideLoading();
-                        
                         const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
-                        window.location.href = disclaimerAcknowledged === 'true' 
-                            ? 'app.html' 
-                            : 'disclaimer.html';
+                        window.location.href = disclaimerAcknowledged === 'true' ? 'app.html' : 'disclaimer.html';
                         resolve(true);
                     }
                 });
-                
+
                 authSubscription = subscription;
-                
+
                 let attempts = 0;
                 const poller = setInterval(async () => {
                     attempts++;
@@ -847,23 +735,14 @@
                         const { data: { session } } = await sbClient.auth.getSession();
                         if (session) {
                             clearInterval(poller);
-                            if (authSubscription) {
-                                authSubscription.unsubscribe();
-                                authSubscription = null;
-                            }
+                            cleanupAuthSubscription();
                             hideLoading();
-                            
                             const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
-                            window.location.href = disclaimerAcknowledged === 'true' 
-                                ? 'app.html' 
-                                : 'disclaimer.html';
+                            window.location.href = disclaimerAcknowledged === 'true' ? 'app.html' : 'disclaimer.html';
                             resolve(true);
                         } else if (attempts >= 30) {
                             clearInterval(poller);
-                            if (authSubscription) {
-                                authSubscription.unsubscribe();
-                                authSubscription = null;
-                            }
+                            cleanupAuthSubscription();
                             hideLoading();
                             showError('Sign in timed out. Please try again.');
                             resolve(false);
@@ -888,64 +767,47 @@
                         flowType: 'pkce'
                     }
                 });
-                
-                console.log('Supabase client initialized');
-                
+
                 if (isIOS) {
                     const setVH = () => {
-                        const vh = window.innerHeight * 0.01;
-                        document.documentElement.style.setProperty('--vh', `${vh}px`);
+                        document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
                     };
                     setVH();
                     window.addEventListener('resize', setVH);
                     window.addEventListener('orientationchange', setVH);
                 }
-                
+
                 const googleBtn = safeGetElement('googleBtn');
                 const signupBtn = safeGetElement('signupBtn');
-                const loginBtn = safeGetElement('loginBtn');
-                
+                const loginBtn  = safeGetElement('loginBtn');
                 if (googleBtn) googleBtn.addEventListener('click', handleGoogleSignIn);
                 if (signupBtn) signupBtn.addEventListener('click', handleSignUp);
-                if (loginBtn) loginBtn.addEventListener('click', handleLogin);
-                
-                // CRITICAL FIX: Get current page
-                const currentPath = window.location.pathname;
-                const currentPage = currentPath.split('/').pop() || 'index.html';
-                
-                // Handle OAuth callback if needed
+                if (loginBtn)  loginBtn.addEventListener('click', handleLogin);
+
+                const currentPage = window.location.pathname.split('/').pop() || 'index.html';
                 const callbackHandled = await handleOAuthCallback();
-                
-                // Only check session on index page, and only if not already handling callback
+
                 if (!callbackHandled && currentPage === 'index.html') {
-                    // Wait a bit before checking session to avoid race conditions
-                    setTimeout(() => checkSession(), 1000);
-                } else {
-                    console.log(`[App] On ${currentPage} - skipping auth redirect`);
+                    // ✅ FIXED: Reduced from 1000ms to 100ms — eliminates the visible flash
+                    setTimeout(() => checkSession(), 100);
                 }
-                
+
             } catch (error) {
                 console.error('Initialization error:', error);
                 showError('Unable to initialize. Please refresh the page.');
             }
         }
 
-        // Service Worker
         if ('serviceWorker' in navigator) {
             let refreshing = false;
-            
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (refreshing) return;
                 refreshing = true;
-                console.log('[InnerShadow] New version activating, reloading...');
                 window.location.reload();
             });
-
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(reg => {
-                        console.log('[InnerShadow] SW registered:', reg.scope);
-                    })
+                    .then(reg => console.log('[InnerShadow] SW registered:', reg.scope))
                     .catch(err => console.log('[InnerShadow] SW failed:', err));
             });
         }
@@ -958,31 +820,22 @@
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                setTimeout(() => { 
-                    if (isProcessingAuth) resetAuthState(); 
-                }, 500);
+                setTimeout(() => { if (isProcessingAuth) resetAuthState(); }, 500);
             }
         });
 
         window.addEventListener('pageshow', (event) => {
-            if (event.persisted) {
-                resetAuthState();
-                cleanupAuthSubscription();
-            }
+            if (event.persisted) { resetAuthState(); cleanupAuthSubscription(); }
         });
 
         window.addEventListener('focus', () => {
             setTimeout(() => {
                 const overlay = safeGetElement('loadingOverlay');
-                if (isProcessingAuth && overlay && !overlay.classList.contains('show')) {
-                    resetAuthState();
-                }
+                if (isProcessingAuth && overlay && !overlay.classList.contains('show')) resetAuthState();
             }, 300);
         });
 
-        window.addEventListener('beforeunload', () => {
-            cleanupAuthSubscription();
-        });
+        window.addEventListener('beforeunload', cleanupAuthSubscription);
     </script>
 </body>
 </html>
