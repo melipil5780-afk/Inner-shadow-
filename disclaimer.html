@@ -318,9 +318,7 @@
   </style>
 </head>
 <body>
-  <!-- ✅ REMOVED: The broken inline session recovery script that was causing the redirect loop.
-       It referenced `sb` before supabase-client.js was loaded, so it always threw an error
-       and redirected back to index.html. Auth is handled correctly by Auth.requireAuth() below. -->
+  <!-- ✅ REMOVED: The broken inline session recovery script -->
 
   <div class="shell">
     <div class="bg-orb bg-orb--teal"></div>
@@ -466,7 +464,6 @@
     <div class="loading-text" id="loadingText">Loading...</div>
   </div>
 
-  <!-- ✅ Scripts load here, in order, before any auth logic runs -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/utils.js"></script>
@@ -522,18 +519,25 @@
       }
     }
 
+    // FIXED: Now properly routes to assessment for new users
     async function routeAfterDisclaimer() {
       // Always ensure flag is set before leaving this page
       localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
 
       try {
         const { data: userState } = await DB.getUserState(currentUser.id);
-        if (userState?.assessment_completed) {
+        
+        // NEW USERS: No userState or assessment not completed → go to assessment
+        // RETURNING USERS: assessment_completed = true → go to app
+        if (userState?.assessment_completed === true) {
+          console.log('Assessment already completed → going to app');
           Nav.go('/app.html', 'Welcome back...');
         } else {
+          console.log('New user or assessment not done → going to assessment');
           Nav.go('/assessment.html', 'Getting started...');
         }
       } catch (err) {
+        console.log('Error checking user state → going to assessment anyway');
         Nav.go('/assessment.html', 'Getting started...');
       }
     }
