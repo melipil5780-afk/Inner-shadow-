@@ -10,11 +10,6 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#0a0f1e">
     <meta name="description" content="Your journey to authentic wellbeing. Emotional skills, self-knowledge, and a life that feels like yours.">
-    
-    <!-- ANTI-FLASH FIX 1: Preconnect + color scheme -->
-    <meta name="color-scheme" content="dark">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -28,36 +23,13 @@
     <title>InnerShadow – Welcome</title>
 
     <style>
-        /* ANTI-FLASH FIX 2: Base opacity transitions */
+        /* ========== CRITICAL FIXES ========== */
         html, body {
-            background: #0a0f1e !important;
-        }
-        body {
-            opacity: 0;
-            transition: opacity 0.35s ease !important;
-        }
-        body.loaded {
-            opacity: 1;
-        }
-        .container {
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .container.loaded {
-            opacity: 1;
-        }
-        .bg-blur-1, .bg-blur-2 {
-            opacity: 0;
-            transition: opacity 0.8s ease;
-        }
-
-        /* Your original CSS starts here */
-        html, body {
-            position: relative;
+            position: fixed;
             width: 100%;
-            height: 100dvh;
+            height: 100%;
             overflow: hidden;
-            -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: auto !important;
         }
         body, .container, .content, p, span, h1, h2, h3, .tagline, .subtitle, .btn, .feature-content, .footer {
             white-space: normal !important;
@@ -154,8 +126,7 @@
         .container {
             width: 100%;
             max-width: 28rem;
-            height: 100dvh;
-            max-height: 100dvh;
+            height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
             background: var(--bg-card);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -177,32 +148,6 @@
 
         .container::-webkit-scrollbar {
             display: none;
-        }
-
-        .bg-blur-1 {
-            position: absolute;
-            top: -10%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 30rem;
-            height: 30rem;
-            background: var(--blur-teal);
-            border-radius: 50%;
-            filter: blur(var(--blur-radius));
-            pointer-events: none;
-            animation: pulse-glow 4s ease-in-out infinite;
-        }
-
-        .bg-blur-2 {
-            position: absolute;
-            bottom: -10%;
-            right: -10%;
-            width: 25rem;
-            height: 25rem;
-            background: var(--blur-amber);
-            border-radius: 50%;
-            filter: blur(100px);
-            pointer-events: none;
         }
 
         .content {
@@ -462,49 +407,6 @@
             display: block;
         }
 
-        /* ===== LOADING OVERLAY – HIDDEN BY DEFAULT ===== */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0a0f1e;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 1rem;
-            z-index: 10000;
-            transition: opacity 0.3s ease;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loading-overlay.visible {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .loading-spinner {
-            width: 2.5rem;
-            height: 2.5rem;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary-teal);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-            font-weight: 500;
-        }
-
         @media (min-width: 640px) {
             .container {
                 height: 844px;
@@ -547,7 +449,6 @@
 </head>
 <body>
     <div class="container">
-
         <div class="content">
             <div class="logo">
                 <div class="logo-icon">
@@ -647,33 +548,14 @@
         </div>
     </div>
 
-    <!-- Loading overlay – HIDDEN BY DEFAULT -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-        <div class="loading-text" id="loadingText">Loading...</div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ===== IPHONE FIXED - OVERLAY HIDDEN BY DEFAULT =====
         let isProcessingAuth = false;
         let sbClient = null;
 
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const SUPABASE_URL = 'https://ocdwpaefmslyidelkzde.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHdwYWVmbXNseWlkZWxremRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0NjQ1OTQsImV4cCI6MjA4NTA0MDU5NH0.OAYuCQhxrmZMLI_H8OuaJvs7dKVm82gUPgGzQDUYq-Q';
-
-        const overlay = document.getElementById('loadingOverlay');
-        const loadingText = document.getElementById('loadingText');
-
-        function showLoading(msg = 'Loading...') {
-            loadingText.textContent = msg;
-            overlay.classList.add('visible');
-        }
-
-        function hideOverlay() {
-            overlay.classList.remove('visible');
-        }
 
         function enableButtons() {
             isProcessingAuth = false;
@@ -701,7 +583,6 @@
             if (isProcessingAuth || !sbClient) return;
             isProcessingAuth = true;
             document.getElementById('googleBtn').disabled = true;
-            showLoading('Connecting to Google...');
 
             try {
                 const { data, error } = await sbClient.auth.signInWithOAuth({
@@ -717,7 +598,6 @@
                 }
             } catch (err) {
                 console.error(err);
-                hideOverlay();
                 enableButtons();
                 showError('Unable to sign in. Please try again.');
             }
@@ -725,27 +605,19 @@
 
         function handleSignUp() {
             if (isProcessingAuth) return;
-            isProcessingAuth = true;
-            document.getElementById('signupBtn').disabled = true;
-            showLoading('Opening sign up...');
-            setTimeout(() => window.location.href = '/signup.html', 150);
+            window.location.href = '/signup.html';
         }
 
         function handleLogin() {
             if (isProcessingAuth) return;
-            isProcessingAuth = true;
-            document.getElementById('loginBtn').disabled = true;
-            showLoading('Opening sign in...');
-            setTimeout(() => window.location.href = '/login.html', 150);
+            window.location.href = '/login.html';
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Attach listeners immediately
             document.getElementById('googleBtn')?.addEventListener('click', handleGoogleSignIn);
             document.getElementById('signupBtn')?.addEventListener('click', handleSignUp);
             document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
 
-            // Initialize Supabase quietly - no loading overlay
             try {
                 sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     auth: {
@@ -756,11 +628,9 @@
                     }
                 });
 
-                // Check for OAuth callback
                 const hasCode = window.location.search.includes('code');
                 
                 if (hasCode) {
-                    showLoading('Completing sign in...');
                     window.history.replaceState({}, '', '/');
                     
                     let poller;
@@ -782,10 +652,9 @@
                                 clearInterval(poller);
                                 subscription.unsubscribe();
                                 redirectAfterAuth();
-                            } else if (attempts >= 15) {   // ~7.5 seconds max
+                            } else if (attempts >= 15) {
                                 clearInterval(poller);
                                 subscription.unsubscribe();
-                                hideOverlay();
                                 enableButtons();
                                 showError('Sign in taking too long. Please try again.');
                             }
@@ -793,7 +662,6 @@
                             console.error('Poller error:', err);
                             if (poller) clearInterval(poller);
                             subscription.unsubscribe();
-                            hideOverlay();
                             enableButtons();
                             showError('Session check failed. Please refresh the page.');
                         }
@@ -801,21 +669,18 @@
                     return;
                 }
 
-                // Check for existing session quietly
                 try {
                     const { data: { session } } = await sbClient.auth.getSession();
                     if (session) {
-                        // Auto-redirect if logged in
                         redirectAfterAuth();
                     }
                 } catch (err) {
-                    console.log('Session check failed - user not logged in');
+                    console.log('Session check failed');
                 }
             } catch (err) {
                 console.error('Supabase init failed', err);
             }
 
-            // iOS viewport height fix
             if (isIOS) {
                 const setVH = () => {
                     document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
@@ -823,26 +688,15 @@
                 setVH();
                 window.addEventListener('resize', setVH);
             }
-
-            // ANTI-FLASH FIX 3: Fade in everything smoothly
-            setTimeout(() => {
-                document.body.classList.add('loaded');
-                document.querySelector('.container').classList.add('loaded');
-                document.querySelectorAll('.bg-blur-1, .bg-blur-2').forEach(el => el.style.opacity = '1');
-            }, 80);
         });
 
-        // Safety: if user navigates back/forward, reset state
         window.addEventListener('pageshow', e => { if (e.persisted) enableButtons(); });
     </script>
 
-    <!-- Service Worker Registration (optional) -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(r => console.log('[SW] registered', r.scope))
-                    .catch(e => console.warn('[SW] failed', e));
+                navigator.serviceWorker.register('/sw.js').catch(e => console.warn('[SW] failed', e));
             });
         }
     </script>
