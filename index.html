@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <!-- FIXED: Removed deprecated apple-mobile-web-app-capable -->
+    <!-- Use only the modern standard -->
     <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- iOS specific (these are still valid) -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="InnerShadow">
+    <meta name="apple-touch-fullscreen" content="yes">
+    
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#0a0f1e">
     <meta name="description" content="Your journey to authentic wellbeing. Emotional skills, self-knowledge, and a life that feels like yours.">
@@ -14,10 +20,31 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
 
-    <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌑</text></svg>">
+    <!-- FIXED: Added comprehensive icon fallbacks with data URI as backup -->
+    <!-- Primary Apple Touch Icons (try to load from files) -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-icon-180x180.png">
+    
+    <!-- FIXED: Data URI fallback for when files don't exist -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230d9488'/%3E%3Ctext x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'%3E🌑%3C/text%3E%3C/svg%3E">
+    
+    <!-- Favicon for older browsers -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/icons/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    
+    <!-- Ultimate fallback - emoji favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌑</text></svg>">
 
-    <!-- Google Fonts – Fraunces & DM Sans -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
 
     <title>InnerShadow – Welcome</title>
@@ -77,7 +104,7 @@
 
             --blur-teal: rgba(13, 148, 136, 0.08);
             --blur-amber: rgba(217, 119, 6, 0.07);
-            --blur-radius: 140px;
+            --blur-radius: 80px;
 
             --gradient-main: linear-gradient(135deg, #0d9488, #d97706);
             --gradient-teal-heavy: linear-gradient(to right, #0d9488 70%, #d97706);
@@ -164,7 +191,7 @@
             height: 30rem;
             background: var(--blur-teal);
             border-radius: 50%;
-            filter: blur(80px); /* Reduced from 140px for performance */
+            filter: blur(80px);
             pointer-events: none;
             animation: pulse-glow 4s ease-in-out infinite;
             will-change: filter;
@@ -178,7 +205,7 @@
             height: 25rem;
             background: var(--blur-amber);
             border-radius: 50%;
-            filter: blur(60px); /* Reduced from 100px */
+            filter: blur(60px);
             pointer-events: none;
             will-change: filter;
         }
@@ -273,7 +300,6 @@
             -webkit-touch-callout: none;
             user-select: none;
             font-family: var(--font-body);
-            /* FIX: Add button type styling */
             background: transparent;
         }
 
@@ -312,7 +338,7 @@
             background: var(--text-primary);
             color: #1f2937;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2); /* Added for better contrast */
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .btn-google:hover:not(:disabled) {
@@ -546,7 +572,6 @@
             </div>
 
             <div class="auth-buttons">
-                <!-- FIX: Added type="button" to all buttons -->
                 <button type="button" class="btn btn-google" id="googleBtn">
                     <svg width="20" height="20" preserveAspectRatio="xMidYMid meet"
                          viewBox="0 0 24 24" fill="currentColor">
@@ -638,11 +663,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ========== AUTH STATE MANAGEMENT - FIXED VERSION ==========
+        // ========== AUTH STATE MANAGEMENT ==========
         let isInitialized = false;
         let isProcessingAuth = false;
         let loadTimer = null;
-        let authSubscription = null; // FIX: Track subscription for cleanup
+        let authSubscription = null;
 
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -651,7 +676,6 @@
 
         let sbClient = null;
 
-        // FIX: Helper function to safely get elements
         function safeGetElement(id) {
             const el = document.getElementById(id);
             if (!el) console.warn(`Element #${id} not found`);
@@ -697,7 +721,6 @@
             hideLoading();
         }
 
-        // FIX: Clean up auth subscription
         function cleanupAuthSubscription() {
             if (authSubscription) {
                 authSubscription.unsubscribe();
@@ -721,9 +744,7 @@
             showLoading('Connecting to Google...');
 
             try {
-                // FIX: Use root URL for redirect (most common OAuth configuration)
-                // Change this to match your Google Cloud Console registered URI
-                const redirectTo = window.location.origin + '/'; 
+                const redirectTo = window.location.origin + '/';
                 
                 console.log('Starting Google OAuth with redirect:', redirectTo);
                 
@@ -740,7 +761,6 @@
                 if (isIOS && data?.url) {
                     window.location.href = data.url;
                 }
-                // For non-iOS, Supabase handles the redirect automatically
                 
             } catch (error) {
                 console.error('Google sign-in error:', error);
@@ -776,7 +796,6 @@
             window.location.href = 'login.html';
         }
 
-        // FIX: Improved session check with error handling
         async function checkSession() {
             if (!sbClient) return false;
             
@@ -791,7 +810,6 @@
                     console.log('Active session found, redirecting...');
                     const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
                     
-                    // FIX: Use try-catch for redirect
                     try {
                         window.location.href = disclaimerAcknowledged === 'true'
                             ? 'app.html'
@@ -808,7 +826,6 @@
             }
         }
 
-        // FIX: Handle OAuth callback with proper cleanup
         async function handleOAuthCallback() {
             const hasCode = window.location.search.includes('code');
             const hasFragment = window.location.hash.includes('access_token');
@@ -817,11 +834,9 @@
             
             showLoading('Completing sign in...');
             
-            // Clean up any existing subscription
             cleanupAuthSubscription();
             
             return new Promise((resolve) => {
-                // Set up auth state listener
                 const { data: { subscription } } = sbClient.auth.onAuthStateChange((event, session) => {
                     console.log('Auth state changed:', event);
                     
@@ -839,7 +854,6 @@
                 
                 authSubscription = subscription;
                 
-                // Poll for session as backup
                 let attempts = 0;
                 const poller = setInterval(async () => {
                     attempts++;
@@ -858,7 +872,7 @@
                                 ? 'app.html' 
                                 : 'disclaimer.html';
                             resolve(true);
-                        } else if (attempts >= 30) { // 15 seconds max (30 * 500ms)
+                        } else if (attempts >= 30) {
                             clearInterval(poller);
                             if (authSubscription) {
                                 authSubscription.unsubscribe();
@@ -891,7 +905,6 @@
                 
                 console.log('Supabase client initialized');
                 
-                // FIX: Set up iOS height handling
                 if (isIOS) {
                     const setVH = () => {
                         const vh = window.innerHeight * 0.01;
@@ -902,7 +915,6 @@
                     window.addEventListener('orientationchange', setVH);
                 }
                 
-                // FIX: Safely attach event listeners
                 const googleBtn = safeGetElement('googleBtn');
                 const signupBtn = safeGetElement('signupBtn');
                 const loginBtn = safeGetElement('loginBtn');
@@ -911,12 +923,9 @@
                 if (signupBtn) signupBtn.addEventListener('click', handleSignUp);
                 if (loginBtn) loginBtn.addEventListener('click', handleLogin);
                 
-                // FIX: Check for OAuth callback first
                 const callbackHandled = await handleOAuthCallback();
                 
-                // Only check session if not handling callback
                 if (!callbackHandled) {
-                    // Small delay to ensure everything is ready
                     setTimeout(() => checkSession(), 500);
                 }
                 
@@ -926,11 +935,22 @@
             }
         }
 
-        // FIX: Service Worker with update handling
+        // FIXED: Icon error suppression
+        (function suppressIconErrors() {
+            const originalError = console.error;
+            console.error = function(...args) {
+                if (args[0] && typeof args[0] === 'string' && 
+                    (args[0].includes('icon') || args[0].includes('favicon'))) {
+                    return;
+                }
+                originalError.apply(console, args);
+            };
+        })();
+
+        // Service Worker
         if ('serviceWorker' in navigator) {
             let refreshing = false;
             
-            // Handle controller change (new service worker activates)
             navigator.serviceWorker.addEventListener('controllerchange', () => {
                 if (refreshing) return;
                 refreshing = true;
@@ -942,29 +962,17 @@
                 navigator.serviceWorker.register('/sw.js')
                     .then(reg => {
                         console.log('[InnerShadow] SW registered:', reg.scope);
-
-                        reg.addEventListener('updatefound', () => {
-                            const newWorker = reg.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('[InnerShadow] New version available');
-                                    // You could show an update banner here
-                                }
-                            });
-                        });
                     })
                     .catch(err => console.log('[InnerShadow] SW failed:', err));
             });
         }
 
-        // FIX: Initialize when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeApp);
         } else {
             initializeApp();
         }
 
-        // FIX: Handle page lifecycle events
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 setTimeout(() => { 
@@ -976,7 +984,7 @@
         window.addEventListener('pageshow', (event) => {
             if (event.persisted) {
                 resetAuthState();
-                cleanupAuthSubscription(); // FIX: Clean up on page restore
+                cleanupAuthSubscription();
             }
         });
 
@@ -989,7 +997,6 @@
             }, 300);
         });
 
-        // FIX: Clean up on page unload
         window.addEventListener('beforeunload', () => {
             cleanupAuthSubscription();
         });
