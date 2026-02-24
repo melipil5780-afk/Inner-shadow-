@@ -533,7 +533,7 @@
     </style>
 </head>
 <body>
-    <!-- SAFETY: Ensure page becomes visible even if JS errors occur -->
+    <!-- SAFETY: Force page visible even if JavaScript fails -->
     <script>document.body.classList.add('loaded');</script>
 
     <div class="container">
@@ -644,20 +644,17 @@
         <div class="loading-text" id="loadingText">Loading...</div>
     </div>
 
+    <!-- ========== IMPROVED AUTH SCRIPT ========== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ========== AUTH STATE MANAGEMENT ==========
-        let isInitialized = false;
+        // ========== SAFETY & STATE ==========
         let isProcessingAuth = false;
         let loadTimer = null;
-        let isOAuthHandled = false; // 🔁 NEW flag
+        let sbClient = null;
 
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
         const SUPABASE_URL = 'https://ocdwpaefmslyidelkzde.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHdwYWVmbXNseWlkZWxremRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0NjQ1OTQsImV4cCI6MjA4NTA0MDU5NH0.OAYuCQhxrmZMLI_H8OuaJvs7dKVm82gUPgGzQDUYq-Q';
-
-        let sbClient = null;
 
         function showLoading(message = 'Loading...') {
             const overlay = document.getElementById('loadingOverlay');
@@ -665,12 +662,12 @@
             if (text) text.textContent = message;
             overlay.classList.add('show');
             if (loadTimer) clearTimeout(loadTimer);
-            loadTimer = setTimeout(hideLoading, 15000);
+            // Hard 10‑second safety cap – buttons can NEVER stay frozen longer than this
+            loadTimer = setTimeout(resetAuthState, 10000);
         }
 
         function hideLoading() {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.classList.remove('show');
+            document.getElementById('loadingOverlay').classList.remove('show');
             if (loadTimer) { clearTimeout(loadTimer); loadTimer = null; }
         }
 
@@ -691,43 +688,32 @@
             hideLoading();
         }
 
-        async function handleGoogleSignIn() {
-            if (isProcessingAuth) return;
-            if (!sbClient) {
-                showError('Authentication service not available. Please refresh the page.');
-                return;
-            }
-            const googleBtn = document.getElementById('googleBtn');
-            if (!googleBtn) return;
+        function redirectAfterAuth() {
+            const disclaimerOk = localStorage.getItem('innershadow_disclaimer_acknowledged');
+            window.location.replace(disclaimerOk === 'true' ? '/app.html' : '/disclaimer.html');
+        }
 
-            googleBtn.disabled = true;
+        async function handleGoogleSignIn() {
+            if (isProcessingAuth || !sbClient) return;
             isProcessingAuth = true;
+            document.getElementById('googleBtn').disabled = true;
             showLoading('Connecting to Google...');
 
             try {
-                // 🔁 FIX: Redirect back to index.html to catch the code
-                const redirectTo = window.location.origin + '/index.html';
                 const { data, error } = await sbClient.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: redirectTo,
-                        skipBrowserRedirect: isIOS ? true : false
+                        redirectTo: window.location.origin + '/index.html',
+                        skipBrowserRedirect: isIOS
                     }
                 });
                 if (error) throw error;
                 if (isIOS && data?.url) window.location.href = data.url;
-            } catch (error) {
-                console.error('Google sign-in error:', error);
+                // On non‑iOS, browser redirects automatically – no further action needed
+            } catch (err) {
+                console.error('Google sign-in error:', err);
                 resetAuthState();
-                let msg = 'Unable to sign in with Google. ';
-                if (error.message.includes('popup')) {
-                    msg += 'Please allow popups for this site.';
-                } else if (isIOS) {
-                    msg += 'Please ensure Safari cookies are enabled.';
-                } else {
-                    msg += error.message || 'Please try again.';
-                }
-                showError(msg);
+                showError('Unable to sign in with Google. Please try again.');
             }
         }
 
@@ -736,7 +722,7 @@
             isProcessingAuth = true;
             document.getElementById('signupBtn').disabled = true;
             showLoading('Loading...');
-            setTimeout(() => { window.location.href = 'signup.html'; }, 300);
+            setTimeout(() => { window.location.href = '/signup.html'; }, 300);
         }
 
         function handleLogin() {
@@ -744,34 +730,16 @@
             isProcessingAuth = true;
             document.getElementById('loginBtn').disabled = true;
             showLoading('Loading...');
-            setTimeout(() => { window.location.href = 'login.html'; }, 300);
+            setTimeout(() => { window.location.href = '/login.html'; }, 300);
         }
 
-        async function checkSession() {
-            if (!sbClient) return false;
-            try {
-                const { data: { session }, error } = await sbClient.auth.getSession();
-                if (error) return false;
-                if (session) {
-                    const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
-                    showLoading('Welcome back...');
-                    setTimeout(() => {
-                        window.location.href = disclaimerAcknowledged === 'true'
-                            ? 'app.html'
-                            : 'disclaimer.html';
-                    }, 800);
-                    return true;
-                }
-                return false;
-            } catch (err) {
-                return false;
-            }
-        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            // ── STEP 1: Attach button listeners FIRST – so they're always live ──
+            document.getElementById('googleBtn')?.addEventListener('click', handleGoogleSignIn);
+            document.getElementById('signupBtn')?.addEventListener('click', handleSignUp);
+            document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
 
-        async function initializeApp() {
-            if (isInitialized) return;
-            isInitialized = true;
-
+            // ── STEP 2: Init Supabase ──
             try {
                 sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     auth: {
@@ -781,88 +749,72 @@
                         flowType: 'pkce'
                     }
                 });
-            } catch (error) {
-                showError('Unable to initialize. Please refresh the page.');
-                resetAuthState();
+            } catch (err) {
+                console.error('Supabase init failed:', err);
+                document.body.classList.add('loaded');
+                showError('Unable to initialize. Please refresh.');
                 return;
             }
 
-            // ---------- 🔁 FIX: OAuth callback handling ----------
-            const params = new URLSearchParams(window.location.search);
-            const hash = window.location.hash;
+            // ── STEP 3: Handle OAuth callback (code in URL) ──
+            const hasCode = window.location.search.includes('code');
 
-            if (params.has('code') || hash.includes('access_token')) {
+            if (hasCode) {
                 showLoading('Completing sign in...');
-                // iOS PKCE needs a moment
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Clear the code from URL immediately
+                window.history.replaceState({}, '', '/');
 
-                try {
-                    const { data: { session }, error } = await sbClient.auth.getSession();
-                    if (error) throw error;
-
-                    if (session) {
-                        const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
-                        window.history.replaceState({}, '', '/');
-                        isOAuthHandled = true; // 🔁 mark as handled
-                        // 🔁 Use replace to avoid history issues and return immediately
-                        window.location.replace(disclaimerAcknowledged === 'true' ? '/app.html' : '/disclaimer.html');
-                        return; // stop further execution
-                    } else {
-                        window.history.replaceState({}, '', '/');
-                        resetAuthState();
-                        hideLoading();
-                        showError('Sign in failed. Please try again.');
+                // Listen for Supabase to finish the PKCE exchange
+                const { data: { subscription } } = sbClient.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_IN' && session) {
+                        subscription.unsubscribe();
+                        redirectAfterAuth();
                     }
-                } catch (err) {
-                    console.error('OAuth callback error:', err);
-                    window.history.replaceState({}, '', '/');
-                    resetAuthState();
-                    hideLoading();
-                    showError('Sign in failed. Please try again.');
-                }
-                return; // ensure we don't proceed to normal init
+                });
+
+                // Fallback: poll for session in case onAuthStateChange doesn't fire (iOS sometimes)
+                let attempts = 0;
+                const poll = setInterval(async () => {
+                    attempts++;
+                    const { data: { session } } = await sbClient.auth.getSession();
+                    if (session) {
+                        clearInterval(poll);
+                        subscription.unsubscribe();
+                        redirectAfterAuth();
+                    } else if (attempts >= 8) { // 8 × 500ms = 4 seconds
+                        clearInterval(poll);
+                        subscription.unsubscribe();
+                        resetAuthState();
+                        showError('Sign in failed. Please try again.');
+                        document.body.classList.add('loaded');
+                    }
+                }, 500);
+
+                return; // Don't show the page yet – we're in OAuth callback
             }
 
-            // Normal init
-            document.getElementById('googleBtn')?.addEventListener('click', handleGoogleSignIn);
-            document.getElementById('signupBtn')?.addEventListener('click', handleSignUp);
-            document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
+            // ── STEP 4: No OAuth code – check for existing session ──
+            const { data: { session } } = await sbClient.auth.getSession();
+            if (session) {
+                redirectAfterAuth();
+                return;
+            }
+
+            // ── STEP 5: No session – show the page normally ──
+            document.body.classList.add('loaded');
 
             if (isIOS) {
-                const setVH = () => {
-                    const vh = window.innerHeight * 0.01;
-                    document.documentElement.style.setProperty('--vh', `${vh}px`);
-                };
+                const setVH = () => document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
                 setVH();
                 window.addEventListener('resize', setVH);
             }
+        });
 
-            setTimeout(() => document.body.classList.add('loaded'), 100);
-        }
-
+        // Extra safety resets
+        window.addEventListener('pageshow', (e) => { if (e.persisted) resetAuthState(); });
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                setTimeout(() => { if (isProcessingAuth) resetAuthState(); }, 500);
-            }
-        });
-
-        window.addEventListener('pageshow', (event) => {
-            if (event.persisted) resetAuthState();
-        });
-
-        window.addEventListener('focus', () => {
-            setTimeout(() => {
-                if (isProcessingAuth && !document.getElementById('loadingOverlay').classList.contains('show')) {
-                    resetAuthState();
-                }
-            }, 300);
-        });
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            await initializeApp();
-            // Only check session if no OAuth code and not already handled
-            if (!window.location.search.includes('code') && !isProcessingAuth && !isOAuthHandled) {
-                setTimeout(checkSession, 1000);
+            if (document.visibilityState === 'visible' && isProcessingAuth) {
+                setTimeout(resetAuthState, 1000);
             }
         });
     </script>
@@ -872,17 +824,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(reg => {
-                        console.log('[InnerShadow] SW registered:', reg.scope);
-                        reg.addEventListener('updatefound', () => {
-                            const newWorker = reg.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('[InnerShadow] New version available');
-                                }
-                            });
-                        });
-                    })
+                    .then(reg => console.log('[InnerShadow] SW registered:', reg.scope))
                     .catch(err => console.log('[InnerShadow] SW failed:', err));
             });
         }
