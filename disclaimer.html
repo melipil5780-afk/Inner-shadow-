@@ -10,6 +10,28 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  
+  <!-- EMERGENCY FIX: Set flag immediately on any button click -->
+  <script>
+    // This runs FIRST - before anything else
+    (function() {
+      // If we're on disclaimer page, prepare the emergency flag setter
+      window.addEventListener('DOMContentLoaded', function() {
+        // Find ALL buttons and add click handler
+        setTimeout(function() {
+          const buttons = document.querySelectorAll('button');
+          buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+              console.log('Button clicked - setting flag immediately');
+              localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+            });
+          });
+          console.log('Emergency fix applied to', buttons.length, 'buttons');
+        }, 100);
+      });
+    })();
+  </script>
+
   <style>
     /* Your original CSS – unchanged */
     html, body {
@@ -551,6 +573,7 @@
 
       // CRITICAL FIX: Set flag IMMEDIATELY before any async operations
       localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+      console.log('Flag set to true');
 
       try {
         // Try to update database, but don't wait for it
