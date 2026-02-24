@@ -18,6 +18,11 @@
     <title>InnerShadow – Welcome</title>
 
     <style>
+        /* ── DESIGN (exactly as you liked) ── */
+        html { background: #0a0f1e; }
+        body { opacity: 0; }
+        body.ready { opacity: 1; transition: opacity 0.25s ease; }
+
         :root {
             --bg-dark: #0a0f1e;
             --bg-card: rgba(12, 18, 34, 0.97);
@@ -28,8 +33,10 @@
             --primary-teal-dark: #0a7c6e;
             --teal-glow: rgba(13, 148, 136, 0.35);
             --accent-amber: #d97706;
+            --amber-glow: rgba(217, 119, 6, 0.35);
             --text-teal: #5eead4;
             --text-teal-light: #5eead4;
+            --text-amber: #fbbf24;
             --success-emerald: #10b981;
             --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
@@ -39,163 +46,320 @@
             --blur-amber: rgba(217, 119, 6, 0.07);
             --gradient-main: linear-gradient(135deg, #0d9488, #d97706);
             --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
-            --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+            --font-display: 'Fraunces', Georgia, serif;
             --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        @keyframes pulse-glow { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.4; } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         html, body {
             font-family: var(--font-body);
-            width: 100%; height: 100%;
-            position: fixed; overflow: hidden;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            overflow: hidden;
             overscroll-behavior: none;
+            background: var(--bg-dark);
             -webkit-overflow-scrolling: auto !important;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
             -webkit-font-smoothing: antialiased;
         }
-        body {
-            display: flex; align-items: center; justify-content: center;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            background: var(--bg-dark);
-        }
+
         @supports (-webkit-touch-callout: none) {
             body { height: -webkit-fill-available; }
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-16px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.4; }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         .container {
-            width: 100%; max-width: 28rem;
+            width: 100%;
+            max-width: 28rem;
             height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
             background: var(--bg-card);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             box-shadow: var(--shadow-card);
-            display: flex; flex-direction: column;
-            overflow-y: auto; overflow-x: hidden;
-            position: relative;
             border: 1px solid var(--border-subtle);
-            scrollbar-width: none; -ms-overflow-style: none;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             transform: translateZ(0);
         }
         .container::-webkit-scrollbar { display: none; }
+
         @media (min-width: 640px) {
-            .container { height: 844px; max-height: 90vh; border-radius: 2.5rem; margin: 20px; }
+            .container {
+                height: min(844px, 90vh);
+                border-radius: 2.5rem;
+                margin: 20px;
+            }
         }
         @supports (-webkit-touch-callout: none) {
-            .container { height: -webkit-fill-available; max-height: -webkit-fill-available; }
+            .container {
+                height: -webkit-fill-available;
+                max-height: -webkit-fill-available;
+            }
         }
 
         .bg-blur-1 {
-            position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
-            width: 30rem; height: 30rem; background: var(--blur-teal);
-            border-radius: 50%; filter: blur(140px); pointer-events: none;
+            position: absolute;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30rem;
+            height: 30rem;
+            background: var(--blur-teal);
+            border-radius: 50%;
+            filter: blur(140px);
+            pointer-events: none;
             animation: pulse-glow 4s ease-in-out infinite;
         }
         .bg-blur-2 {
-            position: absolute; bottom: -10%; right: -10%;
-            width: 25rem; height: 25rem; background: var(--blur-amber);
-            border-radius: 50%; filter: blur(100px); pointer-events: none;
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 25rem;
+            height: 25rem;
+            background: var(--blur-amber);
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
         }
 
         .content {
-            position: relative; z-index: 10;
-            padding: max(2rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-left)) max(2rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-right));
-            flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: min-content;
+            position: relative;
+            z-index: 10;
+            padding: max(2rem, env(safe-area-inset-top)) 1.5rem max(2rem, env(safe-area-inset-bottom));
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
-        @media (min-width: 640px) { .content { padding: 3rem 2rem; } }
+        @media (min-width: 640px) {
+            .content { padding: 3rem 2rem; }
+        }
 
-        .logo { text-align: center; margin-bottom: 2rem; }
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
         .logo-icon {
-            width: 4.5rem; height: 4.5rem; margin: 0 auto 1rem;
-            background: var(--gradient-main); border-radius: 1.5rem;
-            display: flex; align-items: center; justify-content: center;
+            width: 4.5rem;
+            height: 4.5rem;
+            margin: 0 auto 1rem;
+            background: var(--gradient-main);
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             box-shadow: 0 20px 40px var(--teal-glow);
             animation: float 3s ease-in-out infinite;
         }
         .logo-icon svg { width: 40px; height: 40px; color: white; }
 
         h1 {
-            color: var(--text-primary); font-size: 2.5rem; font-weight: 700;
-            letter-spacing: -0.025em; margin-bottom: 0.5rem; line-height: 1.1;
+            color: var(--text-primary);
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
             font-family: var(--font-display);
         }
         h1 em { font-style: italic; color: var(--text-teal); }
-        .tagline { color: var(--text-secondary); font-size: 1rem; line-height: 1.6; margin-bottom: 0.75rem; }
-        .subtitle { color: var(--text-muted); font-size: 0.875rem; line-height: 1.6; }
 
-        .auth-buttons { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .auth-buttons {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
 
         .btn {
-            width: 100%; padding: 0.875rem 1.25rem; border-radius: 1rem;
-            font-size: 0.9375rem; font-weight: 600; border: none; cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-            min-height: 48px; -webkit-appearance: none; touch-action: manipulation;
-            user-select: none; font-family: var(--font-body);
+            width: 100%;
+            min-height: 48px;
+            padding: 0.875rem 1.25rem;
+            border-radius: 1rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            font-family: var(--font-body);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
+            touch-action: manipulation;
+            user-select: none;
         }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn:active:not(:disabled) { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+        .btn:active:not(:disabled) { transform: scale(0.97); }
         .btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 
-        .btn-google { background: var(--text-primary); color: #1f2937; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .btn-google:hover:not(:disabled) { background: #f9fafb; transform: translateY(-2px); }
+        .btn-google {
+            background: var(--text-primary);
+            color: #1f2937;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .btn-google:hover:not(:disabled) { background: #f9fafb; transform: translateY(-1px); }
 
-        .btn-primary { background: var(--gradient-main); color: var(--text-primary); box-shadow: 0 10px 25px var(--teal-glow); }
-        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 35px var(--teal-glow); }
+        .btn-primary {
+            background: var(--gradient-main);
+            color: white;
+            box-shadow: 0 8px 20px var(--teal-glow);
+        }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 12px 28px var(--teal-glow); }
 
-        .btn-secondary { background: var(--bg-card-light); color: var(--text-primary); border: 1px solid var(--border-softer); }
+        .btn-secondary {
+            background: var(--bg-card-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border-softer);
+        }
         .btn-secondary:hover:not(:disabled) { background: rgba(30,41,59,0.9); }
 
-        .divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; }
-        .divider-line { flex: 1; height: 1px; background: var(--border-softer); }
-        .divider-text { color: var(--text-muted); font-size: 0.875rem; font-weight: 500; white-space: nowrap; }
-
-        .features { margin-top: 2rem; display: grid; gap: 0.75rem; }
-        .feature {
-            display: flex; align-items: start; gap: 0.75rem; padding: 0.875rem;
-            background: var(--bg-card-light); border-radius: 1rem; border: 1px solid var(--border-softer);
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.25rem 0;
         }
-        .feature-icon { width: 2.25rem; height: 2.25rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .feature-icon svg { width: 20px; height: 20px; color: white; }
-        .feature:nth-child(1) .feature-icon { background: linear-gradient(135deg, var(--primary-teal), var(--primary-teal-dark)); }
-        .feature:nth-child(2) .feature-icon { background: linear-gradient(135deg, var(--success-emerald), #059669); }
-        .feature:nth-child(3) .feature-icon { background: linear-gradient(135deg, var(--primary-teal), var(--accent-amber)); }
-        .feature-content h3 { color: var(--text-primary); font-size: 0.8125rem; font-weight: 600; margin-bottom: 0.25rem; }
-        .feature-content p { color: var(--text-muted); font-size: 0.75rem; line-height: 1.6; }
+        .divider-line { flex: 1; height: 1px; background: var(--border-softer); }
+        .divider-text { color: var(--text-muted); font-size: 0.875rem; font-weight: 500; }
+
+        .features {
+            margin-top: 2rem;
+            display: grid;
+            gap: 0.625rem;
+        }
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            background: var(--bg-card-light);
+            border-radius: 1rem;
+            border: 1px solid var(--border-softer);
+        }
+        .feature-icon {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .feature-icon svg { width: 18px; height: 18px; color: white; }
+        .feature:nth-child(1) .feature-icon { background: linear-gradient(135deg, #0d9488, #0a7c6e); }
+        .feature:nth-child(2) .feature-icon { background: linear-gradient(135deg, #10b981, #059669); }
+        .feature:nth-child(3) .feature-icon { background: linear-gradient(135deg, #0d9488, #d97706); }
+
+        .feature-content h3 {
+            color: var(--text-primary);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        .feature-content p {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            line-height: 1.5;
+        }
 
         .footer {
             text-align: center;
-            padding: max(1.5rem, env(safe-area-inset-bottom)) 1.5rem 1.5rem;
-            color: var(--text-dim); font-size: 0.75rem; flex-shrink: 0;
+            padding: 1.25rem 1.5rem max(1.25rem, env(safe-area-inset-bottom));
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            line-height: 1.6;
+            flex-shrink: 0;
         }
         .footer a { color: var(--text-teal); text-decoration: none; }
-        .footer a:hover { text-decoration: underline; color: var(--text-teal-light); }
-        .footer p { line-height: 1.6; }
-
-        .loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.88);
-            display: none; align-items: center; justify-content: center;
-            flex-direction: column; gap: 1rem; z-index: 9999;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        }
-        .loading-overlay.show { display: flex; }
-        .loading-spinner {
-            width: 3rem; height: 3rem;
-            border: 3px solid rgba(255,255,255,0.15);
-            border-top-color: var(--primary-teal);
-            border-radius: 50%; animation: spin 0.9s linear infinite;
-        }
-        .loading-text { color: var(--text-primary); font-size: 1rem; font-weight: 500; }
+        .footer a:hover { text-decoration: underline; }
 
         .error-message {
-            background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.35);
-            border-radius: 1rem; padding: 1rem; margin-top: 1rem;
-            color: #fca5a5; font-size: 0.875rem; display: none; line-height: 1.6;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-radius: 0.875rem;
+            padding: 0.875rem 1rem;
+            margin-top: 0.5rem;
+            color: #fca5a5;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            display: none;
         }
         .error-message.show { display: block; }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0a0f1e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .loading-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .loading-spinner {
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary-teal);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .loading-text {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -302,24 +466,34 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL  = 'https://ocdwpaefmslyidelkzde.supabase.co';
+        // ================================================================
+        // INNERSHADOW — index.html (final, stable)
+        // ================================================================
+
+        const SUPABASE_URL = 'https://ocdwpaefmslyidelkzde.supabase.co';
         const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHdwYWVmbXNseWlkZWxremRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0NjQ1OTQsImV4cCI6MjA4NTA0MDU5NH0.OAYuCQhxrmZMLI_H8OuaJvs7dKVm82gUPgGzQDUYq-Q';
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
         let sb = null;
-        let busy = false;
+        let authBusy = false;
         let safetyTimer = null;
 
-        function showLoading(msg) {
-            document.getElementById('loadingText').textContent = msg || 'Loading...';
+        // ── UI helpers ──────────────────────────────────────────────────
+
+        function showOverlay(msg = 'Loading...') {
+            document.getElementById('loadingText').textContent = msg;
             document.getElementById('loadingOverlay').classList.add('show');
             clearTimeout(safetyTimer);
-            safetyTimer = setTimeout(resetAll, 10000);
+            safetyTimer = setTimeout(unlock, 10000); // hard 10s cap
         }
 
-        function hideLoading() {
+        function hideOverlay() {
             document.getElementById('loadingOverlay').classList.remove('show');
             clearTimeout(safetyTimer);
+        }
+
+        function showPage() {
+            document.body.classList.add('ready');
         }
 
         function showError(msg) {
@@ -329,25 +503,30 @@
             setTimeout(() => el.classList.remove('show'), 5000);
         }
 
-        function resetAll() {
-            busy = false;
-            hideLoading();
-            ['googleBtn','signupBtn','loginBtn'].forEach(id => {
+        function unlock() {
+            authBusy = false;
+            ['googleBtn', 'signupBtn', 'loginBtn'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.disabled = false;
             });
+            hideOverlay();
         }
+
+        // ── Redirect after auth ──────────────────────────────────────────
 
         function goAfterAuth() {
             const seen = localStorage.getItem('innershadow_disclaimer_acknowledged') === 'true';
             window.location.replace(seen ? '/app.html' : '/disclaimer.html');
         }
 
+        // ── Button handlers ──────────────────────────────────────────────
+
         async function onGoogle() {
-            if (busy || !sb) return;
-            busy = true;
+            if (authBusy || !sb) return;
+            authBusy = true;
             document.getElementById('googleBtn').disabled = true;
-            showLoading('Connecting to Google...');
+            showOverlay('Connecting to Google…');
+
             try {
                 const { data, error } = await sb.auth.signInWithOAuth({
                     provider: 'google',
@@ -358,49 +537,69 @@
                 });
                 if (error) throw error;
                 if (isIOS && data?.url) window.location.href = data.url;
+                // On non‑iOS, the browser redirects automatically – nothing more to do
             } catch (err) {
-                console.error(err);
-                resetAll();
+                console.error('[Auth] Google error:', err);
+                unlock();
                 showError('Could not connect to Google. Please try again.');
             }
         }
 
         function onSignUp() {
-            if (busy) return;
-            busy = true;
+            if (authBusy) return;
+            authBusy = true;
             document.getElementById('signupBtn').disabled = true;
-            showLoading('Loading...');
+            showOverlay('Loading…');
             setTimeout(() => window.location.href = '/signup.html', 250);
         }
 
         function onLogin() {
-            if (busy) return;
-            busy = true;
+            if (authBusy) return;
+            authBusy = true;
             document.getElementById('loginBtn').disabled = true;
-            showLoading('Loading...');
+            showOverlay('Loading…');
             setTimeout(() => window.location.href = '/login.html', 250);
         }
 
+        // ── Boot ─────────────────────────────────────────────────────────
+
         document.addEventListener('DOMContentLoaded', async () => {
-            // Wire buttons first — always
+
+            // 1. Wire up buttons immediately – they must always work
             document.getElementById('googleBtn').addEventListener('click', onGoogle);
             document.getElementById('signupBtn').addEventListener('click', onSignUp);
             document.getElementById('loginBtn').addEventListener('click', onLogin);
 
-            // Init Supabase
-            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
-                auth: {
-                    autoRefreshToken: true,
-                    persistSession: true,
-                    detectSessionInUrl: true,
-                    flowType: 'pkce'
-                }
-            });
+            // 2. Init Supabase
+            if (!window.supabase) {
+                console.error('[Auth] Supabase SDK not loaded');
+                showPage();
+                showError('Failed to load. Please check your connection and refresh.');
+                return;
+            }
 
-            // Returning from Google OAuth?
-            if (window.location.search.includes('code')) {
-                showLoading('Completing sign in...');
-                window.history.replaceState({}, '', '/');
+            try {
+                sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+                    auth: {
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true,
+                        flowType: 'pkce'
+                    }
+                });
+            } catch (err) {
+                console.error('[Auth] Supabase init failed:', err);
+                showPage();
+                showError('Initialization failed. Please refresh.');
+                return;
+            }
+
+            // 3. Check if we're returning from Google OAuth (?code=…)
+            const hasCode = window.location.search.includes('code');
+
+            if (hasCode) {
+                showOverlay('Completing sign in…');
+                window.history.replaceState({}, '', '/'); // clean URL
 
                 const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
                     if (event === 'SIGNED_IN' && session) {
@@ -410,35 +609,63 @@
                     }
                 });
 
-                let ticks = 0;
+                let attempts = 0;
                 const poller = setInterval(async () => {
-                    ticks++;
-                    const { data: { session } } = await sb.auth.getSession();
-                    if (session) {
+                    attempts++;
+                    try {
+                        const { data: { session } } = await sb.auth.getSession();
+                        if (session) {
+                            clearInterval(poller);
+                            subscription.unsubscribe();
+                            goAfterAuth();
+                            return;
+                        }
+                    } catch (_) {}
+
+                    if (attempts >= 10) { // 10 * 500ms = 5 seconds max
                         clearInterval(poller);
                         subscription.unsubscribe();
-                        goAfterAuth();
-                    } else if (ticks >= 10) {
-                        clearInterval(poller);
-                        subscription.unsubscribe();
-                        resetAll();
+                        unlock();
+                        showPage();
                         showError('Sign in failed. Please try again.');
                     }
                 }, 500);
-                return;
+
+                return; // page stays hidden behind overlay
             }
 
-            // Already logged in? Redirect silently
-            const { data: { session } } = await sb.auth.getSession();
-            if (session) {
-                goAfterAuth();
-                return;
-            }
+            // 4. No OAuth code – check for existing session
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (session) {
+                    goAfterAuth();
+                    return;
+                }
+            } catch (_) {}
 
-            // No session — page is already visible, nothing to do
+            // 5. No session – reveal the page for the user to sign in
+            showPage();
+
+            // iOS viewport height fix
+            if (isIOS) {
+                const setVH = () =>
+                    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+                setVH();
+                window.addEventListener('resize', setVH);
+            }
         });
 
-        window.addEventListener('pageshow', (e) => { if (e.persisted) resetAll(); });
+        // Safety: back/forward cache
+        window.addEventListener('pageshow', (e) => {
+            if (e.persisted) unlock();
+        });
+
+        // Safety: returning to a stuck state (but not during OAuth callback)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && authBusy && !window.location.search.includes('code')) {
+                setTimeout(unlock, 1500);
+            }
+        });
     </script>
 
     <script>
