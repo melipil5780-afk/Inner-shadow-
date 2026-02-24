@@ -544,9 +544,8 @@
     let answers     = {};
     let selectedVal = null;
 
-    // ⚠️ REMOVED DUPLICATE PATHWAY_ICONS and PATHWAY_MODULES - now using from supabase-client.js
-
-    const Assessment = {
+    // ⚠️ RENAMED from Assessment to AssessmentHelper to avoid conflict with supabase-client.js
+    const AssessmentHelper = {
       getRoutedPathway: function(q1, q3) {
         if (q3 === 'very-difficult') return 'emotional';
         if (q1 === 'emotions') return 'emotional';
@@ -1138,11 +1137,11 @@
     async function processResults() {
       showLoading('Working out your pathway...');
 
-      // Derive pathway + levels
-      const primaryPathway  = Assessment.getRoutedPathway(answers[1], answers[3]);
-      const intensityLevel  = Assessment.getIntensityLevel(answers[3]);
-      const experienceLevel = Assessment.getExperienceLevel(answers[4]);
-      const reflectionBack  = Assessment.generateReflection({
+      // Derive pathway + levels - UPDATED to use AssessmentHelper
+      const primaryPathway  = AssessmentHelper.getRoutedPathway(answers[1], answers[3]);
+      const intensityLevel  = AssessmentHelper.getIntensityLevel(answers[3]);
+      const experienceLevel = AssessmentHelper.getExperienceLevel(answers[4]);
+      const reflectionBack  = AssessmentHelper.generateReflection({
         q1: answers[1],
         q2: answers[2],
         q3: answers[3],
@@ -1164,7 +1163,7 @@
       document.querySelector('.cta-area').style.display      = 'none';
       document.getElementById('topProgress').style.width     = '100%';
 
-      // Populate results - using PATHWAY_ICONS from supabase-client.js
+      // Populate results - using window.PATHWAY_ICONS from supabase-client.js
       document.getElementById('pathwayEmoji').textContent   = window.PATHWAY_ICONS[pathway] || '🌊';
       
       const pathwayNames = {
