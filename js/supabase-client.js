@@ -15,10 +15,12 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    autoRefreshToken:  true,
-    persistSession:    true,
+    autoRefreshToken: true,
+    persistSession: true,
     detectSessionInUrl: true,
-    flowType:          'pkce'
+    flowType: 'pkce',
+    storage: window.localStorage,  // Force localStorage
+    storageKey: 'sb-innershadow-auth-token'  // Custom key to avoid tracking prevention
   }
 });
 
