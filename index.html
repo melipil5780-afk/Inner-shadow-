@@ -438,14 +438,14 @@
             display: block;
         }
 
-        /* ===== LOADING OVERLAY – NEW ===== */
+        /* ===== LOADING OVERLAY ===== */
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #0a0f1e; /* matches your background */
+            background: #0a0f1e;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -522,7 +522,7 @@
     </style>
 </head>
 <body>
-    <!-- Your full page content (exactly as you had it) -->
+    <!-- Your full page content -->
     <div class="container">
         <div class="bg-blur-1"></div>
         <div class="bg-blur-2"></div>
@@ -634,7 +634,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ===== ROBUST AUTH WITH OVERLAY – NO FLASH, NO FREEZE =====
+        // ===== ROBUST AUTH WITH OVERLAY – HANDLES TRACKING PREVENTION =====
         let isProcessingAuth = false;
         let sbClient = null;
         let safetyTimer = null;
@@ -731,68 +731,107 @@
             document.getElementById('signupBtn')?.addEventListener('click', handleSignUp);
             document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
 
-            // Ensure overlay is visible (it is by default)
+            // Ensure overlay is visible
             showLoading('Checking...');
 
-            // Init Supabase
+            // Test if storage is available (for tracking prevention)
+            let storageAvailable = true;
+            try {
+                const testKey = '_test_' + Date.now();
+                localStorage.setItem(testKey, testKey);
+                localStorage.removeItem(testKey);
+            } catch (e) {
+                storageAvailable = false;
+                console.warn('localStorage not available - tracking prevention may be active');
+            }
+
+            // Init Supabase with storage fallbacks
             try {
                 sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     auth: {
                         autoRefreshToken: true,
-                        persistSession: true,
+                        persistSession: storageAvailable, // Only persist if storage works
                         detectSessionInUrl: true,
-                        flowType: 'pkce'
+                        flowType: 'pkce',
+                        storage: storageAvailable ? undefined : {
+                            // Fallback memory storage if localStorage is blocked
+                            getItem: () => null,
+                            setItem: () => {},
+                            removeItem: () => {}
+                        }
                     }
                 });
             } catch (err) {
-                console.error(err);
+                console.error('Supabase init failed:', err);
                 hideOverlay();
-                showError('Init failed. Please refresh.');
+                showError('App initialization failed. Please disable tracking prevention or try a different browser.');
                 return;
             }
 
-            const hasCode = window.location.search.includes('code');
+            // Main auth logic with error handling
+            try {
+                const hasCode = window.location.search.includes('code');
 
-            if (hasCode) {
-                showLoading('Completing sign in...');
-                window.history.replaceState({}, '', '/');
+                if (hasCode) {
+                    showLoading('Completing sign in...');
+                    window.history.replaceState({}, '', '/');
 
-                const { data: { subscription } } = sbClient.auth.onAuthStateChange((event, session) => {
-                    if (event === 'SIGNED_IN' && session) {
-                        subscription.unsubscribe();
-                        clearInterval(poller);
-                        redirectAfterAuth();
-                    }
-                });
+                    const { data: { subscription } } = sbClient.auth.onAuthStateChange((event, session) => {
+                        if (event === 'SIGNED_IN' && session) {
+                            subscription.unsubscribe();
+                            clearInterval(poller);
+                            redirectAfterAuth();
+                        }
+                    });
 
-                let attempts = 0;
-                const poller = setInterval(async () => {
-                    attempts++;
+                    let attempts = 0;
+                    const poller = setInterval(async () => {
+                        try {
+                            attempts++;
+                            const { data: { session } } = await sbClient.auth.getSession();
+                            if (session) {
+                                clearInterval(poller);
+                                subscription.unsubscribe();
+                                redirectAfterAuth();
+                            } else if (attempts >= 10) { // 5 seconds max
+                                clearInterval(poller);
+                                subscription.unsubscribe();
+                                hideOverlay();
+                                enableButtons();
+                                showError('Sign in failed. Please try again.');
+                            }
+                        } catch (err) {
+                            console.error('Poller error:', err);
+                            clearInterval(poller);
+                            subscription.unsubscribe();
+                            hideOverlay();
+                            enableButtons();
+                            showError('Session check failed. Please refresh.');
+                        }
+                    }, 500);
+                    return;
+                }
+
+                // No code – check for existing session
+                try {
                     const { data: { session } } = await sbClient.auth.getSession();
                     if (session) {
-                        clearInterval(poller);
-                        subscription.unsubscribe();
                         redirectAfterAuth();
-                    } else if (attempts >= 10) { // 5 seconds max
-                        clearInterval(poller);
-                        subscription.unsubscribe();
-                        hideOverlay();
-                        enableButtons();
-                        showError('Sign in failed. Please try again.');
+                        return;
                     }
-                }, 500);
-                return;
-            }
+                } catch (err) {
+                    console.error('Session check error:', err);
+                    // Continue to show page even if session check fails
+                }
 
-            // No code – check for existing session
-            const { data: { session } } = await sbClient.auth.getSession();
-            if (session) {
-                redirectAfterAuth(); // overlay stays, then redirect
-                return;
+                // No session, no code – hide overlay to reveal page
+                hideOverlay();
+            } catch (err) {
+                console.error('Auth check error:', err);
+                hideOverlay();
+                enableButtons();
+                showError('Something went wrong. Please refresh.');
             }
-
-            // No session, no code – hide overlay to reveal page
-            hideOverlay();
 
             // iOS viewport height fix
             if (isIOS) {
@@ -806,7 +845,7 @@
         window.addEventListener('pageshow', e => { if (e.persisted) enableButtons(); });
     </script>
 
-    <!-- Service Worker Registration (optional) -->
+    <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
