@@ -536,7 +536,7 @@
     <!-- SAFETY: Ensure page becomes visible even if JS errors occur -->
     <script>document.body.classList.add('loaded');</script>
 
-    <!-- Service Worker Unregistration – temporary debugging -->
+    <!-- Service Worker Unregistration – temporary debugging (optional) -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(registrations => {
@@ -717,7 +717,8 @@
             showLoading('Connecting to Google...');
 
             try {
-                const redirectTo = window.location.origin + '/disclaimer.html';
+                // 🔥 FIX: redirect to index.html so we can catch the code
+                const redirectTo = window.location.origin + '/index.html';
                 const { data, error } = await sbClient.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
@@ -782,6 +783,24 @@
         async function initializeApp() {
             if (isInitialized) return;
             isInitialized = true;
+
+            // 🔥 NEW: Check for OAuth return code first (Safari PKCE fix)
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('code')) {
+                showLoading('Completing sign in...');
+                // Give Supabase a moment to exchange the code
+                setTimeout(async () => {
+                    const { data: { session } } = await sbClient.auth.getSession();
+                    if (session) {
+                        const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
+                        window.location.href = disclaimerAcknowledged === 'true' ? '/app.html' : '/disclaimer.html';
+                    } else {
+                        // Something went wrong – fallback
+                        window.location.href = '/index.html';
+                    }
+                }, 500);
+                return; // stop further initialization
+            }
 
             try {
                 sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
