@@ -10,6 +10,128 @@ const SUPABASE_URL = 'https://ocdwpaefmslyidelkzde.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHdwYWVmbXNseWlkZWxremRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0NjQ1OTQsImV4cCI6MjA4NTA0MDU5NH0.OAYuCQhxrmZMLI_H8OuaJvs7dKVm82gUPgGzQDUYq-Q';
 
 // ================================================================
+// CONSTANTS — Module and pathway relationships
+// MOVED TO TOP so they're available to all functions
+// ================================================================
+
+// Which module unlocks after completing each module
+const MODULE_SEQUENCE = {
+  'em-1': 'em-2', 'em-2': 'em-3', 'em-3': 'em-4', 'em-4': 'em-5', 'em-5': 'em-6', 'em-6': null,
+  'id-1': 'id-2', 'id-2': 'id-3', 'id-3': 'id-4', 'id-4': 'id-5', 'id-5': 'id-6', 'id-6': null,
+  'cn-1': 'cn-2', 'cn-2': 'cn-3', 'cn-3': 'cn-4', 'cn-4': 'cn-5', 'cn-5': 'cn-6', 'cn-6': null,
+  'lw-1': 'lw-2', 'lw-2': 'lw-3', 'lw-3': 'lw-4', 'lw-4': 'lw-5', 'lw-5': 'lw-6', 'lw-6': null
+};
+
+// Which pathway each module belongs to
+const MODULE_PATHWAY_MAP = {
+  'em-1': 'emotional', 'em-2': 'emotional', 'em-3': 'emotional', 'em-4': 'emotional', 'em-5': 'emotional', 'em-6': 'emotional',
+  'id-1': 'identity',  'id-2': 'identity',  'id-3': 'identity',  'id-4': 'identity',  'id-5': 'identity',  'id-6': 'identity',
+  'cn-1': 'connection','cn-2': 'connection','cn-3': 'connection','cn-4': 'connection','cn-5': 'connection','cn-6': 'connection',
+  'lw-1': 'living',    'lw-2': 'living',   'lw-3': 'living',    'lw-4': 'living',    'lw-5': 'living',    'lw-6': 'living'
+};
+
+// All modules in each pathway — in order
+const PATHWAY_MODULES = {
+  emotional:  ['em-1','em-2','em-3','em-4','em-5','em-6'],
+  identity:   ['id-1','id-2','id-3','id-4','id-5','id-6'],
+  connection: ['cn-1','cn-2','cn-3','cn-4','cn-5','cn-6'],
+  living:     ['lw-1','lw-2','lw-3','lw-4','lw-5','lw-6']
+};
+
+// Which pathway unlocks after completing each pathway
+const PATHWAY_SEQUENCE = {
+  emotional:  'identity',
+  identity:   'connection',
+  connection: 'living',
+  living:     null
+};
+
+// Which tool is unlocked by completing each module
+const MODULE_TOOL_MAP = {
+  'em-1': 'tool-name-it',
+  'em-2': 'tool-body-check',
+  'em-3': 'tool-event-vs-story',
+  'em-4': 'tool-self-compassion-pause',
+  'em-5': 'tool-catch-name-pause',
+  'em-6': 'tool-regulation-sequence',
+  'id-1': 'tool-inheritance-audit',
+  'id-2': 'tool-values-compass',
+  'id-3': 'tool-redemption-reframe',
+  'id-4': 'tool-wellbeing-audit',
+  'id-5': 'tool-witness-without-verdict',
+  'id-6': 'tool-quarterly-audit',
+  'cn-1': 'tool-origin-trace',
+  'cn-2': 'tool-attachment-check',
+  'cn-3': 'tool-listen-to-understand',
+  'cn-4': 'tool-one-true-thing',
+  'cn-5': 'tool-softened-startup',
+  'cn-6': 'tool-relationship-inventory',
+  'lw-1': 'tool-alive-inventory',
+  'lw-2': 'tool-meaning-reframe',
+  'lw-3': 'tool-design-tomorrow',
+  'lw-4': 'tool-enough-pause',
+  'lw-5': 'tool-relationship-compass',
+  'lw-6': 'tool-weekly-review'
+};
+
+// Free modules — accessible without Pro
+const FREE_MODULES = new Set(['em-1', 'em-2', 'id-1', 'cn-1', 'lw-1']);
+
+// Free tools — always accessible
+const FREE_TOOLS = new Set([
+  'tool-physiological-sigh',
+  'tool-cold-reset',
+  'tool-move-it-out',
+  'tool-come-to-now',
+  'tool-butterfly-hold',
+  'tool-safety-scan',
+  'tool-full-body-shake',
+  'tool-name-it'  // First earned tool is always free
+]);
+
+// Human-readable labels
+const PATHWAY_LABELS = {
+  emotional:  'Emotional Foundations',
+  identity:   'Knowing Yourself',
+  connection: 'Connection',
+  living:     'Living Well'
+};
+
+const PATHWAY_ICONS = {
+  emotional:  '🌊',
+  identity:   '🪞',
+  connection: '💔',
+  living:     '🌱'
+};
+
+const MODULE_LABELS = {
+  'em-1': 'What Emotions Actually Are',
+  'em-2': 'Your Body Knows First',
+  'em-3': 'The Stories We Tell Ourselves',
+  'em-4': 'Self-Compassion Is Not Weakness',
+  'em-5': 'Your Patterns and Where They Came From',
+  'em-6': 'Regulation — Coming Back to Yourself',
+  'id-1': 'The Self You Inherited',
+  'id-2': 'What You Actually Value',
+  'id-3': 'The Stories That Define You',
+  'id-4': 'What Actually Makes You Happy',
+  'id-5': 'Your Strengths and Your Shadows',
+  'id-6': 'Living Deliberately',
+  'cn-1': 'Why Connection Is So Hard',
+  'cn-2': 'Attachment — The Blueprint',
+  'cn-3': 'The Art of Actually Listening',
+  'cn-4': 'Vulnerability Without Oversharing',
+  'cn-5': 'Conflict as Information',
+  'cn-6': 'Building Something Real',
+  'lw-1': 'A Good Life vs a Full Calendar',
+  'lw-2': 'Meaning — The Thing That Sustains',
+  'lw-3': 'The Architecture of a Good Day',
+  'lw-4': 'Enough',
+  'lw-5': 'The People You Become Through',
+  'lw-6': 'A Life That Is Yours'
+};
+
+// ================================================================
 // INITIALIZE CLIENT — WITH SAFARI FIXES
 // ================================================================
 
@@ -159,36 +281,37 @@ const Auth = {
 
   // Guard — redirect to app if already logged in
   // Call at top of auth pages (login, signup)
-async redirectIfLoggedIn(redirectTo = '/app.html') {
-  // Get current page filename
-  const currentPath = window.location.pathname;
-  const currentPage = currentPath.split('/').pop() || 'index.html';
-  
-  // IMPORTANT: Don't redirect if already on disclaimer page
-  if (currentPage === 'disclaimer.html') {
-    console.log('[Auth] On disclaimer page - no redirect');
-    return false;
-  }
-  
-  const session = await this.getSession();
-  if (session) {
-    const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
+  async redirectIfLoggedIn(redirectTo = '/app.html') {
+    // Get current page filename
+    const currentPath = window.location.pathname;
+    const currentPage = currentPath.split('/').filter(Boolean).pop() || 'index.html';
     
-    // Determine target page
-    const targetPage = disclaimerAcknowledged === 'true' ? redirectTo : '/disclaimer.html';
-    const targetFileName = targetPage.split('/').pop();
-    
-    // Only redirect if we're not already on the target page
-    if (currentPage !== targetFileName) {
-      console.log(`[Auth] Redirecting from ${currentPage} to ${targetPage}`);
-      window.location.href = targetPage;
-    } else {
-      console.log(`[Auth] Already on ${currentPage} - no redirect needed`);
+    // IMPORTANT: Don't redirect if already on disclaimer page
+    if (currentPage === 'disclaimer.html') {
+      console.log('[Auth] On disclaimer page - no redirect');
+      return false;
     }
-    return true;
-  }
-  return false;
-},
+    
+    const session = await this.getSession();
+    if (session) {
+      const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
+      
+      // Determine target page
+      const targetPage = disclaimerAcknowledged === 'true' ? redirectTo : '/disclaimer.html';
+      const targetFileName = targetPage.split('/').pop();
+      
+      // Only redirect if we're not already on the target page
+      if (currentPage !== targetFileName) {
+        console.log(`[Auth] Redirecting from ${currentPage} to ${targetPage}`);
+        window.location.href = targetPage;
+      } else {
+        console.log(`[Auth] Already on ${currentPage} - no redirect needed`);
+      }
+      return true;
+    }
+    return false;
+  },
+
   // Listen for auth state changes
   onAuthStateChange(callback) {
     return sb.auth.onAuthStateChange((event, session) => {
@@ -362,7 +485,7 @@ const DB = {
       .update({
         completed:    true,
         completed_at: now,
-        current_step: 99, // sentinel — fully done
+        current_step: 99,
         updated_at:   now
       })
       .eq('user_id', userId)
@@ -386,11 +509,11 @@ const DB = {
     // 3. Add tool to user's unlocked tools array
     const toolId = MODULE_TOOL_MAP[moduleId];
     if (toolId) {
-      // Use Postgres array append — avoids race conditions
-      await sb.rpc('append_tool_unlocked', {
+      const { error: rpcError } = await sb.rpc('append_tool_unlocked', {
         p_user_id: userId,
         p_tool_id: toolId
       });
+      if (rpcError) console.error('[DB] RPC append_tool_unlocked failed:', rpcError);
     }
 
     // 4. Check if entire pathway is complete
@@ -497,40 +620,38 @@ const DB = {
     }
   },
 
-  // Recalculate streak and save to user_state
+  // FIXED: Recalculate streak properly (counts both current AND longest)
   async recalculateStreak(userId) {
     try {
       const { data: checkins } = await sb
         .from('checkins')
         .select('date')
         .eq('user_id', userId)
-        .order('date', { ascending: false })
-        .limit(90);
+        .order('date', { ascending: false });
 
       if (!checkins?.length) return;
 
-      const dates = checkins.map(c => c.date).sort().reverse();
       let current = 0;
       let longest = 0;
-      let check = new Date();
+      let prevDate = null;
 
-      for (const date of dates) {
-        const checkStr = check.toISOString().slice(0, 10);
-        if (date === checkStr) {
-          current++;
-          longest = Math.max(longest, current);
-          check.setDate(check.getDate() - 1);
-        } else {
-          break;
+      for (const c of checkins) {
+        const d = new Date(c.date);
+        if (prevDate) {
+          const diff = (prevDate - d) / (1000 * 60 * 60 * 24);
+          if (diff !== 1) current = 0;
         }
+        current++;
+        longest = Math.max(longest, current);
+        prevDate = d;
       }
 
       await sb
         .from('user_state')
         .update({
           streak_current:  current,
-          streak_longest:  Math.max(longest, current),
-          streak_last_date: dates[0],
+          streak_longest:  longest,
+          streak_last_date: checkins[0].date,
           updated_at:      new Date().toISOString()
         })
         .eq('user_id', userId);
@@ -662,10 +783,11 @@ const DB = {
       });
 
       // Update recently used in user_state
-      await sb.rpc('prepend_recently_used_tool', {
+      const { error: rpcError } = await sb.rpc('prepend_recently_used_tool', {
         p_user_id: userId,
         p_tool_id: toolId
       });
+      if (rpcError) console.error('[DB] RPC prepend_recently_used_tool failed:', rpcError);
 
       return { error: null };
     } catch (err) {
@@ -743,151 +865,6 @@ const DB = {
       return null;
     }
   }
-};
-
-// ================================================================
-// CONSTANTS — Module and pathway relationships
-// ================================================================
-
-// Which module unlocks after completing each module
-const MODULE_SEQUENCE = {
-  'em-1': 'em-2',
-  'em-2': 'em-3',
-  'em-3': 'em-4',
-  'em-4': 'em-5',
-  'em-5': 'em-6',
-  'em-6': null,       // pathway complete — next pathway unlocked separately
-  'id-1': 'id-2',
-  'id-2': 'id-3',
-  'id-3': 'id-4',
-  'id-4': 'id-5',
-  'id-5': 'id-6',
-  'id-6': null,
-  'cn-1': 'cn-2',
-  'cn-2': 'cn-3',
-  'cn-3': 'cn-4',
-  'cn-4': 'cn-5',
-  'cn-5': 'cn-6',
-  'cn-6': null,
-  'lw-1': 'lw-2',
-  'lw-2': 'lw-3',
-  'lw-3': 'lw-4',
-  'lw-4': 'lw-5',
-  'lw-5': 'lw-6',
-  'lw-6': null
-};
-
-// Which pathway each module belongs to
-const MODULE_PATHWAY_MAP = {
-  'em-1': 'emotional', 'em-2': 'emotional', 'em-3': 'emotional',
-  'em-4': 'emotional', 'em-5': 'emotional', 'em-6': 'emotional',
-  'id-1': 'identity',  'id-2': 'identity',  'id-3': 'identity',
-  'id-4': 'identity',  'id-5': 'identity',  'id-6': 'identity',
-  'cn-1': 'connection','cn-2': 'connection','cn-3': 'connection',
-  'cn-4': 'connection','cn-5': 'connection','cn-6': 'connection',
-  'lw-1': 'living',   'lw-2': 'living',   'lw-3': 'living',
-  'lw-4': 'living',   'lw-5': 'living',   'lw-6': 'living'
-};
-
-// All modules in each pathway — in order
-const PATHWAY_MODULES = {
-  emotional:  ['em-1','em-2','em-3','em-4','em-5','em-6'],
-  identity:   ['id-1','id-2','id-3','id-4','id-5','id-6'],
-  connection: ['cn-1','cn-2','cn-3','cn-4','cn-5','cn-6'],
-  living:     ['lw-1','lw-2','lw-3','lw-4','lw-5','lw-6']
-};
-
-// Which pathway unlocks after completing each pathway
-const PATHWAY_SEQUENCE = {
-  emotional:  'identity',
-  identity:   'connection',
-  connection: 'living',
-  living:     null
-};
-
-// Which tool is unlocked by completing each module
-const MODULE_TOOL_MAP = {
-  'em-1': 'tool-name-it',
-  'em-2': 'tool-body-check',
-  'em-3': 'tool-event-vs-story',
-  'em-4': 'tool-self-compassion-pause',
-  'em-5': 'tool-catch-name-pause',
-  'em-6': 'tool-regulation-sequence',
-  'id-1': 'tool-inheritance-audit',
-  'id-2': 'tool-values-compass',
-  'id-3': 'tool-redemption-reframe',
-  'id-4': 'tool-wellbeing-audit',
-  'id-5': 'tool-witness-without-verdict',
-  'id-6': 'tool-quarterly-audit',
-  'cn-1': 'tool-origin-trace',
-  'cn-2': 'tool-attachment-check',
-  'cn-3': 'tool-listen-to-understand',
-  'cn-4': 'tool-one-true-thing',
-  'cn-5': 'tool-softened-startup',
-  'cn-6': 'tool-relationship-inventory',
-  'lw-1': 'tool-alive-inventory',
-  'lw-2': 'tool-meaning-reframe',
-  'lw-3': 'tool-design-tomorrow',
-  'lw-4': 'tool-enough-pause',
-  'lw-5': 'tool-relationship-compass',
-  'lw-6': 'tool-weekly-review'
-};
-
-// Free modules — accessible without Pro
-const FREE_MODULES = new Set(['em-1', 'em-2', 'id-1', 'cn-1', 'lw-1']);
-
-// Free tools — always accessible
-const FREE_TOOLS = new Set([
-  'tool-physiological-sigh',
-  'tool-cold-reset',
-  'tool-move-it-out',
-  'tool-come-to-now',
-  'tool-butterfly-hold',
-  'tool-safety-scan',
-  'tool-full-body-shake',
-  'tool-name-it'  // First earned tool is always free
-]);
-
-// Human-readable labels
-const PATHWAY_LABELS = {
-  emotional:  'Emotional Foundations',
-  identity:   'Knowing Yourself',
-  connection: 'Connection',
-  living:     'Living Well'
-};
-
-const PATHWAY_ICONS = {
-  emotional:  '🌊',
-  identity:   '🪞',
-  connection: '💔',
-  living:     '🌱'
-};
-
-const MODULE_LABELS = {
-  'em-1': 'What Emotions Actually Are',
-  'em-2': 'Your Body Knows First',
-  'em-3': 'The Stories We Tell Ourselves',
-  'em-4': 'Self-Compassion Is Not Weakness',
-  'em-5': 'Your Patterns and Where They Came From',
-  'em-6': 'Regulation — Coming Back to Yourself',
-  'id-1': 'The Self You Inherited',
-  'id-2': 'What You Actually Value',
-  'id-3': 'The Stories That Define You',
-  'id-4': 'What Actually Makes You Happy',
-  'id-5': 'Your Strengths and Your Shadows',
-  'id-6': 'Living Deliberately',
-  'cn-1': 'Why Connection Is So Hard',
-  'cn-2': 'Attachment — The Blueprint',
-  'cn-3': 'The Art of Actually Listening',
-  'cn-4': 'Vulnerability Without Oversharing',
-  'cn-5': 'Conflict as Information',
-  'cn-6': 'Building Something Real',
-  'lw-1': 'A Good Life vs a Full Calendar',
-  'lw-2': 'Meaning — The Thing That Sustains',
-  'lw-3': 'The Architecture of a Good Day',
-  'lw-4': 'Enough',
-  'lw-5': 'The People You Become Through',
-  'lw-6': 'A Life That Is Yours'
 };
 
 // ================================================================
