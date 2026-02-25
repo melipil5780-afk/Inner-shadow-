@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>InnerShadow – Conflict as a Path to Closeness</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+```
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-dark);
+}
+
+.shell {
+  width: 100%;
+  max-width: 28rem;
+  height: 100vh;
+  height: -webkit-fill-available;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.module-header {
+  padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+  background: rgba(10,15,30,0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.module-header__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.header-back {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.625rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.header-back:active { transform: scale(0.92); }
+
+.header-title {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.header-count {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  min-width: 2.25rem;
+  text-align: right;
+}
+
+.progress-dots { display: flex; gap: 0.3rem; }
+
+.progress-dot {
+  flex: 1;
+  height: 3px;
+  background: rgba(148,163,184,0.15);
+  border-radius: 999px;
+  transition: background 0.4s ease;
+}
+
+.progress-dot--active { background: var(--gradient-main); }
+
+.module-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.module-scroll::-webkit-scrollbar { display: none; }
+
+.step-wrap { padding: 1.375rem 1.25rem 2rem; }
+
+.cta-area {
+  padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+  background: rgba(10,15,30,0.95);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.back-btn-sm {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.875rem;
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.back-btn-sm:active { transform: scale(0.92); }
+.back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+/* Gottman four horsemen cards */
+.horseman-card {
+  border-radius: 1rem;
+  padding: 1rem 1.125rem;
+  margin-bottom: 0.625rem;
+}
+
+.horseman-card--1 { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.25); }
+.horseman-card--2 { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.35); }
+.horseman-card--3 { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.25); }
+.horseman-card--4 { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.35); }
+
+.horseman-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 0.375rem;
+}
+
+.horseman-card__name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.horseman-card__desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin-bottom: 0.5rem;
+}
+
+.horseman-card__antidote {
+  font-size: 0.8125rem;
+  color: var(--text-teal);
+  line-height: 1.5;
+}
+
+.horseman-card__antidote strong {
+  color: var(--text-teal);
+}
+
+/* Conflict style selector */
+.conflict-style-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 0.9375rem 1rem;
+  background: var(--bg-card-light);
+  border: 2px solid var(--border-soft);
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-body);
+  text-align: left;
+  width: 100%;
+}
+
+.conflict-style-btn:active { transform: scale(0.98); }
+
+.conflict-style-btn--selected {
+  border-color: var(--teal-border-strong);
+  background: var(--teal-bg);
+}
+
+.conflict-style-btn__emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.conflict-style-btn__name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.conflict-style-btn--selected .conflict-style-btn__name {
+  color: var(--text-teal);
+}
+
+.conflict-style-btn__desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Conversation exchange cards */
+.exchange-card {
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.125rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.exchange-row {
+  padding: 0.875rem 1.125rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.exchange-row:last-child { border-bottom: none; }
+
+.exchange-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.375rem;
+}
+
+.exchange-label--escalates { color: var(--text-red, #f87171); }
+.exchange-label--repairs   { color: var(--text-teal); }
+
+.exchange-text {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+@media (min-width: 640px) {
+  .shell {
+    height: 844px;
+    max-height: 92vh;
+    border-radius: 2.5rem;
+    border: 1px solid var(--border-subtle);
+  }
+}
+```
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--teal"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+```
+<div class="module-header">
+  <div class="module-header__row">
+    <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+    <p class="header-title" id="moduleTitle">Conflict as a Path to Closeness</p>
+    <span class="header-count" id="stepCounter"></span>
+  </div>
+  <div class="progress-dots" id="progressDots"></div>
+</div>
+
+<div class="module-scroll" id="moduleScroll">
+  <div class="step-wrap" id="stepContent"></div>
+</div>
+
+<div class="cta-area">
+  <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+  <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+</div>
+```
+
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="/js/supabase-client.js"></script>
+
+  <script src="/js/utils.js"></script>
+
+  <script src="/js/module-engine.js"></script>
+
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Conflict style selector ────────────────────────────
+
+  let selectedConflictStyle = '';
+
+  function selectConflictStyle(el, name) {
+    document.querySelectorAll('.conflict-style-btn')
+      .forEach(b => b.classList.remove('conflict-style-btn--selected'));
+    el.classList.add('conflict-style-btn--selected');
+    selectedConflictStyle = name;
+    const hidden = document.getElementById('conflictStyleHidden');
+    if (hidden) hidden.value = name;
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = false;
+  }
+
+  // ================================================================
+  // MODULE CN-4: CONFLICT AS A PATH TO CLOSENESS
+  // ================================================================
+
+  const CN4_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('Conflict is not the opposite of closeness. Avoided conflict is.')}
+        ${B.para('Most people treat conflict as evidence that something is wrong — with the relationship, with the other person, with themselves. The goal becomes conflict avoidance. Which means the goal becomes the mutual performance of okayness while actual things go unresolved.')}
+        ${B.para('The walls that form between people in relationships aren\'t usually built by big dramatic ruptures. They\'re built by the accumulation of small things that were never addressed — the irritation swallowed, the hurt not mentioned, the pattern noticed and ignored until it calcified.')}
+        ${B.callout('The research on this is unusually clear. It is not the absence of conflict that distinguishes lasting, close relationships from ones that slowly die. It is the presence of repair — and the willingness to actually engage with the real thing rather than manage around it.')}
+        ${B.para('Conflict, navigated well, is one of the most reliable paths to deeper understanding. It reveals what actually matters to each person. It builds trust when handled with care. What damages relationships is not the conflict itself — it\'s contempt, stonewalling, and the slow accumulation of things never resolved.')}
+      `
+    },
+
+    // ── STEP 2: Concept — The four horsemen ───────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The four things that actually damage relationships in conflict.')}
+        ${B.para('John Gottman spent four decades studying couples in conflict. He identified four specific behaviours that predict relationship breakdown with over 90% accuracy. He called them the Four Horsemen — and more importantly, he identified the antidote to each.')}
+
+        <div style="margin-bottom:1.25rem">
+
+          <div class="horseman-card horseman-card--1">
+            <div class="horseman-card__header">
+              <span style="font-size:1.25rem">🗡️</span>
+              <p class="horseman-card__name">Criticism</p>
+            </div>
+            <p class="horseman-card__desc">Attacking the person's character rather than addressing a specific behaviour. "You always do this" / "You're so selfish" — it's not about the incident anymore, it's about who they are.</p>
+            <p class="horseman-card__antidote"><strong>Antidote:</strong> Gentle start-up. Describe the specific behaviour and your feeling about it — not their character. "When X happened, I felt Y" instead of "You're the kind of person who..."</p>
+          </div>
+
+          <div class="horseman-card horseman-card--2">
+            <div class="horseman-card__header">
+              <span style="font-size:1.25rem">👑</span>
+              <p class="horseman-card__name">Contempt</p>
+            </div>
+            <p class="horseman-card__desc">Treating the other person as inferior — mockery, eye-rolling, sarcasm used as a weapon, name-calling, condescension. Gottman calls this the single strongest predictor of relationship dissolution. It communicates disgust.</p>
+            <p class="horseman-card__antidote"><strong>Antidote:</strong> Build a culture of appreciation in the relationship. Contempt accumulates from unaddressed resentment — it doesn't appear from nowhere. Regular genuine appreciation prevents its build-up.</p>
+          </div>
+
+          <div class="horseman-card horseman-card--3">
+            <div class="horseman-card__header">
+              <span style="font-size:1.25rem">🛡️</span>
+              <p class="horseman-card__name">Defensiveness</p>
+            </div>
+            <p class="horseman-card__desc">Responding to concern or complaint by counter-attacking or playing victim. "Well you always..." / "I only did that because you..." — it deflects responsibility and signals that their concern doesn't land.</p>
+            <p class="horseman-card__antidote"><strong>Antidote:</strong> Take partial responsibility. Even "you're right that I..." for the small part that's true — this single move shifts the entire dynamic. It communicates that you're listening.</p>
+          </div>
+
+          <div class="horseman-card horseman-card--4">
+            <div class="horseman-card__header">
+              <span style="font-size:1.25rem">🧱</span>
+              <p class="horseman-card__name">Stonewalling</p>
+            </div>
+            <p class="horseman-card__desc">Emotional withdrawal — going silent, leaving, shutting down entirely. Often happens after flooding, which makes it physiologically understandable. But to the other person it communicates abandonment.</p>
+            <p class="horseman-card__antidote"><strong>Antidote:</strong> Physiological self-soothing with a declared pause. "I need twenty minutes — I'm coming back." Not stonewalling — a regulated break with a commitment to return.</p>
+          </div>
+
+        </div>
+
+        ${B.insight('Why these matter', 'These aren\'t random behaviours. Each one communicates something specific to the other person\'s nervous system — usually the thing they\'re most afraid of. Criticism attacks identity. Contempt signals disgust. Defensiveness says you don\'t matter. Stonewalling means abandonment. Knowing what you\'re actually communicating changes how you choose to respond.')}
+      `
+    },
+
+    // ── STEP 3: Concept — Your conflict style ─────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('You learned how to handle conflict before you had any say in it.')}
+        ${B.para('Your conflict style was absorbed before you were old enough to choose it. You watched how conflict was handled — or avoided — in the household you grew up in, and you developed a template. That template is still running, largely automatically, in every conflict you have now.')}
+        ${B.steps([
+          '<strong>Fight.</strong> Conflict activates. You push back hard, raise your voice, need to be heard and taken seriously. Losing feels dangerous — like you\'ll disappear if you don\'t hold your ground. Often developed in households where you had to fight to matter.',
+          '<strong>Flee.</strong> Conflict feels unsafe. You go quiet, leave the room, avoid the subject entirely. The discomfort of confrontation outweighs, in the moment, whatever the cost of not resolving it. Often developed where conflict meant danger.',
+          '<strong>Freeze.</strong> Conflict produces total paralysis — words disappear, thought becomes impossible, the body shuts down. Flooding is so complete that no response is available. Often a trauma response.',
+          '<strong>Fawn.</strong> Conflict triggers immediate appeasement — you agree, you accommodate, you smooth it over at any price. The appearance of resolution without actual resolution. Often developed where keeping the peace was survival.'
+        ])}
+        ${B.callout('The important question isn\'t just which style is yours — it\'s what that style is protecting you from. The fear underneath the pattern is almost always more informative than the pattern itself.')}
+      `
+    },
+
+    // ── STEP 4: Concept — What productive conflict looks like ─
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('What it looks like when conflict actually works.')}
+        ${B.para('Productive conflict is not comfortable. But it has a different quality than damaging conflict — it stays oriented toward the relationship rather than becoming a battle for dominance or a race to survive.')}
+
+        ${B.steps([
+          '<strong>Soft start-up.</strong> Begin with "I" not "you." Your experience, not their failure. "I\'ve been feeling distant from you lately and I want to talk about why" lands in a different register than "You\'ve been ignoring me."',
+          '<strong>Stay specific.</strong> This incident, this behaviour, this time. Don\'t let one moment become evidence for a character verdict. "You were forty minutes late and didn\'t message" is workable. "You\'re inconsiderate and don\'t respect my time" closes the conversation.',
+          '<strong>Regulate before and during.</strong> You cannot have a productive conflict while flooded — heart rate above 100bpm, adrenaline running. If flooding happens, take a declared break and return. The conversation will be completely different when you\'re regulated.',
+          '<strong>Find the valid point.</strong> Even in a conflict where you feel mostly wronged, there is almost always something in what the other person is saying that is true. Finding and acknowledging it — even the small part — is the single most reliable de-escalation move available.',
+          '<strong>Receive repair attempts.</strong> During conflict, people make repair attempts — small bids to de-escalate. A touch on the arm. A softened tone. "Okay, let me say that differently." Receiving these is as important as making them. Let them work.'
+        ])}
+      `
+    },
+
+    // ── STEP 5: Worksheet — Your conflict style ────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Your conflict style — honestly.')}
+        ${B.para('Which of these is most true for you when real conflict arrives? Not the one that sounds best — the one you actually recognise:')}
+
+        <div style="margin-bottom:1rem">
+          ${[
+            ['⚔️', 'Fight', 'Conflict activates me. I push back hard, need to be heard, find backing down almost impossible. Losing feels like disappearing.'],
+            ['🏃', 'Flee', 'Conflict feels dangerous. I go quiet, leave, change the subject, or find ways to make the tension stop — even if it means nothing gets resolved.'],
+            ['🧊', 'Freeze', 'Conflict shuts me down completely. Words disappear. I can\'t think or respond. The flooding is total.'],
+            ['🤝', 'Fawn', 'Conflict triggers immediate peace-making. I agree, accommodate, apologise — whatever it takes to reduce the tension. Resentment builds quietly.'],
+            ['🔀', 'Varies', 'It depends on the relationship and what\'s at stake. I have more than one pattern depending on context.']
+          ].map(([emoji, name, desc]) => `
+            <button
+              class="conflict-style-btn"
+              onclick="selectConflictStyle(this, '${name}')"
+            >
+              <span class="conflict-style-btn__emoji">${emoji}</span>
+              <div>
+                <p class="conflict-style-btn__name">${name}</p>
+                <p class="conflict-style-btn__desc">${desc}</p>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="conflictStyleHidden" data-key="conflictStyle" value="">
+
+        ${B.keyedTextarea('style-origin', 'I think I developed this pattern because...', 'What did you observe growing up? What experience taught you that conflict required this kind of response?', '80px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 6: Worksheet — A real conflict ───────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('A conflict you\'re currently carrying.')}
+        ${B.para('Think of a real, current conflict — something unresolved with someone in your life. It doesn\'t have to be dramatic. It could be a recurring friction, something that was never addressed, or a rift that\'s been quietly widening.')}
+        ${B.para('Use it as the material for this module.')}
+
+        ${B.divider('The situation')}
+        ${B.keyedTextarea('conflict-what', 'The conflict is...', 'What\'s the situation? What happened, or what keeps happening?', '80px')}
+
+        ${B.divider('Their side')}
+        ${B.keyedTextarea('conflict-their-side', 'The other person\'s position — stated as charitably as I can...', 'What are they actually experiencing? What do they need? What might they be protecting? State it as fairly as possible, even if you disagree with it.', '85px')}
+
+        ${B.divider('The horsemen check')}
+        ${B.keyedTextarea('conflict-horsemen', 'The Four Horsemen I notice in how I engage with this conflict...', 'Criticism, contempt, defensiveness, stonewalling — which appear when this conflict activates? Be honest.', '75px')}
+      `
+    },
+
+    // ── STEP 7: Worksheet — The repair ───────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('The repair.')}
+        ${B.para('Repair doesn\'t require you to be wrong. It requires you to value the relationship more than the position. It requires orienting toward understanding rather than victory.')}
+
+        ${B.divider('Finding the valid point')}
+        ${B.keyedTextarea('valid-point', 'The part of their position that I can honestly acknowledge is true...', 'Force yourself to find something. Even partial acknowledgment transforms conflict. What are they actually right about, even partially?', '80px')}
+
+        ${B.divider('The soft start-up')}
+        ${B.keyedTextarea('soft-startup', 'If I were to open this conversation well, I\'d start with...', 'Begin with "I" and your experience. What would you say if you were leading with the relationship rather than the grievance?', '80px')}
+
+        <div class="exchange-card">
+          <div class="exchange-row">
+            <p class="exchange-label exchange-label--escalates">Typical start-up — escalates</p>
+            <p class="exchange-text">"You never take my concerns seriously. Every time I try to talk about this you shut down or make it about you."</p>
+          </div>
+          <div class="exchange-row">
+            <p class="exchange-label exchange-label--repairs">Soft start-up — opens</p>
+            <p class="exchange-text">"There's something that's been on my mind and I haven't known how to bring it up. Can I try? I'm not looking to fight — I want us to actually talk about it."</p>
+          </div>
+        </div>
+
+        ${B.divider('What you actually want')}
+        ${B.keyedTextarea('want-from-repair', 'What I actually want from this relationship — underneath the conflict — is...', 'Not winning the argument. Not being proved right. What do you want the relationship to feel like?', '70px')}
+      `
+    },
+
+    // ── STEP 8: Skill ──────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your fourth tool in this pathway.')}
+        ${B.para('The five moves that turn conflict from a battle for dominance into a path toward understanding.')}
+        ${B.skill(
+          'Productive Conflict',
+          'Navigate disagreement toward understanding rather than dominance.',
+          [
+            '<strong>Soft start-up.</strong> "I" not "you." Your experience, not their failure. What you\'re feeling and what you need — not what they did wrong and what that says about them.',
+            '<strong>Check for the horsemen.</strong> Before and during the conversation — am I criticising character or describing behaviour? Am I contemptuous or frustrated? Am I being defensive or genuinely listening? Am I flooding and need a break?',
+            '<strong>Regulate if flooding.</strong> If your heart is pounding, your thinking has narrowed, and you can only see one thing — you are flooded. Declare a break. "I need twenty minutes to regulate — I\'m coming back." Return when you\'re actually regulated, not just calmer.',
+            '<strong>Find and name the valid point.</strong> Before stating your position, find something in theirs that is true. Say it out loud. "You\'re right that I..." This single move changes the conversation more reliably than almost anything else.',
+            '<strong>Receive repair attempts.</strong> When the other person makes a bid to de-escalate — even clumsily — receive it. Let the moment work. You can return to the substance once the temperature has dropped.'
+          ]
+        )}
+        ${B.compare(
+          'Damaging conflict: character attacks, accumulated contempt, mutual defensiveness, flooding, stonewalling. The relationship slowly fills with things that were never resolved and trust that was never rebuilt.',
+          'Productive conflict: soft start-up, specific not global, regulated breaks when needed, genuine acknowledgment, repair received. The relationship becomes more honest. The people in it know each other more accurately.'
+        )}
+      `
+    },
+
+    // ── STEP 9: Commitment ─────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('The conflict you worked with in this module is either one worth addressing directly or one that needs a different kind of attention. Leaving it exactly where it is — unaddressed, slowly widening — is the most costly option.')}
+        ${B.para('The commitment here is not to have a perfect conversation. It\'s to have the conversation at all — with a soft start-up, staying on the specific, and orienting toward what you actually want from the relationship.')}
+        ${B.commitment(
+          'Write what you\'re going to do with the specific conflict you identified — when you\'ll address it, how you\'ll open, and what productive conflict will look like for you going forward.',
+          'With [the conflict I identified], I\'m going to [address it by / let it go because]. My soft start-up will be: "..." When I notice [my conflict style pattern] activating, I\'ll [what you\'ll do instead]. What I most want from this relationship is...'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ──────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'Conflict as a Path to Closeness',
+        'connection',
+        'cn-5',
+        '⚡',
+        'Productive Conflict',
+        'Navigate disagreement toward understanding rather than dominance'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('cn-4', CN4_STEPS);
+  });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+
+</body>
+</html>
