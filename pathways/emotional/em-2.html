@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>InnerShadow – Your Body Knows First</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+```
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-dark);
+}
+
+.shell {
+  width: 100%;
+  max-width: 28rem;
+  height: 100vh;
+  height: -webkit-fill-available;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.module-header {
+  padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+  background: rgba(10,15,30,0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.module-header__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.header-back {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.625rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.header-back:active { transform: scale(0.92); }
+
+.header-title {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.header-count {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  min-width: 2.25rem;
+  text-align: right;
+}
+
+.progress-dots {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.progress-dot {
+  flex: 1;
+  height: 3px;
+  background: rgba(148,163,184,0.15);
+  border-radius: 999px;
+  transition: background 0.4s ease;
+}
+
+.progress-dot--active {
+  background: var(--gradient-main);
+}
+
+.module-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.module-scroll::-webkit-scrollbar { display: none; }
+
+.step-wrap {
+  padding: 1.375rem 1.25rem 2rem;
+}
+
+.cta-area {
+  padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+  background: rgba(10,15,30,0.95);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.back-btn-sm {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.875rem;
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.back-btn-sm:active { transform: scale(0.92); }
+.back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+/* Sensation chips */
+.sensation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.sensation-chip {
+  padding: 0.625rem 0.875rem;
+  background: var(--bg-card-light);
+  border: 1.5px solid var(--border-soft);
+  border-radius: 0.875rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: center;
+  font-family: var(--font-body);
+}
+
+.sensation-chip:active { transform: scale(0.95); }
+
+.sensation-chip--selected {
+  border-color: var(--teal-border-strong);
+  background: var(--teal-bg-strong);
+  color: var(--text-teal);
+  font-weight: 600;
+}
+
+/* Breath circle */
+.breath-card {
+  text-align: center;
+  padding: 1.5rem 1.25rem;
+  background: var(--gradient-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.breath-circle {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  background: var(--teal-bg);
+  border: 3px solid var(--teal-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  transition: transform 4s ease-in-out, background 0.5s ease, border-color 0.5s ease;
+  cursor: pointer;
+}
+
+.breath-circle--expand {
+  transform: scale(1.35);
+  background: var(--teal-bg-strong);
+  border-color: var(--teal-border-strong);
+}
+
+.breath-circle__label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-teal);
+}
+
+.breath-instruction {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  min-height: 1.5rem;
+}
+
+.breath-sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  min-height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .shell {
+    height: 844px;
+    max-height: 92vh;
+    border-radius: 2.5rem;
+    border: 1px solid var(--border-subtle);
+  }
+}
+```
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--teal"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+```
+<div class="module-header">
+  <div class="module-header__row">
+    <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+    <p class="header-title" id="moduleTitle">Your Body Knows First</p>
+    <span class="header-count" id="stepCounter"></span>
+  </div>
+  <div class="progress-dots" id="progressDots"></div>
+</div>
+
+<div class="module-scroll" id="moduleScroll">
+  <div class="step-wrap" id="stepContent"></div>
+</div>
+
+<div class="cta-area">
+  <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+  <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+</div>
+```
+
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="/js/supabase-client.js"></script>
+
+  <script src="/js/utils.js"></script>
+
+  <script src="/js/module-engine.js"></script>
+
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Sensation selector ─────────────────────────────────
+
+  function toggleSensation(el) {
+    el.classList.toggle('sensation-chip--selected');
+    const selected = Array.from(
+      document.querySelectorAll('.sensation-chip--selected')
+    ).map(e => e.textContent.trim());
+    const hidden = document.getElementById('sensationsHidden');
+    if (hidden) hidden.value = selected.join(', ');
+  }
+
+  // ── Breath timer ───────────────────────────────────────
+
+  let breathRunning = false;
+  let breathDone    = false;
+  let breathCycles  = 0;
+  const TOTAL_CYCLES = 3;
+
+  function startBreath() {
+    if (breathRunning || breathDone) return;
+    breathRunning = true;
+
+    const startBtn = document.getElementById('breathStartBtn');
+    if (startBtn) startBtn.style.display = 'none';
+
+    runCycle();
+  }
+
+  function runCycle() {
+    if (breathCycles >= TOTAL_CYCLES) {
+      finishBreath();
+      return;
+    }
+
+    const circle = document.getElementById('breathCircle');
+    const label  = document.getElementById('breathLabel');
+    const instr  = document.getElementById('breathInstr');
+    const sub    = document.getElementById('breathSub');
+    if (!circle) return;
+
+    // Inhale 4s
+    circle.classList.add('breath-circle--expand');
+    if (label) label.textContent = '↑';
+    if (instr) instr.textContent = 'Breathe in slowly...';
+    if (sub)   sub.textContent   = '4 seconds through your nose';
+
+    setTimeout(() => {
+      if (!document.getElementById('breathCircle')) return;
+      // Hold 1s
+      if (label) label.textContent = '—';
+      if (instr) instr.textContent = 'Hold...';
+      if (sub)   sub.textContent   = '';
+
+      setTimeout(() => {
+        if (!document.getElementById('breathCircle')) return;
+        // Exhale 6s
+        circle.classList.remove('breath-circle--expand');
+        if (label) label.textContent = '↓';
+        if (instr) instr.textContent = 'Breathe out slowly...';
+        if (sub)   sub.textContent   = '6 seconds — longer than the inhale';
+
+        setTimeout(() => {
+          breathCycles++;
+          runCycle();
+        }, 6000);
+      }, 1000);
+    }, 4000);
+  }
+
+  function finishBreath() {
+    breathDone    = true;
+    breathRunning = false;
+
+    const circle = document.getElementById('breathCircle');
+    const label  = document.getElementById('breathLabel');
+    const instr  = document.getElementById('breathInstr');
+    const sub    = document.getElementById('breathSub');
+
+    if (circle) circle.classList.remove('breath-circle--expand');
+    if (label)  label.textContent = '✓';
+    if (instr)  instr.textContent = 'Three cycles complete.';
+    if (sub)    sub.textContent   = 'Notice what\'s different in your body right now.';
+
+    // Unlock continue
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = false;
+  }
+
+  // ================================================================
+  // MODULE STEPS
+  // ================================================================
+
+  const EM2_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('Your body has been trying to tell you things for years.')}
+        ${B.para('The tight chest before a difficult conversation. The heaviness that arrives Sunday evenings. The way your jaw clenches when someone talks over you. The stomach drop when you see a certain name on your phone.')}
+        ${B.para('These aren\'t random. They\'re not anxiety or signs something is wrong with you. They\'re a communication system you were never taught to read.')}
+        ${B.callout('The body doesn\'t lie. It just speaks a language most people were never taught.')}
+        ${B.para('This module teaches you that language. By the end, you\'ll be able to catch emotional information in your body before your thinking mind has registered what\'s happening — giving you a window to respond rather than react.')}
+      `
+    },
+
+    // ── STEP 2: Concept — Interoception ────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The sense you were never taught about.')}
+        ${B.para('You know about the five senses. But there\'s a sixth that\'s arguably more important for your emotional life: <strong style="color:var(--text-primary)">interoception</strong>.')}
+        ${B.para('Interoception is your body\'s ability to sense its own internal state — heart rate, breath depth, muscle tension, gut sensations, temperature changes, the feeling of fullness or emptiness.')}
+        ${B.insight('Why this matters', 'Neuroscientist Antonio Damasio found that people with damage to the insula — the brain region that processes interoceptive signals — struggle to make decisions, feel emotions fully, or experience empathy. The body\'s internal signals are not noise. They are the substrate of emotional experience itself.')}
+        ${B.para('Most people have weak interoceptive awareness. Not because something is wrong with them — because nobody ever told them to pay attention to it.')}
+        ${B.compare(
+          'Thinking your way through emotions: "Why do I feel this? Is this rational? Should I feel this?" — circles without landing anywhere.',
+          'Sensing your way through emotions: "Where is this in my body? What does it feel like? What quality does it have?" — gives you something real to work with.'
+        )}
+      `
+    },
+
+    // ── STEP 3: Concept — The 6-second window ──────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The 6-second window.')}
+        ${B.para('Here\'s the timeline that changes everything:')}
+        ${B.steps([
+          '<strong>0 seconds:</strong> Something happens — a look, a word, a memory, an anticipation',
+          '<strong>0–2 seconds:</strong> Your body responds. Nervous system activates. Physiological changes begin.',
+          '<strong>2–6 seconds:</strong> Your brain constructs an emotion — labels the sensation, begins generating a response',
+          '<strong>6+ seconds:</strong> Your conscious mind registers what\'s happening. By now the automatic response has often already fired.'
+        ])}
+        ${B.para('The window between the physiological response and the automatic behaviour is where your agency lives. But you can only access it if you\'re paying attention to your body early enough to catch it.')}
+        ${B.callout('You can\'t slow down a reaction you don\'t notice happening. Body awareness is the prerequisite for everything that follows in this pathway.')}
+      `
+    },
+
+    // ── STEP 4: Concept — Emotion locations ────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('Different emotions live in different parts of your body.')}
+        ${B.para('A study by Finnish researchers mapped where over 700 people across five cultures felt different emotions in their bodies. The patterns were remarkably consistent.')}
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem">
+          ${[
+            ['❤️','Chest and heart area','Love, joy, pride — and grief, sadness, heartbreak'],
+            ['🔥','Upper chest and arms','Anger, disgust — energy moves outward toward action'],
+            ['⚡','Chest and abdomen','Anxiety, fear — tightness, butterflies, held breath'],
+            ['🌑','Throughout the body — or nothing','Depression, numbness — the whole system dims or goes quiet'],
+            ['🪨','Throat and shoulders','Shame — the urge to collapse inward, make yourself smaller'],
+            ['💛','Full body warmth','Happiness, excitement — spreading outward from the centre']
+          ].map(([emoji, loc, desc]) => `
+            <div style="
+              display:flex;gap:0.875rem;align-items:flex-start;
+              padding:0.875rem;background:var(--bg-card-light);
+              border:1px solid var(--border-soft);border-radius:0.875rem;
+            ">
+              <span style="font-size:1.375rem;line-height:1;flex-shrink:0">${emoji}</span>
+              <div>
+                <p style="font-size:0.8125rem;font-weight:700;color:var(--text-primary);margin-bottom:0.2rem">${loc}</p>
+                <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5">${desc}</p>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        ${B.para('Your map may differ. What matters is that you have one — and that you start learning it.')}
+      `
+    },
+
+    // ── STEP 5: Body scan ──────────────────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('A body scan right now.')}
+        ${B.para('90 seconds. Sit relatively still. You don\'t need to close your eyes.')}
+        ${B.steps([
+          'One slow breath — in through the nose, out through the mouth',
+          'Attention to your head and face — jaw clenched? Brow tight?',
+          'Neck and shoulders — braced? Dropped? Carrying something?',
+          'Chest — tight, open, heavy, warm, hollow?',
+          'Abdomen — butterflies, tightness, emptiness, gurgling?',
+          'Arms and hands — tense, loose, tingling?',
+          'Legs and feet — grounded, restless, heavy, numb?'
+        ])}
+        ${B.divider('What did you notice?')}
+        <p style="font-size:0.875rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.625rem">
+          Select everything that was present:
+        </p>
+        <div class="sensation-grid">
+          ${['Tightness','Heaviness','Warmth','Coolness','Tingling','Buzzing',
+             'Openness','Emptiness','Fluttering','Pressure','Aching','Numbness',
+             'Restlessness','Ease','Tension','Nothing noticeable']
+            .map(s => `<button class="sensation-chip" onclick="toggleSensation(this)">${s}</button>`)
+            .join('')}
+        </div>
+        <input type="hidden" id="sensationsHidden" data-key="sensations" value="">
+        ${B.keyedTextarea('location', 'The most prominent sensation was...', 'Name the body region and describe its quality', '75px')}
+        ${B.para('If you noticed nothing — that\'s data too. Disconnection from body sensation is itself worth tracking.', 'font-size:0.8125rem;color:var(--text-muted)')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = false;
+      }
+    },
+
+    // ── STEP 6: Breath practice ────────────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Feel your nervous system shift in real time.')}
+        ${B.para('Breathing out longer than you breathe in is the fastest proven way to activate your parasympathetic nervous system and lower your heart rate. You\'re going to feel it happen.')}
+        ${B.para('Three cycles. Pay attention to what changes in your body as you go.')}
+
+        <div class="breath-card">
+          <div class="breath-circle" onclick="startBreath()">
+            <span class="breath-circle__label" id="breathLabel">Tap</span>
+          </div>
+          <p class="breath-instruction" id="breathInstr">Tap to begin</p>
+          <p class="breath-sub" id="breathSub">3 cycles · 4 in · 1 hold · 6 out</p>
+        </div>
+
+        <button
+          class="btn btn--ghost btn--sm"
+          id="breathStartBtn"
+          onclick="startBreath()"
+          style="margin-bottom:1rem"
+        >
+          Start breath practice
+        </button>
+
+        ${B.keyedTextarea('breathNotice', 'After the three cycles, I noticed...', 'What changed in your body? Heart rate? Tension? Chest? Temperature?', '80px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+
+        // Allow skipping if they write something meaningful
+        const ta = document.querySelector('[data-key="breathNotice"]');
+        if (ta) {
+          ta.addEventListener('input', () => {
+            if (document.getElementById('nextBtn') && ta.value.trim().length > 5) {
+              document.getElementById('nextBtn').disabled = false;
+            }
+          });
+        }
+      }
+    },
+
+    // ── STEP 7: Personal body map ──────────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Building your personal body map.')}
+        ${B.para('The Finnish research showed population-level patterns. But your body is specific to you — shaped by your history, your nervous system, your patterns.')}
+        ${B.para('Start mapping yours now. Think of the last time you felt each of these emotions clearly.')}
+        ${B.divider('Your emotional body map')}
+        ${B.keyedTextarea('map-anxiety', 'When I\'m anxious, I feel it as...', 'Body region + what it feels like', '55px')}
+        ${B.keyedTextarea('map-anger', 'When I\'m angry or frustrated, I feel it as...', 'Body region + sensation', '55px')}
+        ${B.keyedTextarea('map-sad', 'When I\'m sad or low, I feel it as...', 'Body region + sensation', '55px')}
+        ${B.keyedTextarea('map-good', 'When something feels right or I\'m content, I feel it as...', 'Body region + sensation', '55px')}
+        ${B.callout('Keep this map. You\'ll refine it over time. Accuracy matters less than beginning to look.')}
+      `
+    },
+
+    // ── STEP 8: Skill ──────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your second tool.')}
+        ${B.para('This pairs with Name It to Soften It. Together they form the foundation of the entire pathway.')}
+        ${B.skill(
+          'The Body Check',
+          'Find the emotion in your body before you react to it.',
+          [
+            '<strong>Pause before reacting.</strong> 30 seconds. Before you respond, move, or speak.',
+            '<strong>Scan your body.</strong> Where are you feeling something? Chest? Throat? Stomach? Jaw? Shoulders?',
+            '<strong>Describe the sensation without interpreting it.</strong> Tight. Hot. Heavy. Fluttery. Sharp. Cold. Empty. Just observe.',
+            '<strong>Ask: what is this telling me?</strong> Not what story am I making — what information is my body actually giving me?',
+            '<strong>Then decide</strong> how to respond. From that slightly wider, more grounded place.'
+          ]
+        )}
+        ${B.compare(
+          'Without body check: Event → story → automatic reaction → often regret it.',
+          'With body check: Event → body signal → pause → choose → respond with intention.'
+        )}
+        ${B.para('The body check doesn\'t make hard things easy. It makes your responses yours.')}
+      `
+    },
+
+    // ── STEP 9: Commitment ─────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('Body awareness only becomes a reflex through repetition. Not when it\'s easy — specifically in the moments when you\'d normally skip straight to reaction.')}
+        ${B.para('Identify one recurring situation where you currently react without pausing. That\'s your practice ground this week.')}
+        ${B.commitment(
+          'Write the situation and what your commitment looks like in practice. The more specific you are, the more likely it actually happens.',
+          'This week when [specific situation], before I respond I will do a body check — pause, notice where I feel it, describe the sensation, ask what it\'s telling me. I usually feel it in...'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ──────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'Your Body Knows First',
+        'emotional',
+        'em-3',
+        '🧭',
+        'The Body Check',
+        'Find the emotion in your body before you react'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('em-2', EM2_STEPS);
+  });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+
+</body>
+</html>
