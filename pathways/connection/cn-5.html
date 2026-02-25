@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>InnerShadow – Setting Limits Without Losing the Relationship</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+```
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-dark);
+}
+
+.shell {
+  width: 100%;
+  max-width: 28rem;
+  height: 100vh;
+  height: -webkit-fill-available;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.module-header {
+  padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+  background: rgba(10,15,30,0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.module-header__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.header-back {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.625rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.header-back:active { transform: scale(0.92); }
+
+.header-title {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.header-count {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  min-width: 2.25rem;
+  text-align: right;
+}
+
+.progress-dots { display: flex; gap: 0.3rem; }
+
+.progress-dot {
+  flex: 1;
+  height: 3px;
+  background: rgba(148,163,184,0.15);
+  border-radius: 999px;
+  transition: background 0.4s ease;
+}
+
+.progress-dot--active { background: var(--gradient-main); }
+
+.module-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.module-scroll::-webkit-scrollbar { display: none; }
+
+.step-wrap { padding: 1.375rem 1.25rem 2rem; }
+
+.cta-area {
+  padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+  background: rgba(10,15,30,0.95);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.back-btn-sm {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.875rem;
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.back-btn-sm:active { transform: scale(0.92); }
+.back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+/* Areas where limits are needed — chip selector */
+.area-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.area-chip {
+  padding: 0.4375rem 1rem;
+  background: var(--bg-card-light);
+  border: 1.5px solid var(--border-soft);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: var(--font-body);
+}
+
+.area-chip:active { transform: scale(0.92); }
+
+.area-chip--selected {
+  border-color: var(--teal-border-strong);
+  background: var(--teal-bg-strong);
+  color: var(--text-teal);
+  font-weight: 600;
+}
+
+/* Why-people-don't-set-limits cards */
+.barrier-item {
+  padding: 0.875rem 1rem;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.barrier-item__name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.barrier-item__desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* Limit structure step cards */
+.limit-step {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  padding: 0.875rem 1rem;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.limit-step__num {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.4375rem;
+  background: var(--gradient-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.limit-step__body { flex: 1; }
+
+.limit-step__label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.limit-step__desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.limit-step__example {
+  font-size: 0.8125rem;
+  color: var(--text-teal);
+  line-height: 1.5;
+  margin-top: 0.3rem;
+  font-style: italic;
+}
+
+/* Delivery example */
+.delivery-example {
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.125rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.delivery-row {
+  padding: 0.875rem 1.125rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.delivery-row:last-child { border-bottom: none; }
+
+.delivery-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.375rem;
+}
+
+.delivery-label--weak   { color: var(--text-muted); }
+.delivery-label--strong { color: var(--text-teal); }
+
+.delivery-text {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+@media (min-width: 640px) {
+  .shell {
+    height: 844px;
+    max-height: 92vh;
+    border-radius: 2.5rem;
+    border: 1px solid var(--border-subtle);
+  }
+}
+```
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--teal"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+```
+<div class="module-header">
+  <div class="module-header__row">
+    <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+    <p class="header-title" id="moduleTitle">Setting Limits Without Losing the Relationship</p>
+    <span class="header-count" id="stepCounter"></span>
+  </div>
+  <div class="progress-dots" id="progressDots"></div>
+</div>
+
+<div class="module-scroll" id="moduleScroll">
+  <div class="step-wrap" id="stepContent"></div>
+</div>
+
+<div class="cta-area">
+  <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+  <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+</div>
+```
+
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="/js/supabase-client.js"></script>
+
+  <script src="/js/utils.js"></script>
+
+  <script src="/js/module-engine.js"></script>
+
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Area chip selector ─────────────────────────────────
+
+  const selectedAreas = new Set();
+
+  function toggleArea(el, name) {
+    el.classList.toggle('area-chip--selected');
+    if (selectedAreas.has(name)) {
+      selectedAreas.delete(name);
+    } else {
+      selectedAreas.add(name);
+    }
+    const hidden = document.getElementById('areasHidden');
+    if (hidden) hidden.value = Array.from(selectedAreas).join(', ');
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = selectedAreas.size === 0;
+  }
+
+  // ================================================================
+  // MODULE CN-5: SETTING LIMITS WITHOUT LOSING THE RELATIONSHIP
+  // ================================================================
+
+  const CN5_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('A limit is not a wall. It\'s information about what you need to stay in the relationship.')}
+        ${B.para('"Boundaries" has become one of the most overused and misunderstood words in psychological self-help. It\'s used to justify cutting people off, avoiding difficult conversations, and refusing accountability — things that are sometimes necessary, but are not what a limit actually is.')}
+        ${B.para('A real limit is not about controlling what other people do. It\'s about being honest about what you can and can\'t sustain — and communicating that clearly enough that the relationship can continue on terms that work for both people.')}
+        ${B.callout('The most common mistake: people set "boundaries" without ever stating them out loud, then feel violated when others don\'t respect them. Limits only function when they\'re communicated. Expecting people to intuit what you need and then resenting them when they don\'t is not limit-setting — it\'s an unspoken contract the other person never agreed to.')}
+        ${B.para('This module is about how to say what you need — clearly, kindly, and without apologising for having needs at all.')}
+      `
+    },
+
+    // ── STEP 2: Concept — What limits actually are ─────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('What a limit is — and what it isn\'t.')}
+        ${B.compare(
+          'Not a limit: "You\'re not allowed to do X." You cannot control another adult\'s behaviour. Framing a demand as a boundary doesn\'t make it one — it makes it a demand.',
+          'A real limit: "If X continues, I will do Y to take care of myself." You control your response to their behaviour. That\'s where your power actually lives.'
+        )}
+
+        ${B.steps([
+          '<strong>Internal limits.</strong> Clarity about what you can give, how much energy you have, what you\'re actually available for. These often don\'t need to be stated — they\'re simply honoured by you, quietly, without announcement.',
+          '<strong>Relational limits.</strong> Clarity about what you need from a specific relationship to stay in it healthily. These need to be communicated — clearly, kindly, and without excessive apology for having them.',
+          '<strong>Consequence limits.</strong> What you\'ll actually do if a stated limit is repeatedly crossed. Not a punishment or a threat — information. "If this continues, I\'ll need to [specific action you\'ll take]."'
+        ])}
+
+        ${B.insight('The test', 'A limit you\'ve never stated is not a limit — it\'s an unexpressed expectation. Before feeling violated, ask: have I actually communicated this? Clearly? Recently? Without assuming the other person should have known?')}
+      `
+    },
+
+    // ── STEP 3: Concept — Why people don't set limits ──────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('Why people don\'t set limits — and what it costs.')}
+        ${B.para('The barriers to setting limits are almost never about not knowing that limits are useful. They\'re about specific fears and beliefs that make staying silent feel safer than speaking.')}
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem">
+          ${[
+            ['Fear of rejection or abandonment', 'If I say no, they\'ll leave. The relationship only stays safe if I keep saying yes. Often learned in households where love was conditional on compliance — and where disappointing someone felt genuinely dangerous.'],
+            ['Guilt as leverage', 'Others have learned — sometimes consciously, more often not — to use guilt to override your limits. "After everything I\'ve done for you..." Your guilt is their leverage. Recognising this doesn\'t make it easier, but it changes what you\'re working with.'],
+            ['Belief that real love shouldn\'t need limits', 'If you truly cared about me, you\'d know. Real connection shouldn\'t require negotiating needs. This is a story from films and fairy tales, not functional relationships. Every healthy relationship involves navigated limits.'],
+            ['Confusing limits with selfishness', 'Putting your own needs into the equation feels like betrayal — of the relationship, of what a good person looks like. The result is being available to others at the cost of yourself, until there\'s nothing left.'],
+            ['Not knowing what you actually need', 'You can\'t state limits you haven\'t identified. The work starts with enough self-knowledge to name what you\'re protecting.']
+          ].map(([name, desc]) => `
+            <div class="barrier-item">
+              <p class="barrier-item__name">${name}</p>
+              <p class="barrier-item__desc">${desc}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        ${B.callout('People who don\'t set limits don\'t have better relationships. They have relationships full of resentment they\'ve never expressed — until it becomes contempt, withdrawal, or explosion. The limit, stated early and clearly, is the more caring act.')}
+      `
+    },
+
+    // ── STEP 4: Concept — How to state a limit ─────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('How to state a limit so it actually lands.')}
+        ${B.para('The structure is simple. The difficulty is in resisting the urge to over-explain, apologise, or soften the limit into meaninglessness. Over-softening communicates that the limit is negotiable. It usually isn\'t, which means the pattern continues and the resentment builds.')}
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem">
+          <div class="limit-step">
+            <div class="limit-step__num">1</div>
+            <div class="limit-step__body">
+              <p class="limit-step__label">Name the specific behaviour</p>
+              <p class="limit-step__desc">Not a character judgment — the specific, observable behaviour.</p>
+              <p class="limit-step__example">"When you show up significantly late without letting me know..."</p>
+            </div>
+          </div>
+
+          <div class="limit-step">
+            <div class="limit-step__num">2</div>
+            <div class="limit-step__body">
+              <p class="limit-step__label">State the impact</p>
+              <p class="limit-step__desc">What it produces in you — how it lands.</p>
+              <p class="limit-step__example">"...I feel disrespected and like my time doesn't matter to you."</p>
+            </div>
+          </div>
+
+          <div class="limit-step">
+            <div class="limit-step__num">3</div>
+            <div class="limit-step__body">
+              <p class="limit-step__label">State what you need — clearly</p>
+              <p class="limit-step__desc">No excessive softening. One sentence. No apology for having a need.</p>
+              <p class="limit-step__example">"I need you to let me know if you're going to be more than fifteen minutes late."</p>
+            </div>
+          </div>
+
+          <div class="limit-step">
+            <div class="limit-step__num">4</div>
+            <div class="limit-step__body">
+              <p class="limit-step__label">State the consequence — if there is one</p>
+              <p class="limit-step__desc">Only if this is a repeated pattern. Not a threat — information about what you'll do.</p>
+              <p class="limit-step__example">"If it keeps happening without communication, I'm going to start making other plans."</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="delivery-example">
+          <div class="delivery-row">
+            <p class="delivery-label delivery-label--weak">Over-softened — communicates it's negotiable</p>
+            <p class="delivery-text">"I was just wondering if maybe sometimes you could possibly try to let me know if you're running a little bit late, if it's not too much trouble at all..."</p>
+          </div>
+          <div class="delivery-row">
+            <p class="delivery-label delivery-label--strong">Clear and kind — communicates it's real</p>
+            <p class="delivery-text">"I need you to let me know if you're going to be more than fifteen minutes late. It matters to me." Then stop talking.</p>
+          </div>
+        </div>
+
+        ${B.para('The second version is warmer, not colder. Warmth and clarity are not opposites. Murky limits feel anxious; clear limits feel safe.')}
+      `
+    },
+
+    // ── STEP 5: Worksheet — Where you need limits ──────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Where do you need clearer limits?')}
+        ${B.para('Select the areas where limits are currently unclear, unstated, or consistently being crossed:')}
+
+        <div class="area-grid">
+          ${[
+            'My time and availability',
+            'How people speak to me',
+            'Physical space and touch',
+            'Emotional energy I can give',
+            'Topics I won\'t discuss',
+            'How I\'m treated in conflict',
+            'Financial agreements',
+            'Commitments made to me',
+            'My privacy and information',
+            'How people treat others I care about',
+            'What I\'ll accept in my home',
+            'Response time expectations',
+            'How decisions get made',
+            'Criticism and unsolicited advice'
+          ].map(a => `<button class="area-chip" onclick="toggleArea(this,'${a.replace(/'/g, "\\'")}')">${a}</button>`).join('')}
+        </div>
+        <input type="hidden" id="areasHidden" data-key="limitAreas" value="">
+
+        ${B.keyedTextarea('limit-specific', 'The limit I most need to set — or re-set — right now is...', 'In a specific relationship, with a specific person. What\'s being crossed that you\'ve been tolerating?', '85px')}
+
+        ${B.keyedTextarea('limit-why-not', 'I haven\'t stated this clearly because...', 'What fear or belief has made staying silent feel safer? Name it specifically.', '75px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 6: Worksheet — Build the limit statement ──────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Build the statement.')}
+        ${B.para('Take the limit you identified and put it through the four-part structure. Write it as you\'d actually say it — in your own voice, warm and clear, without apologising for having a need.')}
+
+        ${B.divider('Step 1 — The specific behaviour')}
+        ${B.keyedTextarea('limit-behaviour', 'When you...', 'Observable and specific. Not "when you\'re inconsiderate" — what do they actually do?', '55px')}
+
+        ${B.divider('Step 2 — The impact')}
+        ${B.keyedTextarea('limit-impact', 'I feel... because...', 'What does it produce in you? What need does it touch?', '55px')}
+
+        ${B.divider('Step 3 — What you need')}
+        ${B.keyedTextarea('limit-need', 'What I need is...', 'One sentence. Clear. No apology attached.', '50px')}
+
+        ${B.divider('Step 4 — Consequence (if needed)')}
+        ${B.keyedTextarea('limit-consequence', 'If this continues, I\'ll... (leave blank if not needed)', 'Only include if this is a repeated pattern. Not a threat — information about what you\'ll do to take care of yourself.', '50px')}
+
+        ${B.divider('The full statement in your own voice')}
+        ${B.keyedTextarea('limit-full', 'Written as I\'d actually say it...', 'Put it all together naturally. Warm, clear, no excessive hedging. Then stop.', '100px')}
+      `
+    },
+
+    // ── STEP 7: Worksheet — Holding it ───────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('What happens when it\'s pushed back against.')}
+        ${B.para('When you state a genuine limit, some people will push back — with guilt, minimising, accusations of being difficult or selfish. Knowing this in advance, and knowing how you\'ll respond, is most of the preparation.')}
+        ${B.para('The key principle: you do not need to JADE — Justify, Argue, Defend, or Explain. A brief explanation once is enough. Repeating and elaborating signals that the limit is negotiable. It isn\'t.')}
+
+        ${B.divider('The anticipated pushback')}
+        ${B.keyedTextarea('pushback-expect', 'The pushback I most expect when I state this is...', 'What will they say or do? Guilt-trip? Minimise? Get angry? Become cold? Name it specifically.', '70px')}
+
+        ${B.divider('Your response to the pushback')}
+        ${B.keyedTextarea('pushback-response', 'When that happens, I\'ll respond with...', 'Not an argument — a calm restatement. "I understand you feel that way. This is still what I need." You don\'t have to win the argument. You just have to hold the limit.', '75px')}
+
+        ${B.divider('What stating this limit makes possible')}
+        ${B.keyedTextarea('limit-relationship', 'What becomes possible in this relationship if I set this limit clearly...', 'Not just what it protects you from — what does it make possible? What becomes more real when the relationship is honestly negotiated?', '75px')}
+
+        ${B.insight('The paradox of limits', 'People who set clear limits often have more genuinely intimate relationships than those who don\'t — because the relationship is actually negotiated rather than one person quietly accommodating until they have nothing left and everything collapses. Clarity is a form of care.')}
+      `
+    },
+
+    // ── STEP 8: Skill ──────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your fifth tool in this pathway.')}
+        ${B.para('The practice of communicating what you need — clearly, kindly, and early enough that resentment doesn\'t build first.')}
+        ${B.skill(
+          'Limit Setting',
+          'Communicate what you need to stay in a relationship healthily.',
+          [
+            '<strong>Identify the limit before the conversation.</strong> What specifically is being crossed? What specifically do you need? Internal clarity before any external conversation. You can\'t state what you haven\'t named.',
+            '<strong>State it early and calmly.</strong> A limit stated before you\'re resentful or flooded lands completely differently. The best time to set a limit is before you need it urgently — or the moment you notice the pattern, not after months of tolerating it.',
+            '<strong>Use the structure.</strong> Specific behaviour → impact on you → what you need → consequence if needed. Warm delivery, clear content. No apology for having needs.',
+            '<strong>Don\'t JADE.</strong> Justify, Argue, Defend, Explain. One brief explanation is enough. If they push back, restate calmly: "I understand you feel that way. This is still what I need." Elaborating signals negotiability.',
+            '<strong>Follow through.</strong> A limit you consistently don\'t enforce teaches the other person it isn\'t real. Whatever you said you\'d do — do it. This is the hardest part and the most important.'
+          ]
+        )}
+        ${B.compare(
+          'Without limits: accommodating everything, resentment building quietly, eventual explosion or cold withdrawal. The relationship becomes either a performance or a battleground.',
+          'With limits: clear about what you need, stated early, held consistently. The relationship becomes genuinely negotiated. More honest. More sustainable. The people in it know where they actually stand.'
+        )}
+      `
+    },
+
+    // ── STEP 9: Commitment ─────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('The limit you identified and built in this module is either ready to be stated or it needs a specific moment to be stated in. Leaving it unstated is a choice — and it has a cost.')}
+        ${B.para('The commitment here isn\'t to be perfect. It\'s to have the conversation before resentment has had another month to build.')}
+        ${B.commitment(
+          'Write when and how you\'re going to state the limit you identified — what you\'ll say, how you\'ll hold it if there\'s pushback, and what you\'re protecting by doing this.',
+          'I\'m going to state this limit to [person] at [specific moment — before it next comes up / when we next speak / this week]. I\'ll say: "..." If they push back with [anticipated response], I\'ll respond with [restatement, not elaboration]. The reason I\'m doing this now rather than waiting is...'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ──────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'Setting Limits Without Losing the Relationship',
+        'connection',
+        'cn-6',
+        '🛡',
+        'Limit Setting',
+        'Communicate what you need to stay in a relationship healthily'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('cn-5', CN5_STEPS);
+  });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+
+</body>
+</html>
