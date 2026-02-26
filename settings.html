@@ -116,6 +116,35 @@
       </div>
     </div>
 
+    <!-- Feedback -->
+    <p class="section-label">Share feedback</p>
+    <div class="settings-list animate-fade-in">
+      <div class="settings-item" onclick="toggleSuggestForm()" id="suggestToggle">
+        <span class="settings-item__icon">💡</span>
+        <div class="settings-item__body">
+          <p class="settings-item__label">Suggest something</p>
+          <p class="settings-item__sub">Topics, modules, or anything you need</p>
+        </div>
+        <span class="settings-item__arrow" id="suggestArrow">→</span>
+      </div>
+    </div>
+
+    <div id="suggestForm" style="display:none;margin-top:-0.5rem;margin-bottom:1rem;padding:1.125rem;background:var(--bg-card-light);border:1px solid var(--border-soft);border-radius:0 0 1.25rem 1.25rem">
+      <textarea id="suggestionText" placeholder="What would you want InnerShadow to cover? What brought you here that we haven't addressed?" style="
+        width:100%;padding:0.75rem;background:var(--bg-card);
+        border:1px solid var(--border-soft);border-radius:0.875rem;
+        color:var(--text-primary);font-size:0.875rem;line-height:1.65;
+        font-family:var(--font-body);resize:none;min-height:90px;box-sizing:border-box;margin-bottom:0.625rem;
+      "></textarea>
+      <button onclick="submitSuggestion()" style="
+        width:100%;padding:0.75rem;
+        background:rgba(20,184,166,0.1);border:1.5px solid rgba(20,184,166,0.3);
+        border-radius:0.875rem;color:var(--text-teal);font-size:0.875rem;font-weight:600;
+        font-family:var(--font-body);cursor:pointer;
+      ">Send →</button>
+      <p id="suggestionThanks" style="display:none;text-align:center;font-size:0.875rem;color:var(--text-teal);font-weight:600;margin-top:0.625rem">✓ Sent — thank you</p>
+    </div>
+
     <!-- Account -->
     <p class="section-label">Account</p>
     <div class="settings-list animate-fade-in">
@@ -230,6 +259,25 @@
   <script src="/js/utils.js"></script>
 
   <script>
+
+  function toggleSuggestForm() {
+    const form = document.getElementById('suggestForm');
+    const arrow = document.getElementById('suggestArrow');
+    const open = form.style.display === 'none';
+    form.style.display = open ? 'block' : 'none';
+    arrow.textContent = open ? '↓' : '→';
+  }
+
+  async function submitSuggestion() {
+    const text = document.getElementById('suggestionText')?.value?.trim();
+    if (!text) return;
+    document.getElementById('suggestionThanks').style.display = 'block';
+    document.querySelector('[onclick="submitSuggestion()"]').disabled = true;
+    try {
+      const session = await Auth.getSession();
+      if (session) await DB.saveFeedback({ userId: session.user.id, type: 'suggestion', text, context: 'settings' });
+    } catch(e) {}
+  }
 
   async function init() {
     const session = await Auth.requireAuth('/index.html');
