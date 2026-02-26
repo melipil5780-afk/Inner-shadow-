@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>InnerShadow – Meaning</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    html, body { position: fixed; width: 100%; height: 100%; overflow: hidden; }
+    body { display: flex; align-items: center; justify-content: center; background: var(--bg-dark); }
+
+```
+.shell {
+  width: 100%; max-width: 28rem; height: 100vh; height: -webkit-fill-available;
+  background: var(--bg-card); display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  border-left: 1px solid var(--border-subtle); border-right: 1px solid var(--border-subtle);
+}
+
+.module-header {
+  padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+  background: rgba(10,15,30,0.95); border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0; z-index: 10; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.module-header__row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.header-back {
+  width: 2.25rem; height: 2.25rem; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.625rem;
+  color: var(--text-primary); font-size: 1rem; cursor: pointer; transition: var(--transition-fast); flex-shrink: 0;
+}
+.header-back:active { transform: scale(0.92); }
+.header-title { flex: 1; font-size: 0.875rem; font-weight: 600; color: var(--text-primary); line-height: 1.3; text-align: center; }
+.header-count { font-size: 0.8125rem; color: var(--text-muted); font-weight: 500; min-width: 2.25rem; text-align: right; }
+.progress-dots { display: flex; gap: 0.3rem; }
+.progress-dot { flex: 1; height: 3px; background: rgba(148,163,184,0.15); border-radius: 999px; transition: background 0.4s ease; }
+.progress-dot--active { background: var(--gradient-main); }
+.module-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.module-scroll::-webkit-scrollbar { display: none; }
+.step-wrap { padding: 1.375rem 1.25rem 2rem; }
+.cta-area {
+  padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+  background: rgba(10,15,30,0.95); border-top: 1px solid var(--border-subtle);
+  display: flex; gap: 0.75rem; align-items: center; flex-shrink: 0;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.back-btn-sm {
+  width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.875rem;
+  color: var(--text-secondary); font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); flex-shrink: 0;
+}
+.back-btn-sm:active { transform: scale(0.92); }
+.back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+/* Three sources cards — the visual heart of this module */
+.sources-grid { display: flex; flex-direction: column; gap: 0.625rem; margin-bottom: 1.25rem; }
+.source-card {
+  border-radius: 1.125rem; padding: 1.125rem 1.125rem 1rem;
+  border: 1px solid transparent;
+}
+.source-card--create {
+  background: linear-gradient(135deg, rgba(20,184,166,0.1), rgba(20,184,166,0.05));
+  border-color: rgba(20,184,166,0.25);
+}
+.source-card--connect {
+  background: linear-gradient(135deg, rgba(217,119,6,0.1), rgba(217,119,6,0.05));
+  border-color: rgba(217,119,6,0.25);
+}
+.source-card--suffer {
+  background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.05));
+  border-color: rgba(139,92,246,0.25);
+}
+.source-card__icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.source-card__title { font-size: 0.9375rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.375rem; }
+.source-card--create .source-card__title { color: var(--text-teal); }
+.source-card--connect .source-card__title { color: var(--text-amber); }
+.source-card--suffer .source-card__title { color: #a78bfa; }
+.source-card__desc { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.6; }
+
+/* Meaning vs pleasure compare — custom styling */
+.mp-compare {
+  display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;
+}
+.mp-card {
+  background: var(--bg-card-light); border: 1px solid var(--border-soft);
+  border-radius: 1rem; padding: 1rem 1.125rem;
+}
+.mp-card__label {
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; margin-bottom: 0.5rem;
+}
+.mp-card--pleasure .mp-card__label { color: var(--text-amber); }
+.mp-card--meaning .mp-card__label { color: var(--text-teal); }
+.mp-card__text { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+
+/* Meaning moment selector */
+.moment-chip {
+  display: inline-block; padding: 0.4375rem 0.9375rem;
+  background: var(--bg-card-light); border: 1.5px solid var(--border-soft);
+  border-radius: 999px; font-size: 0.8125rem; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.18s ease; font-family: var(--font-body);
+  margin: 0 0.375rem 0.375rem 0;
+}
+.moment-chip:active { transform: scale(0.92); }
+.moment-chip--selected {
+  border-color: rgba(139,92,246,0.5);
+  background: rgba(139,92,246,0.08);
+  color: #a78bfa; font-weight: 600;
+}
+
+/* Frankl quote card */
+.quote-card {
+  background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(20,184,166,0.06));
+  border: 1px solid rgba(139,92,246,0.2); border-radius: 1.125rem;
+  padding: 1.375rem; margin-bottom: 1.25rem;
+}
+.quote-card__text {
+  font-size: 1.0625rem; color: var(--text-primary); line-height: 1.75;
+  font-family: 'Fraunces', serif; font-style: italic; margin-bottom: 0.75rem;
+}
+.quote-card__source {
+  font-size: 0.75rem; color: var(--text-muted); font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+
+/* The void feeling selector */
+.void-chip {
+  display: inline-block; padding: 0.4375rem 0.9375rem;
+  background: var(--bg-card-light); border: 1.5px solid var(--border-soft);
+  border-radius: 999px; font-size: 0.8125rem; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.18s ease; font-family: var(--font-body);
+  margin: 0 0.375rem 0.375rem 0;
+}
+.void-chip:active { transform: scale(0.92); }
+.void-chip--selected {
+  border-color: rgba(239,68,68,0.4);
+  background: rgba(239,68,68,0.07);
+  color: #f87171; font-weight: 600;
+}
+
+@media (min-width: 640px) {
+  .shell { height: 844px; max-height: 92vh; border-radius: 2.5rem; border: 1px solid var(--border-subtle); }
+}
+```
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--teal"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+```
+<div class="module-header">
+  <div class="module-header__row">
+    <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+    <p class="header-title" id="moduleTitle">Meaning</p>
+    <span class="header-count" id="stepCounter"></span>
+  </div>
+  <div class="progress-dots" id="progressDots"></div>
+</div>
+
+<div class="module-scroll" id="moduleScroll">
+  <div class="step-wrap" id="stepContent"></div>
+</div>
+
+<div class="cta-area">
+  <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+  <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+</div>
+```
+
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="/js/supabase-client.js"></script>
+
+  <script src="/js/utils.js"></script>
+
+  <script src="/js/module-engine.js"></script>
+
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Moment chip selector ──────────────────────────────────────
+  const selectedMoments = new Set();
+  function toggleMoment(el, name) {
+    el.classList.toggle('moment-chip--selected');
+    if (selectedMoments.has(name)) { selectedMoments.delete(name); } else { selectedMoments.add(name); }
+    const h = document.getElementById('momentsHidden');
+    if (h) h.value = Array.from(selectedMoments).join(', ');
+    const nb = document.getElementById('nextBtn');
+    if (nb) nb.disabled = selectedMoments.size === 0;
+  }
+
+  // ── Void feeling selector ─────────────────────────────────────
+  const selectedVoid = new Set();
+  function toggleVoid(el, name) {
+    el.classList.toggle('void-chip--selected');
+    if (selectedVoid.has(name)) { selectedVoid.delete(name); } else { selectedVoid.add(name); }
+    const h = document.getElementById('voidHidden');
+    if (h) h.value = Array.from(selectedVoid).join(', ');
+    const nb = document.getElementById('nextBtn');
+    if (nb) nb.disabled = selectedVoid.size === 0;
+  }
+
+  // ================================================================
+  // MODULE LW-2: MEANING
+  // ================================================================
+
+  const LW2_STEPS = [
+
+    // ── STEP 1: Opening ───────────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('The hunger for meaning is not a luxury. It\'s one of the most basic human needs.')}
+        ${B.para('Viktor Frankl was a psychiatrist in Vienna when the Nazis took everything from him — his family, his freedom, his manuscript. He spent years in Auschwitz and three other concentration camps. When he came out, he wrote one of the most important books of the twentieth century. The thesis: human beings can survive almost any suffering if they have a reason to survive it. What breaks people is not the difficulty — it\'s the absence of meaning.')}
+        ${B.para('Most people reading this are not in a concentration camp. But Frankl\'s insight applies at every scale. The flatness that comes from going through days without feeling like any of it matters. The exhaustion that doesn\'t have a physical cause. The sense that something is missing but you can\'t name it.')}
+        ${B.callout('That something is usually meaning. Not happiness — meaning is different from happiness and in some ways its opposite. A meaningful life often involves difficulty, sacrifice, discomfort. But it has a quality that a comfortable, pleasant life without it never does: it feels worth living.')}
+        ${B.para('This module is about understanding what meaning is, where it comes from, and how to find more of it in the specific life you\'re actually living.')}
+      `
+    },
+
+    // ── STEP 2: Meaning vs happiness ─────────────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('Meaning and happiness are not the same thing — and confusing them causes real harm.')}
+        ${B.para('Modern culture has made happiness the primary goal of life. Be happy. Choose happy. You deserve to be happy. And yet rates of depression, anxiety, and existential emptiness are at historic highs. Part of why: happiness is the wrong target.')}
+
+        <div class="mp-compare">
+          <div class="mp-card mp-card--pleasure">
+            <p class="mp-card__label">Happiness / pleasure</p>
+            <p class="mp-card__text">Feels good in the moment. Comes from getting what you want, being comfortable, having things go your way. It\'s real and it matters — but it\'s unstable, dependent on circumstances, and doesn\'t survive difficulty. You can be happy right now and have a life that feels utterly empty.</p>
+          </div>
+          <div class="mp-card mp-card--meaning">
+            <p class="mp-card__label">Meaning / purpose</p>
+            <p class="mp-card__text">Feels significant rather than just good. Comes from contributing to something beyond yourself, from growth that costs something, from deep connection, from creating. It often involves difficulty. It survives hardship in a way happiness doesn\'t. It makes a life feel worth living.</p>
+          </div>
+        </div>
+
+        ${B.insight('The research finding that changes everything', 'Roy Baumeister\'s studies found that parenting, for example, makes people less happy — interrupted sleep, constant demands, financial pressure — but more meaningful. Many of the most meaningful activities in a human life are not particularly pleasurable. This is not an argument against pleasure. It\'s an argument for not using happiness as the primary measure of a life.')}
+      `
+    },
+
+    // ── STEP 3: The three sources ─────────────────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('Frankl identified three sources of meaning. Every meaningful life draws from at least one.')}
+        ${B.para('These aren\'t abstract philosophical categories. They\'re the actual places human beings consistently report finding significance, purpose, and the sense that their life matters.')}
+
+        <div class="sources-grid">
+          <div class="source-card source-card--create">
+            <p class="source-card__icon">🛠</p>
+            <p class="source-card__title">Creating or contributing</p>
+            <p class="source-card__desc">Work, craft, art, building, raising children, teaching, healing, solving — anything where you are making or contributing something to the world. The key is not the scale of the contribution but the genuine investment of yourself in it. This is where most people look first, and where many feel the emptiest.</p>
+          </div>
+          <div class="source-card source-card--connect">
+            <p class="source-card__icon">🤝</p>
+            <p class="source-card__title">Loving — being with people and things</p>
+            <p class="source-card__desc">Deep connection with other people. The experience of being fully known and still chosen. The love of a particular person, animal, place, or idea. Frankl said this source was available even in the camps — he survived partly by holding his wife\'s image in his mind. Connection to something or someone you love is meaning in its purest form.</p>
+          </div>
+          <div class="source-card source-card--suffer">
+            <p class="source-card__icon">🕯</p>
+            <p class="source-card__title">The attitude toward unavoidable suffering</p>
+            <p class="source-card__desc">When suffering cannot be avoided — illness, loss, failure, circumstances beyond control — the way a person meets that suffering becomes itself a source of meaning. Not pretending it\'s okay. Not performing strength. But choosing how to carry it. This is the deepest source, and the one most people never consciously access.</p>
+          </div>
+        </div>
+
+        ${B.para('A meaningful life doesn\'t require all three. But it requires at least one — and the source that feeds you most is specific to who you are, not universal.')}
+      `
+    },
+
+    // ── STEP 4: The existential vacuum ───────────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('What happens when meaning is absent.')}
+
+        <div class="quote-card">
+          <p class="quote-card__text">"The existential vacuum manifests mainly in a state of boredom. And these problems are growing because ever more people have the means to live, but no meaning to live for."</p>
+          <p class="quote-card__source">Viktor Frankl, Man\'s Search for Meaning</p>
+        </div>
+
+        ${B.para('Frankl called it the existential vacuum — not depression exactly, but a hollowness. The feeling of going through the days without them adding up to anything. He predicted in the 1940s that this would become the defining psychological challenge of affluent societies. He was right.')}
+
+        ${B.steps([
+          '<strong>Boredom that wealth can\'t fix.</strong> You can be entertained every hour of the day and still feel profoundly empty. Entertainment is not meaning. Stimulation is not significance.',
+          '<strong>Conformism.</strong> When people don\'t know what they want, they do what others are doing — or what they\'re told to want. A life built on conformism has the shape of other people\'s meaning but not your own.',
+          '<strong>Totalitarianism of the will.</strong> When external purpose fails, some people overcorrect into willpower — achievement, control, productivity — as a substitute for meaning. It produces results but not satisfaction.',
+          '<strong>The Sunday afternoon feeling.</strong> When external demands lift — weekends, holidays, retirement — some people fall into an anxiety or restlessness they can\'t explain. This is the vacuum revealing itself. The busyness was covering it.'
+        ])}
+
+        ${B.callout('The void is not a character flaw. It\'s a signal. It\'s telling you that the meaning you\'re looking for hasn\'t been found yet — and that it needs to be actively sought, not waited for.')}
+      `
+    },
+
+    // ── STEP 5: Worksheet — When meaning arrives ─────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('When have you felt your life most clearly mattered?')}
+        ${B.para('Not the moments you\'re supposed to name. The actual moments — large or small — when you felt most alive, most significant, most like you were doing exactly what you should be doing. Select all that resonate.')}
+
+        <div style="margin-bottom:0.875rem">
+          ${[
+            'Deep in work I actually care about',
+            'Being truly present with someone I love',
+            'Creating something from nothing',
+            'When someone said I helped them',
+            'In nature, feeling small and connected',
+            'Teaching or passing something on',
+            'Moving through something very hard',
+            'When I was fully absorbed — time disappeared',
+            'In moments of real honesty',
+            'When I stood for something at a cost',
+            'Caring for someone who needed me',
+            'When I finished something I\'d started',
+            'In silence, feeling at peace',
+            'Being part of something larger than myself'
+          ].map(m => `
+            <button class="moment-chip" onclick="toggleMoment(this, '${m.replace(/'/g, "\\'")}')">${m}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="momentsHidden" data-key="meaningMoments" value="">
+
+        ${B.keyedTextarea(
+          'meaning-specific',
+          'A specific moment when my life felt most meaningful was...',
+          'Name it concretely. What were you doing? Who were you with? What made it feel significant rather than just pleasant?',
+          '90px'
+        )}
+      `,
+      afterRender: () => {
+        const nb = document.getElementById('nextBtn');
+        if (nb) nb.disabled = true;
+      }
+    },
+
+    // ── STEP 6: Worksheet — The void ─────────────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('When do you feel the absence of meaning most?')}
+        ${B.para('The void has a texture. It shows up in specific circumstances, at specific times. Recognising it clearly is the first step to addressing it. Select all that feel true.')}
+
+        <div style="margin-bottom:0.875rem">
+          ${[
+            'Sunday evenings before the week starts',
+            'In the middle of a busy day that feels empty',
+            'After achieving something I worked hard for',
+            'When I have free time and don\'t know what to do with it',
+            'When I compare my life to what I imagined',
+            'Doing work that doesn\'t feel like it matters',
+            'In moments of silence without distraction',
+            'When I ask myself what this is all for',
+            'After a long stretch of just getting through it',
+            'When I\'m around people but feel completely alone'
+          ].map(v => `
+            <button class="void-chip" onclick="toggleVoid(this, '${v.replace(/'/g, "\\'")}')">${v}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="voidHidden" data-key="voidMoments" value="">
+
+        ${B.keyedTextarea(
+          'void-honest',
+          'The most honest description of where meaning is missing in my life right now is...',
+          'Which of the three sources — creating, connecting, the attitude toward what you can\'t change — feels most depleted? Why?',
+          '90px'
+        )}
+      `,
+      afterRender: () => {
+        const nb = document.getElementById('nextBtn');
+        if (nb) nb.disabled = true;
+      }
+    },
+
+    // ── STEP 7: Worksheet — Your sources ─────────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Finding your specific sources.')}
+        ${B.para('Meaning is not generic — it\'s particular. What gives your specific life its sense of significance is not the same as what gives someone else\'s theirs. The work here is finding yours.')}
+
+        ${B.divider('Source one — creating or contributing')}
+        ${B.keyedTextarea(
+          'source-create',
+          'The work or contribution that makes my life feel most like it matters is...',
+          'Not the work you\'re supposed to care about. The thing — large or small — where your investment of yourself produces something you feel the world is better for.',
+          '75px'
+        )}
+
+        ${B.divider('Source two — connecting and loving')}
+        ${B.keyedTextarea(
+          'source-connect',
+          'The person, relationship, or thing I love that anchors my sense that life is worth living...',
+          'The connection that, when you imagine losing it, makes you understand what you have.',
+          '70px'
+        )}
+
+        ${B.divider('Source three — the attitude toward what you cannot change')}
+        ${B.keyedTextarea(
+          'source-suffer',
+          'Something I\'ve been through that I could choose to meet differently — with more dignity, more acceptance, or more courage — is...',
+          'Not toxic positivity. Real acknowledgment of what\'s hard, and the question of how you\'re choosing to carry it.',
+          '80px'
+        )}
+
+        ${B.insight('Your primary source', 'Most people have one source that feeds them most reliably — and one that\'s nearly empty. The work is not to cultivate all three equally but to be honest about which one your life currently depends on and which one you\'ve been neglecting.')}
+      `
+    },
+
+    // ── STEP 8: The skill ─────────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your second tool in this pathway.')}
+        ${B.para('This tool is not a productivity system. It\'s a reorientation — a way of asking the question that actually matters before the smaller questions crowd it out.')}
+
+        ${B.skill(
+          'The Meaning Check',
+          'Find and tend to what makes your specific life feel worth living.',
+          [
+            '<strong>Identify your primary source.</strong> Creating, connecting, or the attitude toward what you can\'t change — which one gives you the most consistent sense that your life matters? Build from the one that\'s strongest, not from the one you think you should have.',
+            '<strong>Name the specific thing, not the category.</strong> Not "relationships" — which relationship, what kind of depth, what specifically do you need more of? Not "work" — what work, what contribution, what does it look like when it feels meaningful?',
+            '<strong>Notice the void without filling it reflexively.</strong> When you feel the emptiness — resist the first impulse to reach for your phone, a snack, something to do. Sit with it for sixty seconds. The void is telling you something. Listen to what.',
+            '<strong>Protect at least one meaning-bearing activity per week.</strong> Something that feeds the primary source. Not optional, not the first thing to cut when things get busy. The one non-negotiable that keeps the meaning alive.',
+            '<strong>Return to the Frankl question in dark moments.</strong> Why am I surviving this? What am I surviving for? Even a partial answer — a person, a project, a thing you haven\'t done yet — can be enough to carry you through.'
+          ]
+        )}
+
+        ${B.compare(
+          'A life organised around pleasure and comfort: pleasant when things go well, fragile when they don\'t. No anchor. Nothing that makes difficulty bearable. The emptiness that arrives when the stimulation stops.',
+          'A life organised around meaning: harder in some ways, richer in others. Can survive difficulty because difficulty has a place in it. The days add up to something. The years are not interchangeable.'
+        )}
+      `
+    },
+
+    // ── STEP 9: Commitment ────────────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('Meaning doesn\'t arrive by itself. It requires active pursuit — protecting the things that feed it, paying attention to where it lives, refusing to let the busy and the urgent permanently crowd out the significant.')}
+        ${B.para('The commitment you make here is not to become a more meaningful person. It\'s to protect, this week, one specific thing that makes your life feel like it matters.')}
+        ${B.commitment(
+          'Name your primary source of meaning right now — the most honest version — and commit to one specific act that protects or deepens it this week.',
+          'The source of meaning I\'m going to protect is [specific thing from your worksheets — not the category, the specific thing]. This week I\'m going to [one concrete act — a conversation, a block of time, something I\'ll say no to so this can exist]. I\'m doing this because when this is absent from my life, what I feel is [honest description of the void].'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ─────────────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'Meaning',
+        'living',
+        'lw-3',
+        '🕯',
+        'The Meaning Check',
+        'Find and tend to what makes your specific life feel worth living'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('lw-2', LW2_STEPS);
+  });
+
+  </script>
+
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+
+</body>
+</html>
