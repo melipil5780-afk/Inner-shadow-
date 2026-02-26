@@ -814,6 +814,38 @@ body {
       <p class="closing-quote__attr">W. Somerset Maugham</p>
     </div>
 
+    <!-- Pathway feedback -->
+    <div class="animate-fade-in" style="
+      background:var(--bg-card-light);border:1px solid var(--border-soft);
+      border-radius:1.25rem;padding:1.375rem;margin-bottom:1.25rem;text-align:left;
+    ">
+      <p style="font-size:0.8125rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.625rem">Help us build what's next</p>
+      <p style="font-size:0.9375rem;color:var(--text-primary);line-height:1.65;margin-bottom:1rem">What would you want to go deeper on?</p>
+      <div style="margin-bottom:0.875rem">
+        ${['Romantic relationships','Loneliness','Family dynamics','Friendship','Breakups and loss','Conflict at work','Intimacy','Attachment patterns'].map(c => `
+          <button onclick="toggleCn6Chip(this,'${c}')" style="
+            display:inline-block;margin:0 0.375rem 0.375rem 0;
+            padding:0.4375rem 0.9375rem;border-radius:999px;font-size:0.8125rem;
+            font-family:'DM Sans',sans-serif;cursor:pointer;transition:all 0.18s ease;
+            background:var(--bg-card);border:1.5px solid var(--border-soft);color:var(--text-secondary);
+          ">${c}</button>
+        `).join('')}
+      </div>
+      <textarea id="cn6FeedbackText" placeholder="Anything else you'd want to see? What brought you here?" style="
+        width:100%;padding:0.75rem;background:var(--bg-card);
+        border:1px solid var(--border-soft);border-radius:0.875rem;
+        color:var(--text-primary);font-size:0.875rem;line-height:1.6;
+        font-family:'DM Sans',sans-serif;resize:none;min-height:75px;box-sizing:border-box;margin-bottom:0.625rem;
+      "></textarea>
+      <button onclick="submitCn6Feedback()" id="cn6FeedbackBtn" style="
+        width:100%;padding:0.75rem;background:rgba(20,184,166,0.1);
+        border:1.5px solid rgba(20,184,166,0.3);border-radius:0.875rem;
+        color:var(--text-teal);font-size:0.875rem;font-weight:600;
+        font-family:'DM Sans',sans-serif;cursor:pointer;
+      ">Send suggestions →</button>
+      <p id="cn6FeedbackThanks" style="display:none;text-align:center;font-size:0.875rem;color:var(--text-teal);font-weight:600;margin-top:0.75rem">✓ Thank you — this shapes what we build next</p>
+    </div>
+
     <div style="display:flex;flex-direction:column;gap:0.75rem;padding-bottom:1rem">
       <button class="btn btn--primary btn--lg" onclick="Nav.go('/pathways/living/overview.html')">
         Begin Deliberate Living →
@@ -837,6 +869,45 @@ body {
 ```
 
 ];
+
+// ── cn-6 feedback helpers ─────────────────────────────
+const cn6Chips = new Set();
+
+function toggleCn6Chip(el, chip) {
+const selected = cn6Chips.has(chip);
+if (selected) {
+cn6Chips.delete(chip);
+el.style.background = ‘var(–bg-card)’;
+el.style.borderColor = ‘var(–border-soft)’;
+el.style.color = ‘var(–text-secondary)’;
+} else {
+cn6Chips.add(chip);
+el.style.background = ‘rgba(20,184,166,0.08)’;
+el.style.borderColor = ‘rgba(20,184,166,0.4)’;
+el.style.color = ‘var(–text-teal)’;
+}
+}
+
+async function submitCn6Feedback() {
+const text  = document.getElementById(‘cn6FeedbackText’)?.value?.trim();
+const chips = Array.from(cn6Chips);
+if (!text && !chips.length) return;
+document.getElementById(‘cn6FeedbackThanks’).style.display = ‘block’;
+document.getElementById(‘cn6FeedbackBtn’).disabled = true;
+try {
+const user = ModuleEngine.user;
+if (user) {
+await DB.saveFeedback({
+userId:     user.id,
+type:       ‘pathway_suggestions’,
+pathwayKey: ‘connection’,
+chips:      chips.join(’, ’),
+text:       text || null,
+context:    ‘cn6_complete’
+});
+}
+} catch(e) {}
+}
 
 document.addEventListener(‘DOMContentLoaded’, () => {
 ModuleEngine.init(‘cn-6’, CN6_STEPS);
