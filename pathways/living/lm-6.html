@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>InnerShadow – A Life That Is Yours</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    html, body { position: fixed; width: 100%; height: 100%; overflow: hidden; }
+    body { display: flex; align-items: center; justify-content: center; background: var(--bg-dark); }
+
+```
+.shell {
+  width: 100%; max-width: 28rem; height: 100vh; height: -webkit-fill-available;
+  background: var(--bg-card); display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  border-left: 1px solid var(--border-subtle); border-right: 1px solid var(--border-subtle);
+}
+
+.module-header {
+  padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+  background: rgba(10,15,30,0.95); border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0; z-index: 10; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.module-header__row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.header-back {
+  width: 2.25rem; height: 2.25rem; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.625rem;
+  color: var(--text-primary); font-size: 1rem; cursor: pointer; transition: var(--transition-fast); flex-shrink: 0;
+}
+.header-back:active { transform: scale(0.92); }
+.header-title { flex: 1; font-size: 0.875rem; font-weight: 600; color: var(--text-primary); line-height: 1.3; text-align: center; }
+.header-count { font-size: 0.8125rem; color: var(--text-muted); font-weight: 500; min-width: 2.25rem; text-align: right; }
+.progress-dots { display: flex; gap: 0.3rem; }
+.progress-dot { flex: 1; height: 3px; background: rgba(148,163,184,0.15); border-radius: 999px; transition: background 0.4s ease; }
+.progress-dot--active { background: var(--gradient-main); }
+.module-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.module-scroll::-webkit-scrollbar { display: none; }
+.step-wrap { padding: 1.375rem 1.25rem 2rem; }
+.cta-area {
+  padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+  background: rgba(10,15,30,0.95); border-top: 1px solid var(--border-subtle);
+  display: flex; gap: 0.75rem; align-items: center; flex-shrink: 0;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.back-btn-sm {
+  width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.875rem;
+  color: var(--text-secondary); font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); flex-shrink: 0;
+}
+.back-btn-sm:active { transform: scale(0.92); }
+.back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+/* The four pathways integration */
+.pathway-row {
+  display: flex; gap: 0.75rem; align-items: flex-start;
+  padding: 0.875rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.pathway-row:last-child { border-bottom: none; }
+.pathway-icon {
+  width: 2.5rem; height: 2.5rem; border-radius: 0.75rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.125rem; flex-shrink: 0;
+}
+.pathway-icon--em { background: rgba(239,68,68,0.15); }
+.pathway-icon--id { background: rgba(217,119,6,0.15); }
+.pathway-icon--cn { background: rgba(20,184,166,0.15); }
+.pathway-icon--lw { background: rgba(139,92,246,0.15); }
+.pathway-body__title { font-size: 0.875rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem; }
+.pathway-body__what { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.55; }
+
+/* The choosing vs accumulating visual */
+.choice-card {
+  background: linear-gradient(135deg, rgba(139,92,246,0.09), rgba(20,184,166,0.06));
+  border: 1px solid rgba(139,92,246,0.2); border-radius: 1.25rem;
+  padding: 1.375rem; margin-bottom: 1.25rem;
+}
+.choice-card__label {
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #a78bfa; margin-bottom: 0.75rem;
+}
+.choice-card__text {
+  font-size: 1rem; color: var(--text-primary); line-height: 1.8;
+  font-family: 'Fraunces', serif;
+}
+
+/* True north selector */
+.north-chip {
+  display: inline-block; padding: 0.4375rem 0.9375rem;
+  background: var(--bg-card-light); border: 1.5px solid var(--border-soft);
+  border-radius: 999px; font-size: 0.8125rem; color: var(--text-secondary);
+  cursor: pointer; transition: all 0.18s ease; font-family: var(--font-body);
+  margin: 0 0.375rem 0.375rem 0;
+}
+.north-chip:active { transform: scale(0.92); }
+.north-chip--selected {
+  border-color: rgba(139,92,246,0.5);
+  background: rgba(139,92,246,0.08);
+  color: #a78bfa; font-weight: 600;
+}
+
+/* The letter to self */
+.letter-card {
+  background: linear-gradient(135deg, rgba(20,184,166,0.09), rgba(20,184,166,0.04));
+  border: 1px solid rgba(20,184,166,0.22); border-radius: 1.125rem;
+  padding: 1.25rem; margin-bottom: 1.25rem;
+}
+.letter-card__label {
+  font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-teal); margin-bottom: 0.5rem;
+}
+.letter-card__text {
+  font-size: 0.875rem; color: var(--text-secondary); line-height: 1.7;
+}
+
+/* Integration summary cards */
+.integration-card {
+  background: var(--bg-card-light); border: 1px solid var(--border-soft);
+  border-radius: 1rem; padding: 1rem 1.125rem; margin-bottom: 0.5rem;
+}
+.integration-card__q {
+  font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.375rem;
+}
+.integration-card__prompt {
+  font-size: 0.875rem; color: var(--text-primary); line-height: 1.6;
+  font-family: 'Fraunces', serif; font-style: italic;
+}
+
+/* Final complete — special styling for the app's closing screen */
+.final-complete {
+  text-align: center; padding: 1.5rem 0 0.5rem;
+}
+.final-complete__badge {
+  width: 5rem; height: 5rem; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(20,184,166,0.2));
+  border: 2px solid rgba(139,92,246,0.35);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.25rem; margin: 0 auto 1.25rem;
+}
+.final-complete__title {
+  font-size: 1.375rem; font-weight: 700; color: var(--text-primary);
+  font-family: 'Fraunces', serif; margin-bottom: 0.625rem; line-height: 1.3;
+}
+.final-complete__sub {
+  font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+.pathway-chips {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  justify-content: center; margin-bottom: 1.5rem;
+}
+.pathway-chip-final {
+  padding: 0.375rem 0.875rem; border-radius: 999px;
+  font-size: 0.8125rem; font-weight: 600;
+}
+.pathway-chip-final--em { background: rgba(239,68,68,0.12); color: #f87171; }
+.pathway-chip-final--id { background: rgba(217,119,6,0.12); color: var(--text-amber); }
+.pathway-chip-final--cn { background: rgba(20,184,166,0.12); color: var(--text-teal); }
+.pathway-chip-final--lw { background: rgba(139,92,246,0.12); color: #a78bfa; }
+
+@media (min-width: 640px) {
+  .shell { height: 844px; max-height: 92vh; border-radius: 2.5rem; border: 1px solid var(--border-subtle); }
+}
+```
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--teal"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+```
+<div class="module-header">
+  <div class="module-header__row">
+    <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+    <p class="header-title" id="moduleTitle">A Life That Is Yours</p>
+    <span class="header-count" id="stepCounter"></span>
+  </div>
+  <div class="progress-dots" id="progressDots"></div>
+</div>
+
+<div class="module-scroll" id="moduleScroll">
+  <div class="step-wrap" id="stepContent"></div>
+</div>
+
+<div class="cta-area">
+  <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+  <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+</div>
+```
+
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="/js/supabase-client.js"></script>
+
+  <script src="/js/utils.js"></script>
+
+  <script src="/js/module-engine.js"></script>
+
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── North chip selector ───────────────────────────────────────
+  const selectedNorth = new Set();
+  function toggleNorth(el, name) {
+    el.classList.toggle('north-chip--selected');
+    if (selectedNorth.has(name)) { selectedNorth.delete(name); } else { selectedNorth.add(name); }
+    const h = document.getElementById('northHidden');
+    if (h) h.value = Array.from(selectedNorth).join(', ');
+    const nb = document.getElementById('nextBtn');
+    if (nb) nb.disabled = selectedNorth.size === 0;
+  }
+
+  // ================================================================
+  // MODULE LW-6: A LIFE THAT IS YOURS
+  // ================================================================
+
+  const LW6_STEPS = [
+
+    // ── STEP 1: Opening — what this module is ────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('You\'ve done real work to get here.')}
+        ${B.para('Not every pathway. Maybe not in the order intended. But you arrived at this module, which means something in you was looking for something — and was willing to do the uncomfortable work of actually looking.')}
+        ${B.para('This is the last module. It doesn\'t introduce new frameworks or give you another tool to carry. It asks you to bring together everything — from the emotional foundations, the identity work, the connection skills, the living questions — and name, as honestly as you can, what a life that is actually yours looks like.')}
+
+        <div class="choice-card">
+          <p class="choice-card__label">The question this whole app has been building toward</p>
+          <p class="choice-card__text">What does it mean to choose your life rather than accumulate it? And are you — right now, given everything you know about yourself — doing that?</p>
+        </div>
+
+        ${B.para('This module doesn\'t end with another commitment you might or might not keep. It ends with something you can carry — a clear statement of what you\'re building and why it matters, written in your own words, for yourself.')}
+      `
+    },
+
+    // ── STEP 2: What the four pathways gave you ───────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('What you\'ve built across these pathways.')}
+        ${B.para('Each pathway was about a different dimension of the same thing: learning to be genuinely present in and responsible for your own life. Here\'s what each one was actually for.')}
+
+        <div style="margin-bottom:1.25rem">
+          <div class="pathway-row">
+            <div class="pathway-icon pathway-icon--em">❤️</div>
+            <div class="pathway-body">
+              <p class="pathway-body__title">Emotional Foundations</p>
+              <p class="pathway-body__what">You learned to be with yourself. To understand what your emotions are telling you rather than being controlled by them or running from them. To treat yourself with the same compassion you might offer someone you love. This is the ground everything else stands on.</p>
+            </div>
+          </div>
+          <div class="pathway-row">
+            <div class="pathway-icon pathway-icon--id">🔍</div>
+            <div class="pathway-body">
+              <p class="pathway-body__title">Knowing Yourself</p>
+              <p class="pathway-body__what">You learned to know yourself. The self you inherited, the values that are genuinely yours, the stories that shape how you see everything, the parts you keep hidden. Without this, you can work very hard in a direction you never actually chose.</p>
+            </div>
+          </div>
+          <div class="pathway-row">
+            <div class="pathway-icon pathway-icon--cn">🤝</div>
+            <div class="pathway-body">
+              <p class="pathway-body__title">Real Connection</p>
+              <p class="pathway-body__what">You learned to be with other people — to actually listen, to say what\'s true, to navigate conflict without it destroying closeness, to set limits without losing the relationship. A life you\'ve chosen for yourself that is lived entirely alone is not a full life.</p>
+            </div>
+          </div>
+          <div class="pathway-row">
+            <div class="pathway-icon pathway-icon--lw">🧭</div>
+            <div class="pathway-body">
+              <p class="pathway-body__title">Deliberate Living</p>
+              <p class="pathway-body__what">You learned to inhabit your actual life. What makes it feel like it matters, why arriving never feels like arriving, who you\'re becoming through the people around you, what a good day actually needs. This is where the work lands in the real world.</p>
+            </div>
+          </div>
+        </div>
+
+        ${B.callout('These aren\'t separate things. A person who can be with themselves, who knows themselves, who can be genuinely with others, and who lives deliberately — that person has something most people spend a lifetime searching for and never find a name for. It\'s called being at home in your own life.')}
+      `
+    },
+
+    // ── STEP 3: Choosing vs accumulating ─────────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The difference between a chosen life and an accumulated one.')}
+        ${B.para('Most people\'s lives are accumulated. Not because they\'re lazy or unconscious — because accumulation is the default. The path of least resistance. The life that forms when you follow the options that are available rather than the ones you actually want.')}
+
+        ${B.steps([
+          '<strong>An accumulated life looks like yours but isn\'t.</strong> It has the right pieces in the right order. Career, relationship, home, routine. From outside it looks complete. From inside it often feels like someone else\'s template that you stepped into without quite noticing.',
+          '<strong>A chosen life is uncomfortable in a different way.</strong> Choosing requires knowing what you want — which requires the kind of self-knowledge that takes real work to develop. It requires saying no to things that are fine in order to say yes to things that are actually yours. It requires disappointing people sometimes.',
+          '<strong>Most people have both.</strong> A life that is fully chosen and fully accumulated in equal measure. The question is not whether you\'ve accumulated anything — everyone has — but whether the things that matter most to you are chosen or inherited.',
+          '<strong>Choosing is ongoing, not a one-time event.</strong> You don\'t choose your life once. You choose it continuously — in the small decisions about where attention goes, what you protect, what you let drift, who you become through.'
+        ])}
+
+        ${B.insight('The honest question', 'Of the major dimensions of your life right now — your work, your relationships, where you live, how you spend your time, what you\'re building toward — which ones did you genuinely choose? Which ones accumulated? And is that distribution okay with you?')}
+      `
+    },
+
+    // ── STEP 4: What a life that is yours requires ────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('What it actually takes to live a life that is yours.')}
+        ${B.para('Not the inspirational version. The honest one.')}
+
+        ${B.steps([
+          '<strong>Tolerance for disappointment.</strong> A life built around your actual values will sometimes disappoint people who had different expectations of you. Your parents, your colleagues, your social environment. You cannot have a fully chosen life without sometimes choosing differently than others would choose for you.',
+          '<strong>Comfort with uncertainty.</strong> An accumulated life is often more predictable — you know what it asks of you, you know what to expect. A chosen life involves more genuine risk, because you\'re making bets based on your own values rather than established templates.',
+          '<strong>The capacity to be alone with yourself.</strong> You cannot choose a life you haven\'t taken the time to understand. This requires solitude — not isolation, but the willingness to be genuinely quiet and honest with yourself, without constant stimulation to cover the silence.',
+          '<strong>Repeated small courage, not one big moment.</strong> Choosing your life doesn\'t usually happen in a dramatic turning point. It happens in the repeated small acts of saying what\'s true, protecting what matters, declining what doesn\'t, doing the uncomfortable thing when the comfortable thing is available.',
+          '<strong>Acceptance that it will be imperfect and incomplete.</strong> A chosen life is not a perfect life. It\'s just more yours. It still has things in it you didn\'t choose and can\'t change. The goal is not a life without constraints — it\'s a life where what you actually care about has room to exist.'
+        ])}
+      `
+    },
+
+    // ── STEP 5: Worksheet — What you\'ve learned ──────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('What has actually shifted for you?')}
+        ${B.para('Not what you\'re supposed to say. What has genuinely moved or changed through this work — in how you understand yourself, what you see differently, what you know that you didn\'t before.')}
+
+        <div style="margin-bottom:1.125rem">
+          ${[
+            ['About my emotions', 'em'],
+            ['About who I actually am', 'id'],
+            ['About how I connect with people', 'cn'],
+            ['About what my life is for', 'lw']
+          ].map(([label, path]) => `
+            <div class="integration-card">
+              <p class="integration-card__q">Something I understand differently now</p>
+              <p class="integration-card__prompt">— ${label}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        ${B.keyedTextarea(
+          'shifted-most',
+          'The thing that has shifted most for me through this work is...',
+          'Not the most impressive answer. The truest one. What do you understand about yourself or your life that you didn\'t understand before?',
+          '90px'
+        )}
+
+        ${B.keyedTextarea(
+          'still-carrying',
+          'The thing I\'m still carrying that I haven\'t fully faced is...',
+          'This work opens doors. Not all of them get walked through at once. What are you aware is still waiting?',
+          '80px'
+        )}
+      `
+    },
+
+    // ── STEP 6: Worksheet — Your true north ──────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('What is your life actually for?')}
+        ${B.para('After everything — the emotional work, the self-knowledge, the connection, the living questions — what is the most honest answer you can give to this question right now?')}
+        ${B.para('Not the permanent answer. Not the perfect answer. The truest answer you currently have.')}
+
+        <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:0.75rem;line-height:1.6">Select all that feel genuinely true — not aspirationally true, but actually true about what gives your life its sense of meaning:</p>
+
+        <div style="margin-bottom:0.875rem">
+          ${[
+            'Being genuinely known by a few people',
+            'Creating something that didn\'t exist before',
+            'Raising people who will outlast me',
+            'Understanding myself and the world more deeply',
+            'Contributing something that makes things better',
+            'Living with integrity — doing what I say I believe',
+            'Being fully present for the people I love',
+            'Becoming who I\'m capable of being',
+            'Surviving and growing through what\'s hard',
+            'Building something I\'m proud of',
+            'The quality of my attention to ordinary life',
+            'Love — in whatever form it takes'
+          ].map(n => `
+            <button class="north-chip" onclick="toggleNorth(this, '${n.replace(/'/g, "\\'")}')">${n}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="northHidden" data-key="trueNorth" value="">
+
+        ${B.keyedTextarea(
+          'north-own-words',
+          'In my own words — not chosen from a list — my life is for...',
+          'One sentence if you can. The clearest, most honest statement you can make right now about what you\'re building and why.',
+          '75px'
+        )}
+      `,
+      afterRender: () => {
+        const nb = document.getElementById('nextBtn');
+        if (nb) nb.disabled = true;
+      }
+    },
+
+    // ── STEP 7: Worksheet — The letter ───────────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('A letter to yourself.')}
+        ${B.para('This is the last worksheet in the app. Not a commitment to a specific behaviour — something more important. A letter from who you are right now, after all this work, to yourself — to be read when the drift has set in, when the busyness has returned, when you\'ve forgotten what you figured out here.')}
+
+        <div class="letter-card">
+          <p class="letter-card__label">What to include</p>
+          <p class="letter-card__text">What you know about yourself that you want to remember. What your life is actually for. What you tend to forget when things get hard or busy. What you want to come back to. What you\'re building, and who you\'re trying to become.</p>
+        </div>
+
+        ${B.keyedTextarea(
+          'letter-to-self',
+          'Dear me — what I know right now that I don\'t want to forget is...',
+          'Write it as if the person reading it has been lost for a while and needs to find their way back. What do they need to hear from the version of themselves who did this work?',
+          '160px'
+        )}
+      `
+    },
+
+    // ── STEP 8: The final integration ─────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('What you\'re carrying forward.')}
+        ${B.para('Not a tool — a synthesis. The distilled version of what a life that is genuinely yours requires, based on everything you\'ve worked through.')}
+
+        ${B.skill(
+          'Living Deliberately',
+          'Choose your life — continuously, in small acts, over a long time.',
+          [
+            '<strong>Be with yourself honestly.</strong> The emotional foundation everything else stands on. When something is happening inside you, stay with it long enough to understand it rather than immediately managing it away. Your feelings are information.',
+            '<strong>Know who you actually are.</strong> Not the performed version — the genuine one. Your real values, not the aspirational ones. The patterns that serve you and the ones that cost you. The story you tell and whether it\'s still true.',
+            '<strong>Let yourself be genuinely known.</strong> Real connection requires vulnerability — saying what\'s actually true, listening to understand rather than respond, staying with difficulty rather than managing around it. The relationships that matter most require the most honesty.',
+            '<strong>Stay oriented toward what your life is for.</strong> Meaning, not just comfort. Enough, not just more. The people you\'re becoming through, not just the people you\'re around. Days that have something real in them, not just days that pass.',
+            '<strong>Choose, repeatedly, in small acts.</strong> A chosen life is not built in a single moment of clarity. It\'s built in the repeated small decisions — what you protect, what you decline, what you say out loud, what you refuse to keep quiet — over time.'
+          ]
+        )}
+
+        <div style="margin-top:1.25rem;padding:1.25rem;background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(20,184,166,0.06));border:1px solid rgba(139,92,246,0.2);border-radius:1.125rem">
+          <p style="font-size:0.6875rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#a78bfa;margin-bottom:0.625rem">The only measure that matters</p>
+          <p style="font-size:0.9375rem;color:var(--text-primary);line-height:1.75;font-family:'Fraunces',serif">Not whether your life looks right from outside. Whether it feels like yours from inside.</p>
+        </div>
+      `
+    },
+
+    // ── STEP 9: The final commitment ──────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your final commitment.')}
+        ${B.para('Not to a behaviour this week. To yourself — to the version of you that did this work, and to the life you\'re actually trying to build.')}
+        ${B.para('This is the one that matters. Not because it\'s dramatic, but because it\'s honest — and because you\'re the only person who will know whether you kept it.')}
+        ${B.commitment(
+          'Write the clearest statement you can of what you\'re committing to — not this week, but going forward. What does choosing your life, rather than accumulating it, require of you specifically?',
+          'I am committing to [the most honest version of what living deliberately requires of you — not a list of habits, but a genuine commitment to the person you\'re trying to be]. I know this will require [the hard thing — the discomfort, the courage, the repetition]. The cost of not doing it is [honest]. The person I\'m building toward is [specific — not perfect, just more genuinely yours]. I\'ll come back to this when I\'ve lost the thread.'
+        )}
+      `
+    },
+
+    // ── STEP 10: The final complete — special for the whole app ──
+    {
+      type: 'complete',
+      render: () => `
+        <div class="final-complete">
+          <div class="final-complete__badge">🌱</div>
+
+          <p class="final-complete__title">A Life That Is Yours</p>
+          <p class="final-complete__sub">You completed the Deliberate Living pathway — and with it, the work this app was built to support.</p>
+
+          <div class="pathway-chips">
+            <span class="pathway-chip-final pathway-chip-final--em">❤️ Emotional Foundations</span>
+            <span class="pathway-chip-final pathway-chip-final--id">🔍 Knowing Yourself</span>
+            <span class="pathway-chip-final pathway-chip-final--cn">🤝 Real Connection</span>
+            <span class="pathway-chip-final pathway-chip-final--lw">🧭 Deliberate Living</span>
+          </div>
+
+          <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem;font-family:'Fraunces',serif;font-style:italic">
+            "The question is not whether you will live. The question is whether you will inhabit it."
+          </p>
+
+          <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;margin-bottom:1.75rem">
+            This isn't the end. It's the clearest starting point you've had. Come back to any module when you need it. The tools are yours now.
+          </p>
+
+          <button
+            class="btn btn--primary"
+            style="width:100%;margin-bottom:0.75rem"
+            onclick="window.location.href='/pathways/overview.html'"
+          >
+            Return to pathways
+          </button>
+
+          <button
+            class="btn"
+            style="width:100%;background:var(--bg-card-light);border:1px solid var(--border-soft);color:var(--text-secondary)"
+            onclick="window.location.href='/index.html'"
+          >
+            Go home
+          </button>
+        </div>
+      `
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('lw-6', LW6_STEPS);
+  });
+
+  </script>
+
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+
+</body>
+</html>
