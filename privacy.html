@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>InnerShadow – Privacy Policy</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    html, body { position: fixed; width: 100%; height: 100%; overflow: hidden; }
+    body { display: flex; align-items: center; justify-content: center; background: var(--bg-dark); }
+    .shell {
+      width: 100%; max-width: 28rem; height: 100vh; height: -webkit-fill-available;
+      background: var(--bg-card); display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+      border-left: 1px solid var(--border-subtle); border-right: 1px solid var(--border-subtle);
+    }
+    .scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .scroll-area::-webkit-scrollbar { display: none; }
+    .inner { padding: max(1.5rem, env(safe-area-inset-top)) 1.375rem max(3rem, env(safe-area-inset-bottom)); }
+
+```
+.page-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+.back-btn {
+  width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.875rem;
+  color: var(--text-primary); font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast);
+}
+.back-btn:active { transform: scale(0.92); }
+.page-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; }
+
+.doc-meta { font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+
+.toc-card {
+  background: var(--bg-card-light); border: 1px solid var(--border-soft);
+  border-radius: 1rem; padding: 1rem 1.125rem; margin: 1.25rem 0;
+}
+.toc-card p { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.5rem; }
+.toc-card a { display: block; font-size: 0.875rem; color: var(--text-teal); text-decoration: none; line-height: 2; }
+.toc-card a:active { opacity: 0.7; }
+
+.alert-card {
+  background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));
+  border: 1px solid rgba(239,68,68,0.25); border-radius: 1rem;
+  padding: 1.125rem; margin-bottom: 1.25rem;
+}
+.alert-card p { margin-bottom: 0; color: var(--text-primary); font-size: 0.875rem; line-height: 1.7; }
+.alert-card strong { color: #f87171; }
+
+.highlight-card {
+  background: linear-gradient(135deg, rgba(20,184,166,0.09), rgba(20,184,166,0.04));
+  border: 1px solid rgba(20,184,166,0.2); border-radius: 1rem;
+  padding: 1.125rem; margin-bottom: 1.25rem;
+}
+.highlight-card p { margin-bottom: 0; color: var(--text-primary); font-size: 0.875rem; line-height: 1.7; }
+
+.state-card {
+  background: linear-gradient(135deg, rgba(139,92,246,0.09), rgba(139,92,246,0.04));
+  border: 1px solid rgba(139,92,246,0.2); border-radius: 1rem;
+  padding: 1.125rem; margin-bottom: 1rem;
+}
+.state-card__title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #a78bfa; margin-bottom: 0.5rem; }
+.state-card p { margin-bottom: 0; font-size: 0.875rem; color: var(--text-secondary); line-height: 1.7; }
+
+h2 { font-size: 1.0625rem; font-weight: 700; color: var(--text-primary); margin: 2rem 0 0.625rem; padding-top: 0.25rem; }
+h3 { font-size: 0.9375rem; font-weight: 700; color: var(--text-secondary); margin: 1.25rem 0 0.375rem; }
+p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 0.75rem; }
+ul, ol { padding-left: 1.25rem; margin-bottom: 0.875rem; }
+li { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 0.2rem; }
+strong { color: var(--text-primary); font-weight: 600; }
+hr { border: none; border-top: 1px solid var(--border-subtle); margin: 1.75rem 0; }
+
+.contact-card {
+  background: var(--bg-card-light); border: 1px solid var(--border-soft);
+  border-radius: 1rem; padding: 1.125rem; margin-top: 1.25rem;
+}
+.contact-card p { margin-bottom: 0.25rem; font-size: 0.875rem; }
+.contact-card p:last-child { margin-bottom: 0; }
+
+@media (min-width: 640px) { .shell { height: 844px; max-height: 92vh; border-radius: 2.5rem; border: 1px solid var(--border-subtle); } }
+```
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--teal"></div>
+    <div class="scroll-area">
+      <div class="inner">
+
+```
+    <div class="page-header">
+      <button class="back-btn" onclick="Nav.back('/settings.html')">←</button>
+      <h1 class="page-title">Privacy Policy</h1>
+    </div>
+
+    <p class="doc-meta">Effective date: January 1, 2025</p>
+    <p class="doc-meta" style="margin-bottom:1rem">Last updated: January 1, 2025</p>
+
+    <div class="alert-card">
+      <p><strong>Important:</strong> InnerShadow is a psychoeducation app, not a healthcare provider. Information you share with us is <strong>not protected health information under HIPAA</strong> and does not constitute a clinical or therapeutic relationship. Please read this policy carefully.</p>
+    </div>
+
+    <div class="highlight-card">
+      <p>The short version: <strong>your personal reflections belong to you</strong>. We do not sell them, share them with advertisers, or use them to train AI models. We collect only what we need to operate the service and protect it under New York law.</p>
+    </div>
+
+    <div class="toc-card">
+      <p>Contents</p>
+      <a href="#who-we-are">1. Who we are</a>
+      <a href="#information-we-collect">2. Information we collect</a>
+      <a href="#how-we-use">3. How we use your information</a>
+      <a href="#sharing">4. Sharing and disclosure</a>
+      <a href="#data-retention">5. Data retention</a>
+      <a href="#security">6. Security</a>
+      <a href="#your-rights">7. Your rights</a>
+      <a href="#california">8. California residents (CCPA)</a>
+      <a href="#children">9. Children's privacy (COPPA)</a>
+      <a href="#sensitive-data">10. Sensitive data and mental health</a>
+      <a href="#cookies">11. Cookies and tracking</a>
+      <a href="#third-parties">12. Third-party services</a>
+      <a href="#changes">13. Changes to this policy</a>
+      <a href="#contact">14. Contact us</a>
+    </div>
+
+    <hr>
+
+    <h2 id="who-we-are">1. Who We Are</h2>
+    <p>InnerShadow ("we," "us," "our") is a psychoeducation application operated under the laws of the State of New York, United States. This Privacy Policy governs the collection, use, and disclosure of personal information we collect when you use the InnerShadow mobile and web application (the "Service").</p>
+    <p>By using the Service, you acknowledge you have read, understood, and agree to the terms of this Privacy Policy. If you do not agree, you must discontinue use of the Service immediately.</p>
+
+    <hr>
+
+    <h2 id="information-we-collect">2. Information We Collect</h2>
+
+    <h3>2.1 Information you provide directly</h3>
+    <ul>
+      <li><strong>Account information:</strong> Your email address, name, and password when you create an account</li>
+      <li><strong>Assessment responses:</strong> Your answers to the initial pathway assessment</li>
+      <li><strong>Worksheet and reflection content:</strong> Text you enter into module worksheets, commitment prompts, and reflection fields</li>
+      <li><strong>Communication:</strong> Messages you send to us via email or support channels</li>
+      <li><strong>Payment information:</strong> Billing details processed by our payment processor (Stripe). We do not store full payment card numbers on our servers.</li>
+    </ul>
+
+    <h3>2.2 Information collected automatically</h3>
+    <ul>
+      <li><strong>Usage data:</strong> Which modules you open, complete, or skip; time spent in the app; streak data</li>
+      <li><strong>Device information:</strong> Device type, operating system, browser type, and app version</li>
+      <li><strong>Log data:</strong> IP address, access times, pages viewed, and referring URLs</li>
+      <li><strong>Crash reports:</strong> Error logs to help us diagnose and fix technical problems</li>
+    </ul>
+
+    <h3>2.3 Information we do not collect</h3>
+    <ul>
+      <li>We do not collect precise geolocation data</li>
+      <li>We do not access your camera, microphone, or contacts</li>
+      <li>We do not collect biometric data</li>
+      <li>We do not collect data from third-party social media accounts unless you explicitly connect them</li>
+    </ul>
+
+    <hr>
+
+    <h2 id="how-we-use">3. How We Use Your Information</h2>
+    <p>We use the information we collect for the following purposes:</p>
+    <ul>
+      <li><strong>Providing the Service:</strong> Authenticating your account, saving your progress, displaying your reflection history, and personalising your experience</li>
+      <li><strong>Improving the Service:</strong> Analysing anonymised, aggregated usage patterns to understand what content is most helpful and where users encounter problems</li>
+      <li><strong>Communications:</strong> Sending transactional emails (account confirmation, password reset), product updates you've opted into, and responses to your support requests</li>
+      <li><strong>Security:</strong> Detecting, investigating, and preventing fraudulent or unauthorised activity</li>
+      <li><strong>Legal compliance:</strong> Meeting our obligations under applicable law</li>
+      <li><strong>Payment processing:</strong> Facilitating subscription billing through our payment processor</li>
+    </ul>
+    <p><strong>We do not use your personal reflection content to train AI or machine learning models. We do not use it for advertising targeting. We do not sell it.</strong></p>
+
+    <hr>
+
+    <h2 id="sharing">4. Sharing and Disclosure</h2>
+    <p>We do not sell, rent, or trade your personal information. We share information only in the following limited circumstances:</p>
+
+    <h3>4.1 Service providers</h3>
+    <p>We work with third-party vendors who help us operate the Service. These include:</p>
+    <ul>
+      <li><strong>Supabase:</strong> Database and authentication infrastructure (data stored on AWS)</li>
+      <li><strong>Stripe:</strong> Payment processing</li>
+      <li><strong>Cloudflare:</strong> Content delivery and security</li>
+    </ul>
+    <p>These vendors are contractually bound to use your data only to provide services to us and may not use it for their own purposes.</p>
+
+    <h3>4.2 Legal requirements</h3>
+    <p>We may disclose your information if required to do so by law, court order, or valid legal process, including to comply with national security or law enforcement requirements. Where legally permitted, we will attempt to notify you before complying.</p>
+
+    <h3>4.3 Protection of rights</h3>
+    <p>We may disclose information when we believe in good faith that disclosure is necessary to protect the rights, property, or safety of InnerShadow, our users, or the public — including to prevent fraud or abuse.</p>
+
+    <h3>4.4 Business transfers</h3>
+    <p>If InnerShadow is involved in a merger, acquisition, financing, reorganisation, bankruptcy, or sale of company assets, your information may be transferred as part of that transaction. We will notify you via email or prominent notice within the Service prior to any such transfer, and you will have the opportunity to delete your account before the transfer takes effect.</p>
+
+    <h3>4.5 With your consent</h3>
+    <p>We may share your information for any other purpose with your explicit consent.</p>
+
+    <hr>
+
+    <h2 id="data-retention">5. Data Retention</h2>
+    <p>We retain your personal information for as long as your account is active or as necessary to provide you the Service. Specifically:</p>
+    <ul>
+      <li><strong>Account data:</strong> Retained for the duration of your account. Deleted within 30 days of account deletion request.</li>
+      <li><strong>Worksheet and reflection content:</strong> Retained until you delete it or delete your account.</li>
+      <li><strong>Payment records:</strong> Retained for 7 years as required for tax and accounting purposes, even after account deletion.</li>
+      <li><strong>Log data:</strong> Retained for up to 90 days for security and debugging purposes.</li>
+      <li><strong>Aggregated, anonymised analytics:</strong> May be retained indefinitely as they cannot be traced to any individual.</li>
+    </ul>
+    <p>After the applicable retention period, we securely delete or anonymise your data.</p>
+
+    <hr>
+
+    <h2 id="security">6. Security</h2>
+    <p>We implement reasonable and appropriate technical and organisational measures to protect your personal information against unauthorised access, loss, destruction, or alteration. These include:</p>
+    <ul>
+      <li>Encryption of data in transit using TLS 1.2 or higher</li>
+      <li>Encryption of data at rest</li>
+      <li>Row-level security ensuring users can only access their own data</li>
+      <li>Access controls limiting which personnel can access user data</li>
+      <li>Regular security reviews</li>
+    </ul>
+    <p>No method of transmission over the internet or method of electronic storage is 100% secure. While we strive to protect your personal information, we cannot guarantee its absolute security. In the event of a data breach affecting your rights and freedoms, we will notify you and relevant authorities as required by applicable law, including within the timeframes required by the New York SHIELD Act.</p>
+
+    <hr>
+
+    <h2 id="your-rights">7. Your Rights</h2>
+    <p>Regardless of where you live in the United States, you have the following rights with respect to your personal information:</p>
+    <ul>
+      <li><strong>Right to access:</strong> Request a copy of the personal information we hold about you</li>
+      <li><strong>Right to correction:</strong> Request that we correct inaccurate or incomplete information</li>
+      <li><strong>Right to deletion:</strong> Request deletion of your personal information, subject to certain legal exceptions</li>
+      <li><strong>Right to data portability:</strong> Request your data in a machine-readable format</li>
+      <li><strong>Right to opt out of marketing:</strong> Unsubscribe from marketing communications at any time via the unsubscribe link in any email or by contacting us</li>
+      <li><strong>Right to withdraw consent:</strong> Where we rely on your consent to process data, you may withdraw it at any time</li>
+    </ul>
+    <p>To exercise any of these rights, contact us at <strong>privacy@innershadow.app</strong>. We will respond within 45 days. We may need to verify your identity before fulfilling your request. We will not discriminate against you for exercising your privacy rights.</p>
+
+    <hr>
+
+    <h2 id="california">8. California Residents — CCPA / CPRA Rights</h2>
+
+    <div class="state-card">
+      <p class="state-card__title">California Consumer Privacy Act</p>
+      <p>If you are a California resident, you have additional rights under the California Consumer Privacy Act (CCPA) as amended by the California Privacy Rights Act (CPRA).</p>
+    </div>
+
+    <h3>8.1 Categories of personal information collected</h3>
+    <p>In the past 12 months, we have collected the following categories of personal information as defined by the CCPA:</p>
+    <ul>
+      <li>Identifiers (name, email address, IP address)</li>
+      <li>Internet or other electronic network activity information (usage data, log data)</li>
+      <li>Inferences drawn from other personal information to create a profile (pathway recommendations based on assessment)</li>
+      <li>Personal information described in California's Customer Records statute (account information)</li>
+    </ul>
+    <p>We do not collect sensitive personal information as defined by the CPRA beyond what is necessary to provide the Service.</p>
+
+    <h3>8.2 Purposes for collection</h3>
+    <p>We collect this information for the business purposes described in Section 3 above.</p>
+
+    <h3>8.3 Sale or sharing of personal information</h3>
+    <p><strong>We do not sell your personal information.</strong> We do not share your personal information with third parties for cross-context behavioural advertising.</p>
+
+    <h3>8.4 Your California rights</h3>
+    <p>In addition to the rights in Section 7, California residents have the right to:</p>
+    <ul>
+      <li>Know what personal information is being collected and how it is used and shared</li>
+      <li>Delete personal information collected from you</li>
+      <li>Opt out of the sale or sharing of personal information (not applicable — we do not sell or share)</li>
+      <li>Non-discrimination for exercising CCPA rights</li>
+      <li>Correct inaccurate personal information</li>
+      <li>Limit use and disclosure of sensitive personal information</li>
+    </ul>
+    <p>To submit a verifiable consumer request, contact us at privacy@innershadow.app. You may designate an authorised agent to make requests on your behalf.</p>
+
+    <hr>
+
+    <h2 id="children">9. Children's Privacy — COPPA</h2>
+    <p>InnerShadow is not directed to children under the age of 13. We do not knowingly collect personal information from children under 13. If you are under 13, you may not use this Service.</p>
+    <p>If you are between 13 and 17 years old, you may use InnerShadow only with the consent and involvement of a parent or legal guardian.</p>
+    <p>If we discover that we have inadvertently collected personal information from a child under 13 without parental consent, we will delete that information promptly. If you believe we have collected information from a child under 13, please contact us immediately at privacy@innershadow.app.</p>
+    <p>We comply with the Children's Online Privacy Protection Act (COPPA). Parents or guardians who wish to review, modify, or delete their child's information should contact us at the address below.</p>
+
+    <hr>
+
+    <h2 id="sensitive-data">10. Sensitive Data and Mental Health Content</h2>
+
+    <div class="alert-card">
+      <p><strong>Please read this section carefully.</strong> It explains how we handle the personal reflections and mental health-related content you enter into the app.</p>
+    </div>
+
+    <p>InnerShadow is a psychoeducation platform. In the course of using the Service, you may enter personal reflections, emotional responses, and content related to your mental health, relationships, and personal history ("Reflection Content").</p>
+
+    <h3>10.1 How we handle Reflection Content</h3>
+    <ul>
+      <li>Reflection Content is stored securely and accessible only to you via your authenticated account</li>
+      <li>Reflection Content is <strong>never sold</strong> to third parties</li>
+      <li>Reflection Content is <strong>never used</strong> to train AI or machine learning models</li>
+      <li>Reflection Content is <strong>never shared</strong> with advertisers, data brokers, or other commercial third parties</li>
+      <li>Reflection Content may be accessed by InnerShadow personnel only in extraordinary circumstances, such as responding to a valid legal order, or when you have explicitly requested technical support that requires access</li>
+    </ul>
+
+    <h3>10.2 Not a covered entity under HIPAA</h3>
+    <p>InnerShadow is not a healthcare provider, health plan, or healthcare clearinghouse. We are not a "covered entity" under the Health Insurance Portability and Accountability Act (HIPAA). Information you share with us is not Protected Health Information (PHI) under HIPAA and is not subject to HIPAA's protections. Do not use InnerShadow as a substitute for, or as part of, clinical care.</p>
+
+    <h3>10.3 Crisis situations</h3>
+    <p>InnerShadow does not provide crisis intervention services. If content you enter indicates an imminent risk of harm to yourself or others, we are not equipped to respond in real time and cannot be held responsible for outcomes arising from reliance on the Service in crisis situations. If you are in crisis, please contact the 988 Suicide and Crisis Lifeline (call or text 988), emergency services (911), or a qualified mental health professional immediately.</p>
+
+    <hr>
+
+    <h2 id="cookies">11. Cookies and Tracking Technologies</h2>
+    <p>We use the following types of cookies and local storage:</p>
+    <ul>
+      <li><strong>Strictly necessary cookies:</strong> Session tokens required to keep you signed in. These cannot be disabled without preventing you from using the Service.</li>
+      <li><strong>Preference cookies:</strong> Store your in-app preferences (e.g. reduced motion setting). These are stored locally on your device.</li>
+      <li><strong>Analytics:</strong> We use anonymised, aggregated analytics to understand usage patterns. We do not use Google Analytics or other third-party behavioural tracking tools that identify individual users across websites.</li>
+    </ul>
+    <p><strong>We do not use advertising cookies. We do not use third-party tracking pixels. We do not engage in cross-site tracking.</strong></p>
+
+    <hr>
+
+    <h2 id="third-parties">12. Third-Party Services</h2>
+    <p>Our Service integrates with the following third-party services. Their use of your data is governed by their respective privacy policies, which we encourage you to review:</p>
+    <ul>
+      <li><strong>Supabase</strong> (supabase.com) — database and authentication</li>
+      <li><strong>Stripe</strong> (stripe.com) — payment processing</li>
+      <li><strong>Cloudflare</strong> (cloudflare.com) — content delivery and DDoS protection</li>
+    </ul>
+    <p>We are not responsible for the privacy practices of these third parties beyond our contractual requirements with them. Links within the app to external websites are not covered by this policy.</p>
+
+    <hr>
+
+    <h2 id="changes">13. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. When we do:</p>
+    <ul>
+      <li>We will update the "Last updated" date at the top of this page</li>
+      <li>For material changes, we will provide at least 30 days' notice by email to your registered address and/or by prominent notice within the Service</li>
+      <li>Your continued use of the Service after the effective date of any changes constitutes acceptance of the updated policy</li>
+      <li>If you do not agree to the updated policy, you must discontinue use and may request deletion of your account</li>
+    </ul>
+
+    <hr>
+
+    <h2 id="contact">14. Contact Us</h2>
+    <p>For any questions, concerns, or requests regarding this Privacy Policy or our data practices:</p>
+
+    <div class="contact-card">
+      <p><strong>InnerShadow Privacy</strong></p>
+      <p>Email: privacy@innershadow.app</p>
+      <p>For data deletion requests, rights exercises, or CCPA/COPPA inquiries, please use the subject line "Privacy Request" and include your registered email address. We respond within 45 days.</p>
+    </div>
+
+    <p style="margin-top:1.5rem;font-size:0.8125rem;color:var(--text-muted);line-height:1.7">This Privacy Policy is governed by and construed in accordance with the laws of the State of New York, United States, without regard to its conflict of law provisions. This policy was last reviewed by the InnerShadow team in January 2025. <strong>This policy has not been reviewed by a licensed attorney and should be reviewed by qualified legal counsel before relying on it for compliance purposes.</strong></p>
+
+  </div>
+</div>
+```
+
+  </div>
+  <script src="/js/utils.js"></script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+</body>
+</html>
