@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,949 +12,953 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
   <style>
-    html, body {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg-dark);
-    }
-
-    .shell {
-      width: 100%;
-      max-width: 28rem;
-      height: 100vh;
-      height: -webkit-fill-available;
-      background: var(--bg-card);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-      border-left: 1px solid var(--border-subtle);
-      border-right: 1px solid var(--border-subtle);
-    }
-
-    /* Tab content areas */
-    .tab-panel {
-      display: none;
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      position: relative;
-    }
-
-    .tab-panel::-webkit-scrollbar { display: none; }
-
-    .tab-panel--active {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .panel-inner {
-      padding: max(1.5rem, env(safe-area-inset-top)) 1.25rem 1.5rem;
-      flex: 1;
-    }
-
-    /* ── TODAY TAB ──────────────────────────────────────── */
-
-    .today-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-    }
-
-    .today-greeting {
-      font-family: var(--font-display);
-      font-size: 1.75rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .today-greeting em {
-      font-style: italic;
-      color: var(--text-teal);
-    }
-
-    .today-date {
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
-
-    .settings-btn {
-      width: 2.5rem;
-      height: 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg-card-light);
-      border: 1px solid var(--border-soft);
-      border-radius: 0.875rem;
-      color: var(--text-secondary);
-      font-size: 1.125rem;
-      cursor: pointer;
-      transition: var(--transition-fast);
-      flex-shrink: 0;
-      text-decoration: none;
-    }
-
-    .settings-btn:active { transform: scale(0.92); }
-
-    /* Check-in card */
-    .checkin-card {
-      background: linear-gradient(135deg,
-        rgba(13,148,136,0.12),
-        rgba(217,119,6,0.08));
-      border: 1px solid var(--teal-border);
-      border-radius: 1.25rem;
-      padding: 1.375rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .checkin-card--done {
-      background: var(--teal-bg);
-    }
-
-    .checkin-label {
-      font-size: 0.8125rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-teal);
-      margin-bottom: 0.875rem;
-    }
-
-    .checkin-question {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-weight: 500;
-      color: var(--text-primary);
-      margin-bottom: 1.125rem;
-      line-height: 1.3;
-    }
-
-    /* Mood grid — 5 across */
-    .mood-row {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .mood-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.625rem 0.25rem;
-      background: rgba(255,255,255,0.04);
-      border: 2px solid transparent;
-      border-radius: 0.875rem;
-      cursor: pointer;
-      transition: all 0.18s ease;
-      font-family: var(--font-body);
-    }
-
-    .mood-btn:active { transform: scale(0.9); }
-
-    .mood-btn--selected {
-      border-color: var(--teal-border-strong);
-      background: var(--teal-bg-strong);
-    }
-
-    .mood-emoji { font-size: 1.625rem; line-height: 1; }
-
-    .mood-label {
-      font-size: 0.625rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-
-    .mood-btn--selected .mood-label { color: var(--text-teal); }
-
-    /* Note input */
-    .note-section {
-      display: none;
-      animation: fade-in 0.25s ease-out;
-    }
-
-    .note-section--show { display: block; }
-
-    .note-input {
-      width: 100%;
-      padding: 0.75rem 0.875rem;
-      background: var(--bg-input);
-      border: 1px solid var(--border-soft);
-      border-radius: 0.875rem;
-      color: var(--text-primary);
-      font-size: 15px;
-      font-family: var(--font-body);
-      resize: none;
-      min-height: 70px;
-      transition: var(--transition-base);
-      -webkit-appearance: none;
-    }
-
-    .note-input::placeholder { color: var(--text-muted); }
-
-    .note-input:focus {
-      outline: none;
-      border-color: var(--teal-border-strong);
-      background: var(--bg-input-focus);
-      box-shadow: 0 0 0 3px var(--teal-glow-soft);
-    }
-
-    /* Done state */
-    .checkin-done {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .checkin-done__emoji { font-size: 2rem; line-height: 1; }
-
-    .checkin-done__text {
-      flex: 1;
-    }
-
-    .checkin-done__title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.15rem;
-    }
-
-    .checkin-done__sub {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-    }
-
-    /* Streak bar */
-    .streak-row {
-      display: flex;
-      gap: 0.875rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .streak-chip {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-      padding: 0.875rem 1rem;
-      background: var(--amber-bg);
-      border: 1px solid var(--amber-border);
-      border-radius: 1rem;
-    }
-
-    .streak-chip__icon { font-size: 1.375rem; }
-
-    .streak-chip__count {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-amber);
-      font-family: var(--font-display);
-      line-height: 1;
-    }
-
-    .streak-chip__label {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-
-    .modules-chip {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-      padding: 0.875rem 1rem;
-      background: var(--teal-bg);
-      border: 1px solid var(--teal-border);
-      border-radius: 1rem;
-    }
-
-    .modules-chip__icon { font-size: 1.375rem; }
-
-    .modules-chip__count {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-teal);
-      font-family: var(--font-display);
-      line-height: 1;
-    }
-
-    .modules-chip__label {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-
-    /* Continue learning card */
-    .continue-card {
-      background: var(--gradient-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 1.25rem;
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .continue-card:hover {
-      border-color: var(--teal-border);
-      transform: translateY(-2px);
-    }
-
-    .continue-card:active { transform: scale(0.98); }
-
-    .continue-card__label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.75rem;
-    }
-
-    .continue-card__row {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-    }
-
-    .continue-card__num {
-      width: 2.75rem;
-      height: 2.75rem;
-      background: var(--gradient-main);
-      border-radius: 0.875rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1rem;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .continue-card__body { flex: 1; min-width: 0; }
-
-    .continue-card__title {
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.3;
-      margin-bottom: 0.2rem;
-    }
-
-    .continue-card__pathway {
-      font-size: 0.8125rem;
-      color: var(--text-teal);
-    }
-
-    .continue-card__arrow {
-      font-size: 1.125rem;
-      color: var(--text-muted);
-    }
-
-    /* Suggested tool */
-    .suggested-tool {
-      background: var(--amber-bg);
-      border: 1px solid var(--amber-border);
-      border-radius: 1.25rem;
-      padding: 1.125rem 1.25rem;
-      margin-bottom: 1.25rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .suggested-tool:hover {
-      border-color: var(--amber-border-strong);
-      transform: translateY(-2px);
-    }
-
-    .suggested-tool:active { transform: scale(0.98); }
-
-    .suggested-tool__label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-amber);
-      margin-bottom: 0.625rem;
-    }
-
-    .suggested-tool__row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .suggested-tool__emoji { font-size: 1.75rem; line-height: 1; }
-
-    .suggested-tool__body { flex: 1; }
-
-    .suggested-tool__name {
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.15rem;
-    }
-
-    .suggested-tool__why {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-    }
-
-    /* Pending reflection */
-    .reflection-nudge {
-      background: linear-gradient(135deg,
-        rgba(13,148,136,0.10),
-        rgba(217,119,6,0.08));
-      border: 1px solid var(--teal-border);
-      border-radius: 1.25rem;
-      padding: 1.125rem 1.25rem;
-      margin-bottom: 1.25rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .reflection-nudge:hover { transform: translateY(-2px); }
-    .reflection-nudge:active { transform: scale(0.98); }
-
-    .reflection-nudge__label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-teal);
-      margin-bottom: 0.5rem;
-    }
-
-    .reflection-nudge__text {
-      font-size: 0.9375rem;
-      color: var(--text-primary);
-      font-weight: 500;
-      line-height: 1.4;
-    }
-
-    /* ── LEARN TAB ───────────────────────────────────────── */
-
-    .learn-header {
-      margin-bottom: 1.5rem;
-    }
-
-    .learn-title {
-      font-family: var(--font-display);
-      font-size: 1.625rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-      margin-bottom: 0.25rem;
-    }
-
-    .learn-title em {
-      font-style: italic;
-      color: var(--text-teal);
-    }
-
-    .learn-sub {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-
-    /* Pathway cards */
-    .pw-card {
-      background: var(--gradient-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 1.25rem;
-      padding: 1.25rem;
-      margin-bottom: 0.875rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .pw-card:hover {
-      border-color: var(--teal-border);
-      transform: translateY(-2px);
-    }
-
-    .pw-card:active { transform: scale(0.98); }
-
-    .pw-card--locked {
-      opacity: 0.45;
-      cursor: default;
-    }
-
-    .pw-card--locked:hover {
-      transform: none;
-      border-color: var(--border-soft);
-    }
-
-    .pw-card--active {
-      border-color: var(--teal-border-strong);
-      background: var(--teal-bg);
-    }
-
-    .pw-card__header {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      margin-bottom: 0.875rem;
-    }
-
-    .pw-card__emoji { font-size: 2rem; line-height: 1; }
-
-    .pw-card__meta { flex: 1; min-width: 0; }
-
-    .pw-card__name {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.15rem;
-    }
-
-    .pw-card__sub {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }
-
-    .pw-card__lock {
-      font-size: 1rem;
-      color: var(--text-muted);
-    }
-
-    .pw-card__progress {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .pw-card__bar {
-      flex: 1;
-      height: 5px;
-      background: var(--border-soft);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .pw-card__bar-fill {
-      height: 100%;
-      background: var(--gradient-main);
-      border-radius: 999px;
-      transition: width 0.6s ease;
-    }
-
-    .pw-card__pct {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      min-width: 2.5rem;
-      text-align: right;
-    }
-
-    .pw-card__pct--active { color: var(--text-teal); }
-
-    /* ── TOOLS TAB ───────────────────────────────────────── */
-
-    .tools-header {
-      margin-bottom: 1.25rem;
-    }
-
-    .tools-title {
-      font-family: var(--font-display);
-      font-size: 1.625rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-      margin-bottom: 0.25rem;
-    }
-
-    .tools-title em {
-      font-style: italic;
-      color: var(--text-teal);
-    }
-
-    .tools-sub {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-
-    .tools-section-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin: 1.125rem 0 0.625rem;
-    }
-
-    .tool-row {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      padding: 0.875rem 1rem;
-      background: var(--bg-card-light);
-      border: 1px solid var(--border-soft);
-      border-radius: 1rem;
-      margin-bottom: 0.5rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .tool-row:hover {
-      border-color: var(--teal-border);
-      background: var(--teal-bg);
-      transform: translateX(3px);
-    }
-
-    .tool-row:active { transform: scale(0.98); }
-
-    .tool-row--locked {
-      opacity: 0.38;
-      cursor: default;
-      filter: grayscale(0.4);
-    }
-
-    .tool-row--locked:hover {
-      transform: none;
-      border-color: var(--border-soft);
-      background: var(--bg-card-light);
-    }
-
-    .tool-row--crisis {
-      background: var(--red-bg);
-      border-color: var(--red-border);
-    }
-
-    .tool-row--crisis:hover {
-      background: var(--red-bg-strong);
-      border-color: var(--red-border-strong);
-    }
-
-    .tool-row__emoji { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
-
-    .tool-row__body { flex: 1; min-width: 0; }
-
-    .tool-row__name {
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.3;
-      margin-bottom: 0.15rem;
-    }
-
-    .tool-row__desc {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-    }
-
-    .tool-row__lock { font-size: 0.9375rem; color: var(--text-muted); }
-
-    /* ── YOU TAB ─────────────────────────────────────────── */
-
-    .you-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .avatar {
-      width: 3.5rem;
-      height: 3.5rem;
-      border-radius: 1rem;
-      background: var(--gradient-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .you-name {
-      font-family: var(--font-display);
-      font-size: 1.375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.015em;
-    }
-
-    .you-since {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-    }
-
-    /* Stats grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.625rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .stat-chip {
-      background: var(--bg-card-light);
-      border: 1px solid var(--border-soft);
-      border-radius: 1rem;
-      padding: 0.875rem 0.75rem;
-      text-align: center;
-    }
-
-    .stat-chip__num {
-      font-family: var(--font-display);
-      font-size: 1.625rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1;
-      margin-bottom: 0.25rem;
-    }
-
-    .stat-chip__label {
-      font-size: 0.6875rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* Settings list */
-    .settings-list {
-      background: var(--gradient-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 1.25rem;
-      overflow: hidden;
-      margin-bottom: 1.25rem;
-    }
-
-    .settings-item {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      padding: 1rem 1.125rem;
-      cursor: pointer;
-      transition: background 0.15s ease;
-      border-bottom: 1px solid var(--border-subtle);
-      text-decoration: none;
-    }
-
-    .settings-item:last-child { border-bottom: none; }
-
-    .settings-item:hover { background: var(--bg-card-light); }
-    .settings-item:active { background: var(--bg-card-medium); }
-
-    .settings-item__icon {
-      font-size: 1.125rem;
-      width: 1.75rem;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .settings-item__label {
-      flex: 1;
-      font-size: 0.9375rem;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .settings-item__arrow {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-    }
-
-    .settings-item--danger .settings-item__label { color: var(--text-red); }
-
-    /* Pro banner */
-    .pro-banner {
-      background: var(--gradient-main);
-      border-radius: 1.25rem;
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .pro-banner:hover { transform: translateY(-2px); }
-    .pro-banner:active { transform: scale(0.98); }
-
-    .pro-banner__title {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: white;
-      margin-bottom: 0.375rem;
-    }
-
-    .pro-banner__sub {
-      font-size: 0.875rem;
-      color: rgba(255,255,255,0.8);
-      line-height: 1.5;
-    }
-
-    .pro-banner__cta {
-      margin-top: 0.875rem;
-      font-size: 0.875rem;
-      font-weight: 700;
-      color: white;
-      opacity: 0.9;
-    }
-
-    /* ── TOOL MODAL ──────────────────────────────────────── */
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.75);
-      z-index: var(--z-modal);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-
-    .modal-overlay--show { display: flex; }
-
-    .modal-sheet {
-      width: 100%;
-      max-width: 28rem;
-      background: var(--bg-card);
-      border-radius: 1.5rem 1.5rem 0 0;
-      border: 1px solid var(--border-soft);
-      border-bottom: none;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    .modal-handle {
-      width: 2.5rem;
-      height: 4px;
-      background: var(--border-softer);
-      border-radius: 999px;
-      margin: 0.875rem auto 0;
-      flex-shrink: 0;
-    }
-
-    .modal-scroll {
-      flex: 1;
-      overflow-y: auto;
-      scrollbar-width: none;
-      padding: 1.25rem 1.5rem 1.5rem;
-    }
-
-    .modal-scroll::-webkit-scrollbar { display: none; }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .modal-icon { font-size: 2.5rem; line-height: 1; }
-
-    .modal-title {
-      font-family: var(--font-display);
-      font-size: 1.375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.015em;
-      line-height: 1.2;
-    }
-
-    .modal-tagline {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin-top: 0.2rem;
-    }
-
-    .modal-section-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.75rem;
-    }
-
-    .tool-step {
-      display: flex;
-      gap: 0.875rem;
-      align-items: flex-start;
-      margin-bottom: 1rem;
-    }
-
-    .tool-step__num {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 0.5rem;
-      background: var(--gradient-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8125rem;
-      font-weight: 700;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .tool-step__text {
-      font-size: 0.9375rem;
-      color: var(--text-secondary);
-      line-height: 1.65;
-      padding-top: 0.25rem;
-    }
-
-    .tool-step__text strong { color: var(--text-primary); }
-
-    .modal-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 2rem;
-      height: 2rem;
-      background: var(--bg-card-light);
-      border: 1px solid var(--border-soft);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: var(--transition-fast);
-    }
-
-    .modal-close:active { transform: scale(0.9); }
-
-    .modal-footer {
-      padding: 0 1.5rem 0.5rem;
-      flex-shrink: 0;
-    }
-
-    @media (min-width: 640px) {
-      .shell {
-        height: 844px;
-        max-height: 92vh;
-        border-radius: 2.5rem;
-        border: 1px solid var(--border-subtle);
-      }
-    }
+
+```
+html, body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-dark);
+}
+
+.shell {
+  width: 100%;
+  max-width: 28rem;
+  height: 100vh;
+  height: -webkit-fill-available;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+}
+
+/* Tab content areas */
+.tab-panel {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  position: relative;
+}
+
+.tab-panel::-webkit-scrollbar { display: none; }
+
+.tab-panel--active {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-inner {
+  padding: max(1.5rem, env(safe-area-inset-top)) 1.25rem 1.5rem;
+  flex: 1;
+}
+
+/* ── TODAY TAB ──────────────────────────────────────── */
+
+.today-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.today-greeting {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.today-greeting em {
+  font-style: italic;
+  color: var(--text-teal);
+}
+
+.today-date {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.settings-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.875rem;
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.settings-btn:active { transform: scale(0.92); }
+
+/* Check-in card */
+.checkin-card {
+  background: linear-gradient(135deg,
+    rgba(13,148,136,0.12),
+    rgba(217,119,6,0.08));
+  border: 1px solid var(--teal-border);
+  border-radius: 1.25rem;
+  padding: 1.375rem;
+  margin-bottom: 1.25rem;
+}
+
+.checkin-card--done {
+  background: var(--teal-bg);
+}
+
+.checkin-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-teal);
+  margin-bottom: 0.875rem;
+}
+
+.checkin-question {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 1.125rem;
+  line-height: 1.3;
+}
+
+/* Mood grid — 5 across */
+.mood-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mood-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.625rem 0.25rem;
+  background: rgba(255,255,255,0.04);
+  border: 2px solid transparent;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: var(--font-body);
+}
+
+.mood-btn:active { transform: scale(0.9); }
+
+.mood-btn--selected {
+  border-color: var(--teal-border-strong);
+  background: var(--teal-bg-strong);
+}
+
+.mood-emoji { font-size: 1.625rem; line-height: 1; }
+
+.mood-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.mood-btn--selected .mood-label { color: var(--text-teal); }
+
+/* Note input */
+.note-section {
+  display: none;
+  animation: fade-in 0.25s ease-out;
+}
+
+.note-section--show { display: block; }
+
+.note-input {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.875rem;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-family: var(--font-body);
+  resize: none;
+  min-height: 70px;
+  transition: var(--transition-base);
+  -webkit-appearance: none;
+}
+
+.note-input::placeholder { color: var(--text-muted); }
+
+.note-input:focus {
+  outline: none;
+  border-color: var(--teal-border-strong);
+  background: var(--bg-input-focus);
+  box-shadow: 0 0 0 3px var(--teal-glow-soft);
+}
+
+/* Done state */
+.checkin-done {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.checkin-done__emoji { font-size: 2rem; line-height: 1; }
+
+.checkin-done__text {
+  flex: 1;
+}
+
+.checkin-done__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.checkin-done__sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Streak bar */
+.streak-row {
+  display: flex;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.streak-chip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-border);
+  border-radius: 1rem;
+}
+
+.streak-chip__icon { font-size: 1.375rem; }
+
+.streak-chip__count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-amber);
+  font-family: var(--font-display);
+  line-height: 1;
+}
+
+.streak-chip__label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.modules-chip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: var(--teal-bg);
+  border: 1px solid var(--teal-border);
+  border-radius: 1rem;
+}
+
+.modules-chip__icon { font-size: 1.375rem; }
+
+.modules-chip__count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-teal);
+  font-family: var(--font-display);
+  line-height: 1;
+}
+
+.modules-chip__label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Continue learning card */
+.continue-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.continue-card:hover {
+  border-color: var(--teal-border);
+  transform: translateY(-2px);
+}
+
+.continue-card:active { transform: scale(0.98); }
+
+.continue-card__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.continue-card__row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.continue-card__num {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--gradient-main);
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.continue-card__body { flex: 1; min-width: 0; }
+
+.continue-card__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 0.2rem;
+}
+
+.continue-card__pathway {
+  font-size: 0.8125rem;
+  color: var(--text-teal);
+}
+
+.continue-card__arrow {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+}
+
+/* Suggested tool */
+.suggested-tool {
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-border);
+  border-radius: 1.25rem;
+  padding: 1.125rem 1.25rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.suggested-tool:hover {
+  border-color: var(--amber-border-strong);
+  transform: translateY(-2px);
+}
+
+.suggested-tool:active { transform: scale(0.98); }
+
+.suggested-tool__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-amber);
+  margin-bottom: 0.625rem;
+}
+
+.suggested-tool__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.suggested-tool__emoji { font-size: 1.75rem; line-height: 1; }
+
+.suggested-tool__body { flex: 1; }
+
+.suggested-tool__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.suggested-tool__why {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Pending reflection */
+.reflection-nudge {
+  background: linear-gradient(135deg,
+    rgba(13,148,136,0.10),
+    rgba(217,119,6,0.08));
+  border: 1px solid var(--teal-border);
+  border-radius: 1.25rem;
+  padding: 1.125rem 1.25rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.reflection-nudge:hover { transform: translateY(-2px); }
+.reflection-nudge:active { transform: scale(0.98); }
+
+.reflection-nudge__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-teal);
+  margin-bottom: 0.5rem;
+}
+
+.reflection-nudge__text {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ── LEARN TAB ───────────────────────────────────────── */
+
+.learn-header {
+  margin-bottom: 1.5rem;
+}
+
+.learn-title {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.learn-title em {
+  font-style: italic;
+  color: var(--text-teal);
+}
+
+.learn-sub {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Pathway cards */
+.pw-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+  position: relative;
+  overflow: hidden;
+}
+
+.pw-card:hover {
+  border-color: var(--teal-border);
+  transform: translateY(-2px);
+}
+
+.pw-card:active { transform: scale(0.98); }
+
+.pw-card--locked {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.pw-card--locked:hover {
+  transform: none;
+  border-color: var(--border-soft);
+}
+
+.pw-card--active {
+  border-color: var(--teal-border-strong);
+  background: var(--teal-bg);
+}
+
+.pw-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 0.875rem;
+}
+
+.pw-card__emoji { font-size: 2rem; line-height: 1; }
+
+.pw-card__meta { flex: 1; min-width: 0; }
+
+.pw-card__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.pw-card__sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.pw-card__lock {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.pw-card__progress {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pw-card__bar {
+  flex: 1;
+  height: 5px;
+  background: var(--border-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.pw-card__bar-fill {
+  height: 100%;
+  background: var(--gradient-main);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.pw-card__pct {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+.pw-card__pct--active { color: var(--text-teal); }
+
+/* ── TOOLS TAB ───────────────────────────────────────── */
+
+.tools-header {
+  margin-bottom: 1.25rem;
+}
+
+.tools-title {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.tools-title em {
+  font-style: italic;
+  color: var(--text-teal);
+}
+
+.tools-sub {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.tools-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 1.125rem 0 0.625rem;
+}
+
+.tool-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.tool-row:hover {
+  border-color: var(--teal-border);
+  background: var(--teal-bg);
+  transform: translateX(3px);
+}
+
+.tool-row:active { transform: scale(0.98); }
+
+.tool-row--locked {
+  opacity: 0.38;
+  cursor: default;
+  filter: grayscale(0.4);
+}
+
+.tool-row--locked:hover {
+  transform: none;
+  border-color: var(--border-soft);
+  background: var(--bg-card-light);
+}
+
+.tool-row--crisis {
+  background: var(--red-bg);
+  border-color: var(--red-border);
+}
+
+.tool-row--crisis:hover {
+  background: var(--red-bg-strong);
+  border-color: var(--red-border-strong);
+}
+
+.tool-row__emoji { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+
+.tool-row__body { flex: 1; min-width: 0; }
+
+.tool-row__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 0.15rem;
+}
+
+.tool-row__desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.tool-row__lock { font-size: 0.9375rem; color: var(--text-muted); }
+
+/* ── YOU TAB ─────────────────────────────────────────── */
+
+.you-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: var(--gradient-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.you-name {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+}
+
+.you-since {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.625rem;
+  margin-bottom: 1.25rem;
+}
+
+.stat-chip {
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  padding: 0.875rem 0.75rem;
+  text-align: center;
+}
+
+.stat-chip__num {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.stat-chip__label {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Settings list */
+.settings-list {
+  background: var(--gradient-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.125rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid var(--border-subtle);
+  text-decoration: none;
+}
+
+.settings-item:last-child { border-bottom: none; }
+
+.settings-item:hover { background: var(--bg-card-light); }
+.settings-item:active { background: var(--bg-card-medium); }
+
+.settings-item__icon {
+  font-size: 1.125rem;
+  width: 1.75rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.settings-item__label {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.settings-item__arrow {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.settings-item--danger .settings-item__label { color: var(--text-red); }
+
+/* Pro banner */
+.pro-banner {
+  background: var(--gradient-main);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.pro-banner:hover { transform: translateY(-2px); }
+.pro-banner:active { transform: scale(0.98); }
+
+.pro-banner__title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.375rem;
+}
+
+.pro-banner__sub {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+}
+
+.pro-banner__cta {
+  margin-top: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: white;
+  opacity: 0.9;
+}
+
+/* ── TOOL MODAL ──────────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: var(--z-modal);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-overlay--show { display: flex; }
+
+.modal-sheet {
+  width: 100%;
+  max-width: 28rem;
+  background: var(--bg-card);
+  border-radius: 1.5rem 1.5rem 0 0;
+  border: 1px solid var(--border-soft);
+  border-bottom: none;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.modal-handle {
+  width: 2.5rem;
+  height: 4px;
+  background: var(--border-softer);
+  border-radius: 999px;
+  margin: 0.875rem auto 0;
+  flex-shrink: 0;
+}
+
+.modal-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.modal-scroll::-webkit-scrollbar { display: none; }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.modal-icon { font-size: 2.5rem; line-height: 1; }
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+.modal-tagline {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+}
+
+.modal-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.tool-step {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.tool-step__num {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: var(--gradient-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.tool-step__text {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  padding-top: 0.25rem;
+}
+
+.tool-step__text strong { color: var(--text-primary); }
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.modal-close:active { transform: scale(0.9); }
+
+.modal-footer {
+  padding: 0 1.5rem 0.5rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .shell {
+    height: 844px;
+    max-height: 92vh;
+    border-radius: 2.5rem;
+    border: 1px solid var(--border-subtle);
+  }
+}
+```
+
   </style>
 </head>
 <body>
@@ -961,263 +966,267 @@
     <div class="bg-orb bg-orb--teal"></div>
     <div class="bg-orb bg-orb--amber"></div>
 
-    <!-- ── TODAY TAB ─────────────────────────────────── -->
-    <div class="tab-panel tab-panel--active" id="panel-today">
-      <div class="panel-inner">
+```
+<!-- ── TODAY TAB ─────────────────────────────────── -->
+<div class="tab-panel tab-panel--active" id="panel-today">
+  <div class="panel-inner">
 
-        <div class="today-header">
-          <div>
-            <h1 class="today-greeting" id="greeting">Good <em>morning</em></h1>
-            <p class="today-date" id="todayDate"></p>
-          </div>
-          <a href="/settings.html" class="settings-btn" aria-label="Settings">⚙</a>
-        </div>
+    <div class="today-header">
+      <div>
+        <h1 class="today-greeting" id="greeting">Good <em>morning</em></h1>
+        <p class="today-date" id="todayDate"></p>
+      </div>
+      <a href="/settings.html" class="settings-btn" aria-label="Settings">⚙</a>
+    </div>
 
-        <!-- Check-in card -->
-        <div class="checkin-card" id="checkinCard">
-          <p class="checkin-label">Daily check-in</p>
-          <p class="checkin-question">How are you feeling right now?</p>
+    <!-- Check-in card -->
+    <div class="checkin-card" id="checkinCard">
+      <p class="checkin-label">Daily check-in</p>
+      <p class="checkin-question">How are you feeling right now?</p>
 
-          <div class="mood-row" id="moodRow">
-            <button class="mood-btn" data-mood="rough"   onclick="selectMood('rough')"  >
-              <span class="mood-emoji">😞</span>
-              <span class="mood-label">Rough</span>
-            </button>
-            <button class="mood-btn" data-mood="anxious" onclick="selectMood('anxious')">
-              <span class="mood-emoji">😰</span>
-              <span class="mood-label">Anxious</span>
-            </button>
-            <button class="mood-btn" data-mood="okay"    onclick="selectMood('okay')"   >
-              <span class="mood-emoji">😐</span>
-              <span class="mood-label">Okay</span>
-            </button>
-            <button class="mood-btn" data-mood="good"    onclick="selectMood('good')"   >
-              <span class="mood-emoji">🙂</span>
-              <span class="mood-label">Good</span>
-            </button>
-            <button class="mood-btn" data-mood="great"   onclick="selectMood('great')"  >
-              <span class="mood-emoji">😊</span>
-              <span class="mood-label">Great</span>
-            </button>
-          </div>
+      <div class="mood-row" id="moodRow">
+        <button class="mood-btn" data-mood="rough"   onclick="selectMood('rough')"  >
+          <span class="mood-emoji">😞</span>
+          <span class="mood-label">Rough</span>
+        </button>
+        <button class="mood-btn" data-mood="anxious" onclick="selectMood('anxious')">
+          <span class="mood-emoji">😰</span>
+          <span class="mood-label">Anxious</span>
+        </button>
+        <button class="mood-btn" data-mood="okay"    onclick="selectMood('okay')"   >
+          <span class="mood-emoji">😐</span>
+          <span class="mood-label">Okay</span>
+        </button>
+        <button class="mood-btn" data-mood="good"    onclick="selectMood('good')"   >
+          <span class="mood-emoji">🙂</span>
+          <span class="mood-label">Good</span>
+        </button>
+        <button class="mood-btn" data-mood="great"   onclick="selectMood('great')"  >
+          <span class="mood-emoji">😊</span>
+          <span class="mood-label">Great</span>
+        </button>
+      </div>
 
-          <div class="note-section" id="noteSection">
-            <textarea
-              class="note-input"
-              id="noteInput"
-              placeholder="Anything else on your mind? (optional)"
-              maxlength="300"
-              rows="2"
-            ></textarea>
-            <button
-              class="btn btn--primary btn--sm"
-              style="margin-top:0.625rem"
-              onclick="submitCheckin()"
-              id="checkinSubmitBtn"
-            >
-              Log check-in
-            </button>
-          </div>
-        </div>
-
-        <!-- Streak + modules row -->
-        <div class="streak-row">
-          <div class="streak-chip">
-            <span class="streak-chip__icon">🔥</span>
-            <div>
-              <div class="streak-chip__count" id="streakCount">0</div>
-              <div class="streak-chip__label">day streak</div>
-            </div>
-          </div>
-          <div class="modules-chip">
-            <span class="modules-chip__icon">✅</span>
-            <div>
-              <div class="modules-chip__count" id="modulesCount">0</div>
-              <div class="modules-chip__label">modules done</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pending reflection nudge -->
-        <div class="reflection-nudge" id="reflectionNudge" style="display:none" onclick="goToReflection()">
-          <p class="reflection-nudge__label">3-day reflection ready</p>
-          <p class="reflection-nudge__text" id="reflectionNudgeText">
-            How's that commitment landing in real life?
-          </p>
-        </div>
-
-        <!-- Continue learning -->
-        <div class="continue-card" id="continueCard" onclick="goToNextModule()">
-          <p class="continue-card__label">Continue learning</p>
-          <div class="continue-card__row">
-            <div class="continue-card__num" id="nextModuleNum">1</div>
-            <div class="continue-card__body">
-              <p class="continue-card__title" id="nextModuleTitle">Loading...</p>
-              <p class="continue-card__pathway" id="nextModulePathway"></p>
-            </div>
-            <span class="continue-card__arrow">→</span>
-          </div>
-        </div>
-
-        <!-- Suggested tool (shown after check-in) -->
-        <div class="suggested-tool" id="suggestedTool" style="display:none" onclick="openSuggestedTool()">
-          <p class="suggested-tool__label">Try this now</p>
-          <div class="suggested-tool__row">
-            <span class="suggested-tool__emoji" id="suggestedToolEmoji">🌬</span>
-            <div class="suggested-tool__body">
-              <p class="suggested-tool__name" id="suggestedToolName"></p>
-              <p class="suggested-tool__why" id="suggestedToolWhy"></p>
-            </div>
-            <span style="color:var(--text-muted)">→</span>
-          </div>
-        </div>
-
+      <div class="note-section" id="noteSection">
+        <textarea
+          class="note-input"
+          id="noteInput"
+          placeholder="Anything else on your mind? (optional)"
+          maxlength="300"
+          rows="2"
+        ></textarea>
+        <button
+          class="btn btn--primary btn--sm"
+          style="margin-top:0.625rem"
+          onclick="submitCheckin()"
+          id="checkinSubmitBtn"
+        >
+          Log check-in
+        </button>
       </div>
     </div>
 
-    <!-- ── LEARN TAB ──────────────────────────────────── -->
-    <div class="tab-panel" id="panel-learn">
-      <div class="panel-inner">
-
-        <div class="learn-header">
-          <h2 class="learn-title">Your <em>pathways</em></h2>
-          <p class="learn-sub">Four pathways. 24 modules. Start with yours.</p>
+    <!-- Streak + modules row -->
+    <div class="streak-row">
+      <div class="streak-chip">
+        <span class="streak-chip__icon">🔥</span>
+        <div>
+          <div class="streak-chip__count" id="streakCount">0</div>
+          <div class="streak-chip__label">day streak</div>
         </div>
-
-        <div id="pathwaysList">
-          <!-- Rendered by JS -->
+      </div>
+      <div class="modules-chip">
+        <span class="modules-chip__icon">✅</span>
+        <div>
+          <div class="modules-chip__count" id="modulesCount">0</div>
+          <div class="modules-chip__label">modules done</div>
         </div>
-
       </div>
     </div>
 
-    <!-- ── TOOLS TAB ──────────────────────────────────── -->
-    <div class="tab-panel" id="panel-tools">
-      <div class="panel-inner">
+    <!-- Pending reflection nudge -->
+    <div class="reflection-nudge" id="reflectionNudge" style="display:none" onclick="goToReflection()">
+      <p class="reflection-nudge__label">3-day reflection ready</p>
+      <p class="reflection-nudge__text" id="reflectionNudgeText">
+        How's that commitment landing in real life?
+      </p>
+    </div>
 
-        <div class="tools-header">
-          <h2 class="tools-title">Your <em>toolkit</em></h2>
-          <p class="tools-sub">Skills you've unlocked. Always available.</p>
+    <!-- Continue learning -->
+    <div class="continue-card" id="continueCard" onclick="goToNextModule()">
+      <p class="continue-card__label">Continue learning</p>
+      <div class="continue-card__row">
+        <div class="continue-card__num" id="nextModuleNum">1</div>
+        <div class="continue-card__body">
+          <p class="continue-card__title" id="nextModuleTitle">Loading...</p>
+          <p class="continue-card__pathway" id="nextModulePathway"></p>
         </div>
-
-        <!-- Crisis tools always visible -->
-        <p class="tools-section-label">🆘 Always available — crisis tools</p>
-        <div id="crisisToolsList">
-          <!-- Rendered by JS -->
-        </div>
-
-        <!-- Earned tools -->
-        <p class="tools-section-label" id="earnedToolsLabel">✨ Earned tools</p>
-        <div id="earnedToolsList">
-          <!-- Rendered by JS -->
-        </div>
-
-        <!-- Locked tools -->
-        <p class="tools-section-label" id="lockedToolsLabel" style="display:none">🔒 Unlock by completing modules</p>
-        <div id="lockedToolsList">
-          <!-- Rendered by JS -->
-        </div>
-
+        <span class="continue-card__arrow">→</span>
       </div>
     </div>
 
-    <!-- ── YOU TAB ────────────────────────────────────── -->
-    <div class="tab-panel" id="panel-you">
-      <div class="panel-inner">
-
-        <!-- Profile header -->
-        <div class="you-header">
-          <div class="avatar">🌑</div>
-          <div>
-            <p class="you-name" id="userName">Welcome</p>
-            <p class="you-since" id="userSince">Member since today</p>
-          </div>
+    <!-- Suggested tool (shown after check-in) -->
+    <div class="suggested-tool" id="suggestedTool" style="display:none" onclick="openSuggestedTool()">
+      <p class="suggested-tool__label">Try this now</p>
+      <div class="suggested-tool__row">
+        <span class="suggested-tool__emoji" id="suggestedToolEmoji">🌬</span>
+        <div class="suggested-tool__body">
+          <p class="suggested-tool__name" id="suggestedToolName"></p>
+          <p class="suggested-tool__why" id="suggestedToolWhy"></p>
         </div>
-
-        <!-- Stats -->
-        <div class="stats-grid">
-          <div class="stat-chip">
-            <div class="stat-chip__num" id="statStreak">0</div>
-            <div class="stat-chip__label">Day streak</div>
-          </div>
-          <div class="stat-chip">
-            <div class="stat-chip__num" id="statModules">0</div>
-            <div class="stat-chip__label">Modules done</div>
-          </div>
-          <div class="stat-chip">
-            <div class="stat-chip__num" id="statTools">0</div>
-            <div class="stat-chip__label">Tools earned</div>
-          </div>
-        </div>
-
-        <!-- Pro upgrade banner (hidden for pro users) -->
-        <div class="pro-banner" id="proBanner" onclick="window.location.href='/upgrade.html'">
-          <p class="pro-banner__title">Unlock the full journey</p>
-          <p class="pro-banner__sub">All 24 modules, all 4 pathways, every tool you earn — no limits.</p>
-          <p class="pro-banner__cta">Upgrade to Pro →</p>
-        </div>
-
-        <!-- Settings list -->
-        <div class="settings-list">
-          <a href="/settings.html" class="settings-item">
-            <span class="settings-item__icon">⚙️</span>
-            <span class="settings-item__label">Settings</span>
-            <span class="settings-item__arrow">›</span>
-          </a>
-          <a href="/privacy.html" class="settings-item">
-            <span class="settings-item__icon">🔒</span>
-            <span class="settings-item__label">Privacy Policy</span>
-            <span class="settings-item__arrow">›</span>
-          </a>
-          <a href="/terms.html" class="settings-item">
-            <span class="settings-item__icon">📄</span>
-            <span class="settings-item__label">Terms of Service</span>
-            <span class="settings-item__arrow">›</span>
-          </a>
-          <div class="settings-item settings-item--danger" onclick="handleSignOut()">
-            <span class="settings-item__icon">🚪</span>
-            <span class="settings-item__label">Sign out</span>
-            <span class="settings-item__arrow">›</span>
-          </div>
-        </div>
-
-        <p style="text-align:center;font-size:0.75rem;color:var(--text-dim);line-height:1.6">
-          InnerShadow — educational content only.<br>Not a substitute for professional mental health care.
-        </p>
-
+        <span style="color:var(--text-muted)">→</span>
       </div>
     </div>
 
-    <!-- ── BOTTOM NAV ─────────────────────────────────── -->
-    <nav class="bottom-nav">
-      <button class="nav-tab nav-tab--active" id="tab-today" onclick="switchTab('today')">
-        <div class="nav-tab__icon">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <span class="nav-tab__label">Today</span>
-      </button>
-      <button class="nav-tab" id="tab-learn" onclick="switchTab('learn')">
-        <div class="nav-tab__icon">
-          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-        </div>
-        <span class="nav-tab__label">Learn</span>
-      </button>
-      <button class="nav-tab" id="tab-tools" onclick="switchTab('tools')">
-        <div class="nav-tab__icon">
-          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-        </div>
-        <span class="nav-tab__label">Tools</span>
-      </button>
-      <button class="nav-tab" id="tab-you" onclick="switchTab('you')">
-        <div class="nav-tab__icon">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <span class="nav-tab__label">You</span>
-      </button>
-    </nav>
+  </div>
+</div>
+
+<!-- ── LEARN TAB ──────────────────────────────────── -->
+<div class="tab-panel" id="panel-learn">
+  <div class="panel-inner">
+
+    <div class="learn-header">
+      <h2 class="learn-title">Your <em>pathways</em></h2>
+      <p class="learn-sub">Four pathways. 24 modules. Start with yours.</p>
+    </div>
+
+    <div id="pathwaysList">
+      <!-- Rendered by JS -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ── TOOLS TAB ──────────────────────────────────── -->
+<div class="tab-panel" id="panel-tools">
+  <div class="panel-inner">
+
+    <div class="tools-header">
+      <h2 class="tools-title">Your <em>toolkit</em></h2>
+      <p class="tools-sub">Skills you've unlocked. Always available.</p>
+    </div>
+
+    <!-- Crisis tools always visible -->
+    <p class="tools-section-label">🆘 Always available — crisis tools</p>
+    <div id="crisisToolsList">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Earned tools -->
+    <p class="tools-section-label" id="earnedToolsLabel">✨ Earned tools</p>
+    <div id="earnedToolsList">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Locked tools -->
+    <p class="tools-section-label" id="lockedToolsLabel" style="display:none">🔒 Unlock by completing modules</p>
+    <div id="lockedToolsList">
+      <!-- Rendered by JS -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ── YOU TAB ────────────────────────────────────── -->
+<div class="tab-panel" id="panel-you">
+  <div class="panel-inner">
+
+    <!-- Profile header -->
+    <div class="you-header">
+      <div class="avatar">🌑</div>
+      <div>
+        <p class="you-name" id="userName">Welcome</p>
+        <p class="you-since" id="userSince">Member since today</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-chip">
+        <div class="stat-chip__num" id="statStreak">0</div>
+        <div class="stat-chip__label">Day streak</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip__num" id="statModules">0</div>
+        <div class="stat-chip__label">Modules done</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip__num" id="statTools">0</div>
+        <div class="stat-chip__label">Tools earned</div>
+      </div>
+    </div>
+
+    <!-- Pro upgrade banner (hidden for pro users) -->
+    <div class="pro-banner" id="proBanner" onclick="Nav.go('/upgrade.html')">
+      <p class="pro-banner__title">Unlock the full journey</p>
+      <p class="pro-banner__sub">All 24 modules, all 4 pathways, every tool you earn — no limits.</p>
+      <p class="pro-banner__cta">Upgrade to Pro →</p>
+    </div>
+
+    <!-- Settings list -->
+    <div class="settings-list">
+      <a href="/settings.html" class="settings-item">
+        <span class="settings-item__icon">⚙️</span>
+        <span class="settings-item__label">Settings</span>
+        <span class="settings-item__arrow">›</span>
+      </a>
+      <a href="/privacy.html" class="settings-item">
+        <span class="settings-item__icon">🔒</span>
+        <span class="settings-item__label">Privacy Policy</span>
+        <span class="settings-item__arrow">›</span>
+      </a>
+      <a href="/terms.html" class="settings-item">
+        <span class="settings-item__icon">📄</span>
+        <span class="settings-item__label">Terms of Service</span>
+        <span class="settings-item__arrow">›</span>
+      </a>
+      <div class="settings-item settings-item--danger" onclick="handleSignOut()">
+        <span class="settings-item__icon">🚪</span>
+        <span class="settings-item__label">Sign out</span>
+        <span class="settings-item__arrow">›</span>
+      </div>
+    </div>
+
+    <p style="text-align:center;font-size:0.75rem;color:var(--text-dim);line-height:1.6">
+      InnerShadow — educational content only.<br>Not a substitute for professional mental health care.
+    </p>
+
+  </div>
+</div>
+
+<!-- ── BOTTOM NAV ─────────────────────────────────── -->
+<nav class="bottom-nav">
+  <button class="nav-tab nav-tab--active" id="tab-today" onclick="switchTab('today')">
+    <div class="nav-tab__icon">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <span class="nav-tab__label">Today</span>
+  </button>
+  <button class="nav-tab" id="tab-learn" onclick="switchTab('learn')">
+    <div class="nav-tab__icon">
+      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+    </div>
+    <span class="nav-tab__label">Learn</span>
+  </button>
+  <button class="nav-tab" id="tab-tools" onclick="switchTab('tools')">
+    <div class="nav-tab__icon">
+      <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+    </div>
+    <span class="nav-tab__label">Tools</span>
+  </button>
+  <button class="nav-tab" id="tab-you" onclick="switchTab('you')">
+    <div class="nav-tab__icon">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <span class="nav-tab__label">You</span>
+  </button>
+</nav>
+```
+
   </div><!-- /shell -->
 
   <!-- Tool modal -->
+
   <div class="modal-overlay" id="toolModal" onclick="closeToolModal(event)">
     <div class="modal-sheet" style="position:relative">
       <div class="modal-handle"></div>
@@ -1242,10 +1251,13 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script src="/js/supabase-client.js"></script>
+
   <script src="/js/utils.js"></script>
 
   <script>
+
     // ================================================================
     // APP STATE
     // ================================================================
@@ -1428,6 +1440,232 @@
           { text: '<strong>Wait before re-engaging.</strong> 5 minutes minimum after flooding. You cannot think clearly while flooded.' }
         ],
         science: 'When flooded (Gottman\'s threshold: heart rate over 100 BPM), the prefrontal cortex goes offline. Trying to think or talk your way through it doesn\'t work. You must regulate the body first — then the thinking brain comes back online.'
+      },
+
+      // ── IDENTITY PATHWAY TOOLS ────────────────────────────────
+      'tool-inheritance-check': {
+        emoji: '🧬',
+        name: 'The Inheritance Check',
+        tagline: 'Separate who you were told to be from who you actually are',
+        steps: [
+          { text: '<strong>Name a belief, pattern, or identity.</strong> Something you hold about yourself — about your worth, your role, what you\'re capable of, what you deserve.' },
+          { text: '<strong>Ask: where did this come from?</strong> Which person, relationship, or environment taught you this? Was it said directly or absorbed indirectly?' },
+          { text: '<strong>Ask: is this mine?</strong> If you hadn\'t been taught this, would you have arrived here on your own? Does it fit who you are now, or who you were then?' },
+          { text: '<strong>Decide what to do with it.</strong> Keep it, modify it, or consciously set it down. You didn\'t choose the inheritance — but you can choose what to do with it.' }
+        ],
+        science: 'Attachment research (Bowlby, Main): early caregiving relationships create internal working models — templates for how the self and others behave. These run automatically unless made conscious. Awareness is the prerequisite for change.'
+      },
+      'tool-values-check': {
+        emoji: '⚖️',
+        name: 'The Values Check',
+        tagline: 'Find the values that are genuinely yours — not inherited or performed',
+        steps: [
+          { text: '<strong>Ask: what makes me angry?</strong> Anger almost always signals that something you value is being violated. The thing you\'re angry about points to something you actually care about.' },
+          { text: '<strong>Ask: what do I envy?</strong> Envy points to desires you haven\'t acknowledged. What someone else has that produces envy is often something you genuinely want.' },
+          { text: '<strong>Ask: what do I protect?</strong> What do you naturally defend, make time for, refuse to compromise on? That\'s where your values live.' },
+          { text: '<strong>Check for performance.</strong> For each value you\'ve named — would you hold it even if no one was watching and no one would approve? If yes, it\'s yours.' }
+        ],
+        science: 'Values clarification (Acceptance and Commitment Therapy): living in accordance with your own values rather than socially prescribed ones is one of the most reliable predictors of psychological wellbeing and resilience under pressure.'
+      },
+      'tool-narrative-edit': {
+        emoji: '✍️',
+        name: 'The Narrative Edit',
+        tagline: 'Rewrite the story you tell about yourself without lying',
+        steps: [
+          { text: '<strong>Identify the story.</strong> What\'s the narrative you tell about who you are — especially about a difficult chapter? Not the facts — the interpretation.' },
+          { text: '<strong>Find the truth in it.</strong> What part of this story is genuinely accurate? Don\'t abandon what\'s real.' },
+          { text: '<strong>Find what\'s missing.</strong> What does the story leave out? What has changed since this version was formed? What doesn\'t it give you credit for?' },
+          { text: '<strong>Write a revised version.</strong> Same facts, fuller interpretation. Not a positive spin — a more complete truth that includes your agency, growth, and the context you were in.' }
+        ],
+        science: 'Narrative therapy (White, Epston): the stories we tell about ourselves shape what we believe is possible. A \"problem-saturated\" story keeps people stuck not because it\'s false but because it\'s incomplete. Fuller stories open more options.'
+      },
+      'tool-happiness-audit': {
+        emoji: '🔦',
+        name: 'The Happiness Audit',
+        tagline: 'Find what actually makes you happy — not what you predict will',
+        steps: [
+          { text: '<strong>Track backwards, not forwards.</strong> Instead of predicting what will make you happy, look at recent weeks. When did you feel alive, absorbed, genuinely well? List specific moments.' },
+          { text: '<strong>Find the pattern.</strong> What do the high moments have in common? What were you doing, who were you with, what was the quality of your attention?' },
+          { text: '<strong>Check your predictions.</strong> What are you currently chasing that you believe will make you happy? How does that compare to what the evidence shows actually does?' },
+          { text: '<strong>Make one reallocation.</strong> Less time on a predicted source of happiness that doesn\'t deliver. More on an actual one. Specific, this week.' }
+        ],
+        science: 'Affective forecasting research (Gilbert, Wilson): humans are systematically poor at predicting what will make them happy. We overestimate the impact of future events and ignore adaptation. Backwards tracking is more accurate than prediction.'
+      },
+      'tool-shadow-integration': {
+        emoji: '🌑',
+        name: 'Shadow Integration',
+        tagline: 'Make peace with the parts of yourself you\'ve been fighting',
+        steps: [
+          { text: '<strong>Name the part.</strong> A quality, impulse, or pattern you judge, hide, or are ashamed of. Don\'t soften it — name it plainly.' },
+          { text: '<strong>Ask: what does this part want?</strong> Beneath the behaviour — what is it protecting? What need is it trying to meet, however ineffectively?' },
+          { text: '<strong>Find where it serves you.</strong> Most shadow qualities have a legitimate version — the rage that signals violated limits, the selfishness that is actually self-respect.' },
+          { text: '<strong>Welcome it without obeying it.</strong> You don\'t have to act from this part. But fighting it costs enormous energy. Acknowledging it — \"I see you\" — reduces its grip.' }
+        ],
+        science: 'Jungian psychology: repressed aspects of the self don\'t disappear — they become more powerful. ACT research corroborates: psychological flexibility, including acceptance of difficult inner states, predicts wellbeing better than suppression.'
+      },
+      'tool-authenticity-check': {
+        emoji: '🪞',
+        name: 'The Authenticity Check',
+        tagline: 'Measure the gap between who you are and how you\'re living',
+        steps: [
+          { text: '<strong>State your actual values.</strong> Not aspirational ones — the ones you live by right now, based on where your time, money, and attention actually go.' },
+          { text: '<strong>Describe how you\'re currently living.</strong> Your relationships, your work, your daily choices. As objectively as possible.' },
+          { text: '<strong>Name the gaps.</strong> Where does how you live contradict what you say you value? Every gap is a place where you\'re performing rather than living.' },
+          { text: '<strong>Choose one gap to close.</strong> Not all of them — one. The smallest meaningful change that moves your life toward your actual values. This week.' }
+        ],
+        science: 'Self-determination theory (Deci, Ryan): living in alignment with authentic values (\"autonomous motivation\") is a core predictor of wellbeing and sustained behaviour change. Performative living is chronically depleting.'
+      },
+
+      // ── CONNECTION PATHWAY TOOLS ──────────────────────────────
+      'tool-depth-shift': {
+        emoji: '🌊',
+        name: 'The Depth Shift',
+        tagline: 'Move any conversation one level deeper',
+        steps: [
+          { text: '<strong>Identify the surface level.</strong> Most conversation stays at facts, logistics, and opinions. Notice when you\'re there.' },
+          { text: '<strong>Ask one level deeper.</strong> Move from what to why. From what happened to what it was like. \"What was that like for you?\" is the most reliable depth-shift question.' },
+          { text: '<strong>Receive what comes.</strong> When someone goes deeper, don\'t redirect or advise immediately. Stay with what they\'ve said. \"Tell me more about that.\"' },
+          { text: '<strong>Share in kind.</strong> Once they\'ve gone deeper and you\'ve genuinely received it, you can reciprocate.' }
+        ],
+        science: 'Arthur Aron\'s closeness research: mutual disclosure — not shared activities or time — is the primary mechanism through which closeness is generated. Depth questions accelerate this process.'
+      },
+      'tool-deep-listening': {
+        emoji: '👂',
+        name: 'Deep Listening',
+        tagline: 'Listen to understand, not to respond',
+        steps: [
+          { text: '<strong>Put your response on hold.</strong> Actively decide not to think about what you\'ll say next while they\'re speaking. Your only job is to understand.' },
+          { text: '<strong>Track the experience, not just the facts.</strong> What is this like for them? What\'s the emotion underneath the words? What matters to them about this?' },
+          { text: '<strong>Reflect before responding.</strong> \"It sounds like...\" or \"What I\'m hearing is...\" — check your understanding before offering anything else.' },
+          { text: '<strong>Ask before advising.</strong> \"Do you want input or do you just need to be heard?\" Most people need to be heard first.' }
+        ],
+        science: 'Carl Rogers\' person-centred research: feeling genuinely understood — not just heard — is one of the most powerful therapeutic and relational factors. It is also one of the rarest experiences in everyday conversation.'
+      },
+      'tool-honest-expression': {
+        emoji: '💬',
+        name: 'Honest Expression',
+        tagline: 'Say what\'s true in a way the other person can receive',
+        steps: [
+          { text: '<strong>Observation, not evaluation.</strong> Start with what actually happened — only observable facts. \"When I noticed X...\" not \"When you did X to me.\"' },
+          { text: '<strong>Feeling, not accusation.</strong> \"I feel...\" followed by an actual emotion (hurt, scared, lonely) — not a thought disguised as a feeling.' },
+          { text: '<strong>Need, not demand.</strong> What underlying need of yours is unmet. \"I need to feel like I matter to you.\"' },
+          { text: '<strong>Request, not ultimatum.</strong> A specific, doable ask. Not a correction of who they are — a concrete action. \"Would you be willing to...?\"' }
+        ],
+        science: 'Nonviolent Communication (Rosenberg): separating observation from evaluation, and needs from demands, removes the blame-and-defend dynamic that blocks most difficult conversations.'
+      },
+      'tool-productive-conflict': {
+        emoji: '⚡',
+        name: 'Productive Conflict',
+        tagline: 'Navigate disagreement toward understanding rather than dominance',
+        steps: [
+          { text: '<strong>Regulate before you engage.</strong> If you\'re flooded, the conversation will make things worse. Wait until calm. This is not avoidance — it\'s strategy.' },
+          { text: '<strong>Start soft.</strong> Begin with your feelings and the situation — not their character. \"I\'ve been feeling disconnected\" not \"You never...\"' },
+          { text: '<strong>Stay specific and present.</strong> This behaviour, this situation — not every time they\'ve ever done this, not what it means about who they are.' },
+          { text: '<strong>Find the valid point.</strong> In almost every conflict the other person has something right. Finding and naming it isn\'t capitulation — it\'s what makes resolution possible.' }
+        ],
+        science: 'John Gottman\'s research: the Four Horsemen (criticism, contempt, defensiveness, stonewalling) predict relationship failure with 94% accuracy. Their antidotes are the foundation of productive conflict.'
+      },
+      'tool-limit-setting': {
+        emoji: '🛡',
+        name: 'Limit Setting',
+        tagline: 'Communicate what you need to stay in relationship',
+        steps: [
+          { text: '<strong>Clarify what\'s actually true.</strong> A limit is about your own behaviour — what you will or won\'t do — not a demand about theirs. \"If X happens, I will do Y.\"' },
+          { text: '<strong>Name the behaviour, not the person.</strong> Specific observable behaviour, not their character. \"When this conversation becomes shouting\" not \"when you become aggressive.\"' },
+          { text: '<strong>State the limit clearly and kindly.</strong> No softening that obscures the message. No harshness that makes it a punishment. Clear, clean, kind.' },
+          { text: '<strong>Follow through.</strong> A limit you don\'t follow through on is not a limit — it\'s a warning that trains people to ignore you.' }
+        ],
+        science: 'Limits are frequently misunderstood as rules imposed on others. Relational health research: limits are about self-respect and self-protection — communicating what you need to remain engaged in relationship.'
+      },
+      'tool-relational-investment': {
+        emoji: '❤️',
+        name: 'Relational Investment',
+        tagline: 'Build the relationships that matter — deliberately',
+        steps: [
+          { text: '<strong>Name your tier-one relationships.</strong> The two or three people whose genuine closeness matters most. Not the most frequent contacts — the most important ones.' },
+          { text: '<strong>Audit your actual investment.</strong> When did you last have a real conversation with each of them? Not catch-up — genuinely present, unhurried time.' },
+          { text: '<strong>Make one specific move.</strong> Not a vague intention — a specific plan: when, what, how. The best relationships have the most attention, not the most time.' },
+          { text: '<strong>Express something true.</strong> The gratitude that\'s been unspoken. The reason they matter. Say it. People rarely hear this from the people who most feel it.' }
+        ],
+        science: 'Robert Waldinger\'s Harvard Study of Adult Development (80+ years): the quality of close relationships is the single strongest predictor of health and happiness in later life — stronger than wealth, fame, or achievement.'
+      },
+
+      // ── LIVING PATHWAY TOOLS ──────────────────────────────────
+      'tool-life-compass': {
+        emoji: '🧭',
+        name: 'The Life Compass',
+        tagline: 'Stay oriented toward what your life is actually for',
+        steps: [
+          { text: '<strong>Name your north.</strong> In one sentence: what is your life actually for? Not what it\'s supposed to be for — what you, from the inside, believe matters most.' },
+          { text: '<strong>Run the alignment check.</strong> Look at last week honestly. Where did your time and energy actually go? Where does that align with your north — and where does it contradict it?' },
+          { text: '<strong>Identify the one drift.</strong> What is the single biggest way your actual life is drifting from your intended one right now? Just one. Name it specifically.' },
+          { text: '<strong>Make one correction.</strong> Not a life overhaul — one small deliberate correction this week. Something you\'ll protect that would otherwise be crowded out.' },
+          { text: '<strong>Return monthly.</strong> Not daily — monthly, or when the drift feels strong. This isn\'t a system. It\'s a direction.' }
+        ],
+        science: 'Self-determination theory (Deci, Ryan): living in alignment with autonomous goals — ones genuinely chosen — produces sustained wellbeing. Living toward externally imposed goals produces short-term compliance and long-term depletion.'
+      },
+      'tool-meaning-check': {
+        emoji: '🕯',
+        name: 'The Meaning Check',
+        tagline: 'Find and tend to what makes your specific life feel worth living',
+        steps: [
+          { text: '<strong>Identify your primary source.</strong> Frankl\'s three: creating/contributing, loving/connecting, attitude toward unavoidable suffering. Which feeds you most right now?' },
+          { text: '<strong>Name the specific thing.</strong> Not \"relationships\" — which relationship, what depth. Not \"work\" — what work, what contribution, what it feels like when it\'s meaningful.' },
+          { text: '<strong>Notice the void without filling it reflexively.</strong> When you feel the emptiness, resist reaching for distraction. Sit with it for 60 seconds. It\'s telling you something.' },
+          { text: '<strong>Protect one meaning-bearing activity this week.</strong> Something that feeds the primary source. Non-negotiable — not the first thing cut when things get busy.' }
+        ],
+        science: 'Viktor Frankl\'s logotherapy and Seligman\'s PERMA research: meaning and engagement are the most stable contributors to wellbeing — more stable than positive emotion, which is highly contingent on circumstances.'
+      },
+      'tool-enough-practice': {
+        emoji: '🌊',
+        name: 'The Enough Practice',
+        tagline: 'Inhabit what\'s already here rather than being permanently displaced by what isn\'t',
+        steps: [
+          { text: '<strong>Name the treadmill when it starts.</strong> When you notice the \"once I have X\" restlessness — say it explicitly: \"There\'s the treadmill.\" Naming it creates a gap.' },
+          { text: '<strong>The 60-second arrival.</strong> Once a day: wherever you are — stop for 60 seconds. Notice what\'s actually present. Not what\'s missing. What\'s here.' },
+          { text: '<strong>Interrupt comparison at the source.</strong> When you notice you\'re comparing your life to someone else\'s — ask: what am I not inhabiting right now because I\'m doing this?' },
+          { text: '<strong>Ask the enough question.</strong> Do I already have enough? Not forever — right now, today. What would change about how I move through this day if the answer was yes?' },
+          { text: '<strong>Let good things be finished.</strong> When something genuinely good is present, resist the immediate pivot to what\'s missing. Let it be complete.' }
+        ],
+        science: 'Hedonic adaptation (Brickman, Campbell) and the arrival fallacy (Ben-Shahar): humans return to a stable emotional baseline regardless of events. Mindfulness research: present-moment awareness directly counteracts hedonic adaptation.'
+      },
+      'tool-relational-inventory': {
+        emoji: '🪞',
+        name: 'The Relational Inventory',
+        tagline: 'Choose deliberately who you are becoming through',
+        steps: [
+          { text: '<strong>Audit your current five.</strong> Who are the five people taking up most of your time and mental space? What are they calling out of you? What are they calling you back to?' },
+          { text: '<strong>Seek the people who make you more yourself.</strong> Notice relationships where you leave feeling more alive, more clear. Protect them. Invest in them deliberately.' },
+          { text: '<strong>Name the inheritance, then choose what to keep.</strong> From your most shaping early relationships, what did you inherit that serves you? What costs you?' },
+          { text: '<strong>Express the unsaid gratitude.</strong> The people who shaped you well deserve to know it. These conversations change both people.' }
+        ],
+        science: 'Social identity and attachment research: identity is substantially constructed in relationship. Emotional contagion research: we absorb the emotional climate of the people we\'re around — their mood, their ambitions, their sense of what\'s possible.'
+      },
+      'tool-day-design': {
+        emoji: '🏗',
+        name: 'The Day Design',
+        tagline: 'Build days that reflect what you actually care about',
+        steps: [
+          { text: '<strong>Protect the deep window.</strong> Identify your 2–4 hour deep attention window and defend it from reactive work. This is where your most meaningful work lives.' },
+          { text: '<strong>Name one non-negotiable per day.</strong> The single thing that makes the day feel real. Not a to-do list — one thing. Name it the night before.' },
+          { text: '<strong>Design the beginning and end.</strong> A beginning that isn\'t reactive sets a different tone. An ending that isn\'t just collapse gives the day a shape.' },
+          { text: '<strong>Leave open space.</strong> At least 30 minutes of genuinely unstructured time. Not a break from tasks — open time. This is where rest and insight live.' },
+          { text: '<strong>Run the weekly review.</strong> Once a week: did my days reflect what I care about? What consistently crowded out what mattered? One adjustment.' }
+        ],
+        science: 'Cal Newport\'s deep work research and Csikszentmihalyi\'s flow theory: meaningful cognitive work requires uninterrupted focus — a state systematically destroyed by the reactive switching mode most people default to.'
+      },
+      'tool-living-deliberately': {
+        emoji: '🌱',
+        name: 'Living Deliberately',
+        tagline: 'Choose your life — continuously, in small acts, over a long time',
+        steps: [
+          { text: '<strong>Be with yourself honestly.</strong> When something is happening inside you, stay with it long enough to understand it rather than immediately managing it away.' },
+          { text: '<strong>Know who you actually are.</strong> Your real values, not the aspirational ones. The patterns that serve you and the ones that cost you.' },
+          { text: '<strong>Let yourself be genuinely known.</strong> Real connection requires saying what\'s actually true, listening to understand, staying with difficulty rather than managing around it.' },
+          { text: '<strong>Stay oriented toward what your life is for.</strong> Meaning, not just comfort. Enough, not just more. Days that have something real in them.' },
+          { text: '<strong>Choose, repeatedly, in small acts.</strong> A chosen life is built in repeated small decisions — what you protect, what you decline, what you say out loud — over time.' }
+        ],
+        science: 'Integration of emotional literacy (Salovey, Mayer), identity coherence (Erikson), relational health (Waldinger, Gottman), and intentional living (Frankl, Csikszentmihalyi). These fields converge: self-awareness, genuine connection, meaning, and conscious choice are the foundations of a life well lived.'
       }
     };
 
@@ -1449,6 +1687,7 @@
       document.getElementById('tab-' + tab).classList.add('nav-tab--active');
 
       activeTab = tab;
+      Nav.setTab(tab);
 
       // Scroll to top of new tab
       const panel = document.getElementById('panel-' + tab);
@@ -1471,50 +1710,42 @@
       greetingEl.innerHTML = `Good <em>${time}</em>`;
 
       // Date
-      const today = new Date();
-      document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        month: 'long', 
-        day: 'numeric' 
-      });
+      document.getElementById('todayDate').textContent =
+        DateTime.formatDate(DateTime.today(), 'long');
 
       // Streak + modules
       document.getElementById('streakCount').textContent =
-        (userState && userState.streak_current) || 0;
-      
-      let modulesDone = 0;
-      if (appState.modules) {
-        modulesDone = Object.values(appState.modules).filter(m => m && m.completed).length;
-      }
-      document.getElementById('modulesCount').textContent = modulesDone;
+        userState.streak_current || 0;
+      document.getElementById('modulesCount').textContent =
+        Object.values(appState.modules || {}).filter(m => m.completed).length;
 
       // Check-in state
       if (todayCheckin) {
         renderCheckinDone(todayCheckin);
       }
+
+      // Next module
+      renderNextModule();
+
+      // Pending reflections
+      if (appState.pendingReflections?.length > 0) {
+        const nudge = document.getElementById('reflectionNudge');
+        const text  = document.getElementById('reflectionNudgeText');
+        const mod   = appState.pendingReflections[0];
+        text.textContent = `Your commitment from ${MODULE_LABELS[mod.module_id] || 'a module'} — how's it going?`;
+        nudge.style.display = 'block';
+      }
     }
 
     function renderCheckinDone(checkin) {
       const card = document.getElementById('checkinCard');
-      
-      const moodEmojis = {
-        'rough': '😞',
-        'anxious': '😰',
-        'okay': '😐',
-        'good': '🙂',
-        'great': '😊'
-      };
-      
-      const moodLabels = {
-        'rough': 'Rough',
-        'anxious': 'Anxious',
-        'okay': 'Okay',
-        'good': 'Good',
-        'great': 'Great'
-      };
-      
-      const emoji = moodEmojis[checkin.mood] || '😐';
-      const label = moodLabels[checkin.mood] || 'Okay';
+      const emoji = Mood.getEmoji(checkin.mood);
+      const label = Mood.getLabel(checkin.mood);
+      const msg   = Mood.getCheckinMessage(
+        checkin.mood,
+        appState?.userState?.streak_current || 0,
+        appState?.userState?.tools_unlocked?.length > 0
+      );
 
       card.classList.add('checkin-card--done');
       card.innerHTML = `
@@ -1523,10 +1754,52 @@
           <span class="checkin-done__emoji">${emoji}</span>
           <div class="checkin-done__text">
             <p class="checkin-done__title">${label} — logged</p>
-            <p class="checkin-done__sub">Thanks for checking in today.</p>
+            <p class="checkin-done__sub">${msg}</p>
           </div>
         </div>
       `;
+
+      // Show suggested tool
+      showSuggestedTool(checkin.mood);
+    }
+
+    function renderNextModule() {
+      const modules  = appState?.modules || {};
+      const pathways = appState?.pathways || {};
+
+      // Find first incomplete, unlocked module
+      const ORDER = [
+        ...PATHWAY_MODULES.emotional,
+        ...PATHWAY_MODULES.identity,
+        ...PATHWAY_MODULES.connection,
+        ...PATHWAY_MODULES.living
+      ];
+
+      let nextMod = null;
+      for (const modId of ORDER) {
+        const m = modules[modId];
+        if (m && m.unlocked && !m.completed) {
+          nextMod = { id: modId, ...m };
+          break;
+        }
+      }
+
+      if (!nextMod) {
+        // All done
+        document.getElementById('continueCard').style.display = 'none';
+        return;
+      }
+
+      const pathwayKey = MODULE_PATHWAY_MAP[nextMod.id];
+      const modNum     = PATHWAY_MODULES[pathwayKey].indexOf(nextMod.id) + 1;
+
+      document.getElementById('nextModuleNum').textContent    = modNum;
+      document.getElementById('nextModuleTitle').textContent  = MODULE_LABELS[nextMod.id] || '';
+      document.getElementById('nextModulePathway').textContent = PATHWAY_LABELS[pathwayKey] || '';
+
+      // Store for click handler
+      document.getElementById('continueCard').dataset.moduleId = nextMod.id;
+      document.getElementById('continueCard').dataset.pathway  = pathwayKey;
     }
 
     // ── Check-in ──────────────────────────────────────────
@@ -1553,49 +1826,210 @@
       btn.disabled    = true;
       btn.textContent = 'Saving...';
 
-      // Simulate saving (replace with actual DB call)
-      setTimeout(() => {
+      const { error } = await DB.saveCheckin(currentUser.id, selectedMood, note);
+
+      if (error) {
         btn.disabled    = false;
         btn.textContent = 'Log check-in';
-        
-        // Update local state
-        appState = appState || {};
-        appState.todayCheckin = { mood: selectedMood, note, date: new Date().toISOString() };
-        if (!appState.userState) appState.userState = {};
-        appState.userState.streak_current = (appState.userState.streak_current || 0) + 1;
+        UI.showToast('Could not save check-in. Try again.', 'error');
+        return;
+      }
 
-        // Re-render
-        renderCheckinDone(appState.todayCheckin);
+      // Update local state
+      appState.todayCheckin = { mood: selectedMood, note, date: DateTime.today() };
+      appState.userState.streak_current = (appState.userState.streak_current || 0) + 1;
 
-        // Update streak chips
-        document.getElementById('streakCount').textContent =
-          appState.userState.streak_current;
+      // Re-render
+      renderCheckinDone(appState.todayCheckin);
 
-        alert('Check-in saved!');
-      }, 500);
+      // Update streak chips
+      document.getElementById('streakCount').textContent =
+        appState.userState.streak_current;
+
+      UI.showToast('Check-in saved 🌑');
     }
 
     // ── Suggested tool ────────────────────────────────────
 
+    function showSuggestedTool(mood) {
+      const suggestions = Mood.getToolSuggestions(mood);
+      const unlocked    = new Set(appState?.userState?.tools_unlocked || []);
+      const freeCrisis  = new Set(CRISIS_TOOLS.map(t => t.id));
+
+      // Find first available suggestion
+      let tool = null;
+      for (const toolId of suggestions) {
+        if (unlocked.has(toolId) || freeCrisis.has(toolId) || FREE_TOOLS.has(toolId)) {
+          const def = EARNED_TOOL_DEFS[toolId] ||
+                      CRISIS_TOOLS.find(t => t.id === toolId);
+          if (def) { tool = { id: toolId, ...def }; break; }
+        }
+      }
+
+      if (!tool) return;
+
+      document.getElementById('suggestedToolEmoji').textContent = tool.emoji;
+      document.getElementById('suggestedToolName').textContent  = tool.name;
+      document.getElementById('suggestedToolWhy').textContent   =
+        `Based on your ${Mood.getLabel(mood).toLowerCase()} check-in`;
+
+      document.getElementById('suggestedTool').style.display = 'block';
+      document.getElementById('suggestedTool').dataset.toolId = tool.id;
+    }
+
     function openSuggestedTool() {
-      alert('Open suggested tool - to be implemented');
+      const toolId = document.getElementById('suggestedTool').dataset.toolId;
+      if (toolId) openToolModal(toolId, 'checkin-suggestion');
     }
 
     function goToNextModule() {
-      alert('Go to next module - to be implemented');
+      const card     = document.getElementById('continueCard');
+      const moduleId = card.dataset.moduleId;
+      const pathway  = card.dataset.pathway;
+      if (!moduleId) return;
+      Nav.go(`/pathways/${pathway}/${moduleId}.html`);
     }
 
     function goToReflection() {
-      alert('Go to reflection - to be implemented');
+      const mod = appState?.pendingReflections?.[0];
+      if (mod) Nav.go(`/pathways/${MODULE_PATHWAY_MAP[mod.module_id]}/${mod.module_id}.html?reflect=true`);
     }
 
     // ================================================================
-    // SIGN OUT
+    // LEARN TAB
     // ================================================================
 
-    async function handleSignOut() {
-      if (!confirm('Sign out of InnerShadow?')) return;
-      window.location.href = '/index.html';
+    function renderLearn() {
+      if (!appState) return;
+
+      const { pathways, modules } = appState;
+      const list = document.getElementById('pathwaysList');
+
+      const pathwayOrder = ['emotional', 'identity', 'connection', 'living'];
+
+      list.innerHTML = pathwayOrder.map(key => {
+        const pw      = pathways[key] || {};
+        const mods    = PATHWAY_MODULES[key];
+        const done    = mods.filter(id => modules[id]?.completed).length;
+        const total   = mods.length;
+        const pct     = Math.round((done / total) * 100);
+        const locked  = !pw.unlocked;
+        const active  = pw.started && !pw.completed;
+
+        return `
+          <div class="pw-card ${locked ? 'pw-card--locked' : ''} ${active ? 'pw-card--active' : ''}"
+               onclick="${locked ? '' : `goToPathway('${key}')`}">
+            <div class="pw-card__header">
+              <span class="pw-card__emoji">${PATHWAY_ICONS[key]}</span>
+              <div class="pw-card__meta">
+                <p class="pw-card__name">${PATHWAY_LABELS[key]}</p>
+                <p class="pw-card__sub">${done} of ${total} modules complete</p>
+              </div>
+              ${locked ? '<span class="pw-card__lock">🔒</span>' : ''}
+            </div>
+            <div class="pw-card__progress">
+              <div class="pw-card__bar">
+                <div class="pw-card__bar-fill" style="width:${pct}%"></div>
+              </div>
+              <span class="pw-card__pct ${active ? 'pw-card__pct--active' : ''}">${pct}%</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function goToPathway(key) {
+      Nav.go(`/pathways/${key}/overview.html`);
+    }
+
+    // ================================================================
+    // TOOLS TAB
+    // ================================================================
+
+    function renderTools() {
+      if (!appState) return;
+
+      const unlocked = new Set(appState?.userState?.tools_unlocked || []);
+
+      // Crisis tools
+      document.getElementById('crisisToolsList').innerHTML =
+        CRISIS_TOOLS.map(t => renderToolRow(t, 'crisis')).join('');
+
+      // Earned tools
+      const earned = Object.entries(EARNED_TOOL_DEFS)
+        .filter(([id]) => unlocked.has(id));
+
+      const locked = Object.entries(EARNED_TOOL_DEFS)
+        .filter(([id]) => !unlocked.has(id));
+
+      if (earned.length > 0) {
+        document.getElementById('earnedToolsList').innerHTML =
+          earned.map(([id, t]) => renderToolRow({ id, ...t }, 'earned')).join('');
+      } else {
+        document.getElementById('earnedToolsList').innerHTML = `
+          <div style="padding:1rem;text-align:center;color:var(--text-muted);font-size:0.875rem;line-height:1.6">
+            Complete modules to earn tools.<br>Your first one is waiting.
+          </div>
+        `;
+      }
+
+      if (locked.length > 0) {
+        document.getElementById('lockedToolsLabel').style.display = 'block';
+        document.getElementById('lockedToolsList').innerHTML =
+          locked.map(([id, t]) => renderToolRow({ id, ...t }, 'locked')).join('');
+      }
+    }
+
+    function renderToolRow(tool, type) {
+      const isLocked = type === 'locked';
+      const isCrisis = type === 'crisis';
+
+      return `
+        <div class="tool-row ${isLocked ? 'tool-row--locked' : ''} ${isCrisis ? 'tool-row--crisis' : ''}"
+             onclick="${isLocked ? '' : `openToolModal('${tool.id}', '${type}')`}">
+          <span class="tool-row__emoji">${tool.emoji}</span>
+          <div class="tool-row__body">
+            <p class="tool-row__name">${tool.name}</p>
+            <p class="tool-row__desc">${tool.tagline}</p>
+          </div>
+          ${isLocked ? '<span class="tool-row__lock">🔒</span>' : '<span style="color:var(--text-muted);font-size:0.875rem">→</span>'}
+        </div>
+      `;
+    }
+
+    // ================================================================
+    // YOU TAB
+    // ================================================================
+
+    function renderYou() {
+      if (!appState || !currentUser) return;
+
+      const { userState, modules } = appState;
+
+      // Name from email
+      const email    = currentUser.email || '';
+      const name     = currentUser.user_metadata?.full_name ||
+                       email.split('@')[0] || 'You';
+      document.getElementById('userName').textContent = name;
+
+      // Member since
+      const since = currentUser.created_at
+        ? DateTime.formatDate(currentUser.created_at.slice(0,10), 'medium')
+        : 'today';
+      document.getElementById('userSince').textContent = `Member since ${since}`;
+
+      // Stats
+      document.getElementById('statStreak').textContent =
+        userState?.streak_current || 0;
+      document.getElementById('statModules').textContent =
+        Object.values(modules || {}).filter(m => m.completed).length;
+      document.getElementById('statTools').textContent =
+        (userState?.tools_unlocked || []).length;
+
+      // Hide pro banner if already pro
+      if (userState?.is_pro) {
+        document.getElementById('proBanner').style.display = 'none';
+      }
     }
 
     // ================================================================
@@ -1608,10 +2042,7 @@
                      ? { id: toolId, ...EARNED_TOOL_DEFS[toolId] }
                      : null);
 
-      if (!tool) {
-        alert('Tool not found');
-        return;
-      }
+      if (!tool) return;
 
       activeToolId = toolId;
 
@@ -1649,6 +2080,11 @@
       `;
 
       document.getElementById('toolModal').classList.add('modal-overlay--show');
+
+      // Record usage
+      if (currentUser) {
+        DB.recordToolUsage(currentUser.id, toolId, triggeredFrom).catch(() => {});
+      }
     }
 
     function closeToolModal(e) {
@@ -1659,8 +2095,19 @@
 
     function markToolDone() {
       document.getElementById('toolModal').classList.remove('modal-overlay--show');
-      alert('Good work. That takes practice.');
+      UI.showToast('Good work. That takes practice.', 'success');
       activeToolId = null;
+    }
+
+    // ================================================================
+    // SIGN OUT
+    // ================================================================
+
+    async function handleSignOut() {
+      if (!confirm('Sign out of InnerShadow?')) return;
+      UI.showLoading('Signing out...');
+      await Auth.signOut();
+      window.location.href = '/index.html';
     }
 
     // ================================================================
@@ -1668,12 +2115,10 @@
     // ================================================================
 
     async function init() {
-      // Simulate loading user (replace with actual auth check)
-      currentUser = { 
-        id: 'test-user',
-        email: 'user@example.com',
-        created_at: new Date().toISOString()
-      };
+      const session = await Auth.requireAuth('/index.html');
+      if (!session) return;
+
+      currentUser = session.user;
 
       // Check disclaimer
       const disclaimerOk = localStorage.getItem('innershadow_disclaimer_acknowledged');
@@ -1682,38 +2127,62 @@
         return;
       }
 
-      // Initialize app state
-      appState = {
-        userState: {
-          streak_current: 3,
-          tools_unlocked: ['tool-name-it', 'tool-body-check']
-        },
-        modules: {
-          'mod-1': { completed: true },
-          'mod-2': { completed: false, unlocked: true }
-        },
-        pathways: {
-          emotional: { unlocked: true, started: true, completed: false },
-          identity: { unlocked: false },
-          connection: { unlocked: false },
-          living: { unlocked: false }
+      // Load from cache instantly for perceived speed
+      const cached = Cache.load();
+      if (cached) {
+        appState = cached;
+        renderAll();
+        UI.markLoaded(0);
+      }
+
+      // Load fresh from Supabase
+      try {
+        const fresh = await DB.loadFullState(currentUser.id);
+        if (fresh) {
+          appState = fresh;
+          Cache.save(fresh);
+          renderAll();
         }
-      };
+      } catch (err) {
+        console.error('[App] State load failed:', err);
+      }
 
-      renderAll();
+      if (!cached) UI.markLoaded();
 
-      // Hide loading
-      document.body.classList.add('loaded');
+      // Handle tab from URL param
+      const tab = Nav.getCurrentTab('today');
+      if (tab !== 'today') switchTab(tab);
+
+      // Handle action param (e.g. ?action=checkin)
+      const action = Nav.getParam('action');
+      if (action === 'checkin') {
+        switchTab('today');
+        document.getElementById('checkinCard').scrollIntoView({ behavior: 'smooth' });
+      }
     }
 
     function renderAll() {
       renderToday();
-      // renderLearn();
-      // renderTools();
-      // renderYou();
+      renderLearn();
+      renderTools();
+      renderYou();
     }
 
     document.addEventListener('DOMContentLoaded', init);
+
+    // Refresh state when app comes back into focus
+    document.addEventListener('visibilitychange', async () => {
+      if (document.visibilityState === 'visible' && currentUser) {
+        try {
+          const fresh = await DB.loadFullState(currentUser.id);
+          if (fresh) {
+            appState = fresh;
+            Cache.save(fresh);
+            renderAll();
+          }
+        } catch (err) {}
+      }
+    });
   </script>
 
   <script>
