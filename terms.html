@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>InnerShadow – Terms of Service</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    html, body { position: fixed; width: 100%; height: 100%; overflow: hidden; }
+    body { display: flex; align-items: center; justify-content: center; background: var(--bg-dark); }
+    .shell {
+      width: 100%; max-width: 28rem; height: 100vh; height: -webkit-fill-available;
+      background: var(--bg-card); display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+      border-left: 1px solid var(--border-subtle); border-right: 1px solid var(--border-subtle);
+    }
+    .scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .scroll-area::-webkit-scrollbar { display: none; }
+    .inner { padding: max(1.5rem, env(safe-area-inset-top)) 1.375rem max(3rem, env(safe-area-inset-bottom)); }
+
+```
+.page-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+.back-btn {
+  width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.875rem;
+  color: var(--text-primary); font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast);
+}
+.back-btn:active { transform: scale(0.92); }
+.page-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; }
+
+.doc-meta { font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+
+.toc-card {
+  background: var(--bg-card-light); border: 1px solid var(--border-soft);
+  border-radius: 1rem; padding: 1rem 1.125rem; margin: 1.25rem 0;
+}
+.toc-card p { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.5rem; }
+.toc-card a { display: block; font-size: 0.875rem; color: var(--text-teal); text-decoration: none; line-height: 2; }
+
+.alert-card {
+  background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05));
+  border: 1px solid rgba(239,68,68,0.25); border-radius: 1rem;
+  padding: 1.125rem; margin-bottom: 1.25rem;
+}
+.alert-card p { margin-bottom: 0; color: var(--text-primary); font-size: 0.875rem; line-height: 1.7; }
+.alert-card strong { color: #f87171; }
+
+.caps-card {
+  background: var(--bg-card-light); border: 1px solid var(--border-soft);
+  border-radius: 1rem; padding: 1.125rem; margin-bottom: 1.25rem;
+}
+.caps-card p {
+  margin-bottom: 0; font-size: 0.8125rem; color: var(--text-secondary);
+  line-height: 1.8; font-weight: 600; letter-spacing: 0.01em;
+}
+
+.arb-card {
+  background: linear-gradient(135deg, rgba(251,191,36,0.1), rgba(251,191,36,0.04));
+  border: 1px solid rgba(251,191,36,0.25); border-radius: 1rem;
+  padding: 1.125rem; margin-bottom: 1.25rem;
+}
+.arb-card p { margin-bottom: 0; font-size: 0.875rem; color: var(--text-primary); line-height: 1.7; }
+.arb-card strong { color: var(--text-amber); }
+
+h2 { font-size: 1.0625rem; font-weight: 700; color: var(--text-primary); margin: 2rem 0 0.625rem; padding-top: 0.25rem; }
+h3 { font-size: 0.9375rem; font-weight: 700; color: var(--text-secondary); margin: 1.25rem 0 0.375rem; }
+p { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 0.75rem; }
+ul, ol { padding-left: 1.25rem; margin-bottom: 0.875rem; }
+li { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 0.2rem; }
+strong { color: var(--text-primary); font-weight: 600; }
+hr { border: none; border-top: 1px solid var(--border-subtle); margin: 1.75rem 0; }
+
+.contact-card {
+  background: var(--bg-card-light); border: 1px solid var(--border-soft);
+  border-radius: 1rem; padding: 1.125rem; margin-top: 1.25rem;
+}
+.contact-card p { margin-bottom: 0.25rem; font-size: 0.875rem; }
+.contact-card p:last-child { margin-bottom: 0; }
+
+@media (min-width: 640px) { .shell { height: 844px; max-height: 92vh; border-radius: 2.5rem; border: 1px solid var(--border-subtle); } }
+```
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--amber"></div>
+    <div class="scroll-area">
+      <div class="inner">
+
+```
+    <div class="page-header">
+      <button class="back-btn" onclick="Nav.back('/settings.html')">←</button>
+      <h1 class="page-title">Terms of Service</h1>
+    </div>
+
+    <p class="doc-meta">Effective date: January 1, 2025</p>
+    <p class="doc-meta" style="margin-bottom:1rem">Last updated: January 1, 2025</p>
+
+    <div class="alert-card">
+      <p><strong>Not a medical or clinical service.</strong> InnerShadow provides psychoeducational content only. Using this Service does not create a clinical, therapeutic, or physician-patient relationship. <strong>This is not a substitute for professional mental health care.</strong> If you are experiencing a mental health emergency, call 988 or 911.</p>
+    </div>
+
+    <div class="toc-card">
+      <p>Contents</p>
+      <a href="#acceptance">1. Acceptance of terms</a>
+      <a href="#description">2. Description of Service</a>
+      <a href="#eligibility">3. Eligibility</a>
+      <a href="#accounts">4. Accounts</a>
+      <a href="#subscriptions">5. Subscriptions and payments</a>
+      <a href="#license">6. License to use the Service</a>
+      <a href="#user-content">7. Your content</a>
+      <a href="#prohibited">8. Prohibited conduct</a>
+      <a href="#health-disclaimer">9. Health and mental health disclaimer</a>
+      <a href="#disclaimers">10. Disclaimers of warranties</a>
+      <a href="#liability">11. Limitation of liability</a>
+      <a href="#indemnification">12. Indemnification</a>
+      <a href="#arbitration">13. Dispute resolution and arbitration</a>
+      <a href="#governing-law">14. Governing law and venue</a>
+      <a href="#termination">15. Termination</a>
+      <a href="#force-majeure">16. Force majeure</a>
+      <a href="#general">17. General provisions</a>
+      <a href="#contact">18. Contact</a>
+    </div>
+
+    <hr>
+
+    <h2 id="acceptance">1. Acceptance of Terms</h2>
+    <p>These Terms of Service ("Terms") constitute a legally binding agreement between you ("User," "you," "your") and InnerShadow ("InnerShadow," "we," "us," "our") governing your access to and use of the InnerShadow application and related services (collectively, the "Service").</p>
+    <p><strong>By creating an account, clicking "I agree," or otherwise accessing or using the Service, you confirm that you have read, understood, and agree to be bound by these Terms and our Privacy Policy, which is incorporated herein by reference.</strong></p>
+    <p>If you do not agree to these Terms in their entirety, you may not access or use the Service. Your continued use of the Service following any updates to these Terms constitutes acceptance of the revised Terms.</p>
+
+    <hr>
+
+    <h2 id="description">2. Description of Service</h2>
+    <p>InnerShadow is a self-guided psychoeducation platform that provides structured educational content, reflective exercises, and personal development tools across four subject areas: emotional foundations, self-knowledge, interpersonal connection, and intentional living.</p>
+    <p>The Service is designed to support personal growth, self-understanding, and emotional literacy through educational content. <strong>It is not a mental health treatment, clinical intervention, diagnostic tool, or medical device.</strong> It does not provide therapy, counselling, psychiatric care, crisis intervention, or any form of clinical mental health services.</p>
+    <p>InnerShadow does not establish a therapist-patient, counsellor-client, physician-patient, or any other professional clinical relationship between InnerShadow and any User.</p>
+
+    <hr>
+
+    <h2 id="eligibility">3. Eligibility</h2>
+    <p>To use the Service, you must:</p>
+    <ul>
+      <li>Be at least 13 years of age. Users between 13 and 17 must have the consent of a parent or legal guardian, who accepts these Terms on their behalf.</li>
+      <li>Have the legal capacity to enter into a binding contract</li>
+      <li>Not be prohibited from using the Service under applicable law</li>
+      <li>Not have had a previous account terminated for violations of these Terms</li>
+    </ul>
+    <p>By using the Service, you represent and warrant that you meet all eligibility requirements. If you are accepting these Terms on behalf of a minor in your care, you accept personal responsibility for all obligations under these Terms with respect to that minor's use of the Service.</p>
+
+    <hr>
+
+    <h2 id="accounts">4. Accounts</h2>
+    <p>You must create an account to access the Service. You agree to:</p>
+    <ul>
+      <li>Provide accurate, current, and complete information during registration and keep it updated</li>
+      <li>Maintain the confidentiality of your account credentials and not share them with third parties</li>
+      <li>Notify us immediately at support@innershadow.app if you suspect unauthorised access to your account</li>
+      <li>Accept responsibility for all activity that occurs under your account</li>
+    </ul>
+    <p>We reserve the right to disable any account that we reasonably believe has been compromised, is being used in violation of these Terms, or poses a risk to other users or the Service.</p>
+
+    <hr>
+
+    <h2 id="subscriptions">5. Subscriptions and Payments</h2>
+
+    <h3>5.1 Free and paid tiers</h3>
+    <p>InnerShadow offers a free tier with access to a limited number of modules, and a paid Pro subscription that unlocks full access to all content. The specific features available at each tier are described in the Service and are subject to change.</p>
+
+    <h3>5.2 Billing</h3>
+    <p>Pro subscriptions are billed in advance on a monthly or annual basis, as selected at purchase. All payments are processed by Stripe, Inc. By providing payment information, you authorise us (through Stripe) to charge the applicable fees to your payment method on a recurring basis.</p>
+
+    <h3>5.3 Free trial</h3>
+    <p>We may offer free trial periods at our discretion. At the end of a free trial, you will be automatically charged unless you cancel before the trial ends.</p>
+
+    <h3>5.4 Price changes</h3>
+    <p>We reserve the right to change subscription prices. We will provide at least 30 days' advance notice of any price increase by email or in-app notice. Price changes take effect at the start of your next billing cycle following the notice period.</p>
+
+    <h3>5.5 Cancellation</h3>
+    <p>You may cancel your subscription at any time through your account settings or by contacting support@innershadow.app. Cancellation takes effect at the end of your current paid billing period. You retain access to Pro features through the end of the period for which you have paid.</p>
+
+    <h3>5.6 Refunds</h3>
+    <p>New Pro subscribers may request a full refund within 7 days of their initial purchase by contacting support@innershadow.app with the subject line "Refund Request." After this 7-day period, all fees are non-refundable except where required by applicable law. Fees for prior billing periods are non-refundable.</p>
+
+    <h3>5.7 Taxes</h3>
+    <p>Prices displayed may not include applicable taxes. You are responsible for all applicable taxes arising from your purchase. Where required by law, we will collect and remit applicable sales taxes.</p>
+
+    <hr>
+
+    <h2 id="license">6. License to Use the Service</h2>
+    <p>Subject to your compliance with these Terms, InnerShadow grants you a limited, non-exclusive, non-transferable, revocable, personal license to access and use the Service for your own personal, non-commercial purposes.</p>
+    <p>This license does not include the right to:</p>
+    <ul>
+      <li>Copy, modify, distribute, sell, or sublicense any part of the Service or its content</li>
+      <li>Reverse engineer, decompile, or disassemble any software component of the Service</li>
+      <li>Use the Service for commercial purposes or on behalf of a third party</li>
+      <li>Scrape, mine, or systematically extract data from the Service</li>
+      <li>Use the Service's content, frameworks, or curriculum in other products or services</li>
+    </ul>
+    <p>All rights not expressly granted are reserved by InnerShadow. The Service and all content within it (excluding User Content) are protected by copyright, trademark, and other intellectual property laws.</p>
+
+    <hr>
+
+    <h2 id="user-content">7. Your Content</h2>
+    <p>You retain ownership of all content you submit to the Service, including worksheet responses and personal reflections ("User Content"). By submitting User Content, you grant InnerShadow a limited, non-exclusive, royalty-free license to store, process, and display your User Content solely as necessary to provide the Service to you.</p>
+    <p>You represent and warrant that you have all rights necessary to submit User Content and that it does not violate any third-party rights or applicable laws.</p>
+    <p>We will handle your User Content in accordance with our Privacy Policy. We do not claim ownership of your reflections, use them to train AI models, or sell them to third parties.</p>
+
+    <hr>
+
+    <h2 id="prohibited">8. Prohibited Conduct</h2>
+    <p>You agree not to use the Service to:</p>
+    <ul>
+      <li>Violate any applicable federal, state, local, or international law or regulation</li>
+      <li>Impersonate any person or entity or misrepresent your affiliation with any person or entity</li>
+      <li>Attempt to gain unauthorised access to any portion of the Service or any other systems or networks connected to the Service</li>
+      <li>Interfere with or disrupt the integrity or performance of the Service</li>
+      <li>Upload or transmit viruses or any other malicious code</li>
+      <li>Harvest or collect email addresses or other personal information of other users</li>
+      <li>Use the Service in any manner that could harm, defame, harass, or threaten any person</li>
+      <li>Use the Service for any commercial purpose not expressly authorised by InnerShadow</li>
+      <li>Circumvent any technical measures we use to protect the Service or enforce these Terms</li>
+    </ul>
+    <p>Violation of these prohibitions may result in immediate termination of your account and may expose you to civil or criminal liability.</p>
+
+    <hr>
+
+    <h2 id="health-disclaimer">9. Health and Mental Health Disclaimer</h2>
+    <p>This section is critically important. Please read it carefully.</p>
+
+    <h3>9.1 Not a medical device or clinical service</h3>
+    <p>InnerShadow is a psychoeducation application. It has not been evaluated, cleared, or approved by the U.S. Food and Drug Administration (FDA) or any other regulatory authority as a medical device, diagnostic tool, or treatment for any mental health condition. The Service is not intended to diagnose, treat, cure, or prevent any disease or mental health disorder.</p>
+
+    <h3>9.2 No clinical relationship</h3>
+    <p>Your use of the Service does not create any clinical, therapeutic, counselling, or physician-patient relationship between you and InnerShadow or any of its employees, contractors, or content creators. Nothing in the Service constitutes professional mental health advice, and no content should be interpreted as such.</p>
+
+    <h3>9.3 Not a substitute for professional care</h3>
+    <p>InnerShadow is not a substitute for professional mental health treatment. If you are experiencing mental health symptoms, emotional distress, suicidal ideation, or any condition requiring professional care, you should seek help from a qualified mental health professional. Do not delay seeking professional help because of something you have read or experienced in the Service.</p>
+
+    <h3>9.4 Crisis situations</h3>
+    <p><strong>InnerShadow does not provide crisis intervention services and is not designed for use during mental health emergencies.</strong> If you are experiencing a mental health crisis, suicidal thoughts, or are in immediate danger, you must:</p>
+    <ul>
+      <li>Call or text <strong>988</strong> (Suicide and Crisis Lifeline, available 24/7)</li>
+      <li>Call <strong>911</strong> or go to your nearest emergency room</li>
+      <li>Contact the Crisis Text Line by texting HOME to <strong>741741</strong></li>
+    </ul>
+    <p>InnerShadow expressly disclaims any liability for harm, death, or injury resulting from reliance on the Service during a crisis situation or in lieu of emergency services.</p>
+
+    <h3>9.5 Individual results vary</h3>
+    <p>The educational content in InnerShadow reflects evidence-informed frameworks and psychological research. However, individual responses to psychoeducational content vary significantly. InnerShadow makes no representations or warranties that use of the Service will produce any particular outcome, improvement in wellbeing, or therapeutic benefit.</p>
+
+    <hr>
+
+    <h2 id="disclaimers">10. Disclaimers of Warranties</h2>
+
+    <div class="caps-card">
+      <p>THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED. TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, INNERSHADOW EXPRESSLY DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.</p>
+      <p style="margin-top:0.75rem">INNERSHADOW DOES NOT WARRANT THAT: (A) THE SERVICE WILL BE UNINTERRUPTED, TIMELY, SECURE, OR ERROR-FREE; (B) THE RESULTS OBTAINED FROM USE OF THE SERVICE WILL BE ACCURATE OR RELIABLE; (C) ANY ERRORS IN THE SERVICE WILL BE CORRECTED; OR (D) THE SERVICE OR THE SERVERS THAT MAKE IT AVAILABLE ARE FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.</p>
+      <p style="margin-top:0.75rem">SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OF CERTAIN WARRANTIES. IN SUCH JURISDICTIONS, THE ABOVE EXCLUSIONS APPLY TO THE MAXIMUM EXTENT PERMITTED BY LAW.</p>
+    </div>
+
+    <hr>
+
+    <h2 id="liability">11. Limitation of Liability</h2>
+
+    <div class="caps-card">
+      <p>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, INNERSHADOW AND ITS OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, AFFILIATES, AND LICENSORS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, PUNITIVE, OR EXEMPLARY DAMAGES, INCLUDING BUT NOT LIMITED TO DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA, OR OTHER INTANGIBLE LOSSES, ARISING OUT OF OR RELATING TO YOUR USE OF OR INABILITY TO USE THE SERVICE, EVEN IF INNERSHADOW HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+      <p style="margin-top:0.75rem">IN NO EVENT SHALL INNERSHADOW'S TOTAL CUMULATIVE LIABILITY TO YOU FOR ALL CLAIMS ARISING OUT OF OR RELATING TO THESE TERMS OR THE SERVICE EXCEED THE GREATER OF (A) THE TOTAL AMOUNT YOU PAID TO INNERSHADOW IN THE TWELVE (12) MONTHS IMMEDIATELY PRECEDING THE CLAIM, OR (B) ONE HUNDRED U.S. DOLLARS ($100.00).</p>
+      <p style="margin-top:0.75rem">THE LIMITATIONS IN THIS SECTION APPLY TO ALL CAUSES OF ACTION, WHETHER BASED IN CONTRACT, TORT, STRICT LIABILITY, OR OTHERWISE. SOME JURISDICTIONS DO NOT ALLOW CERTAIN LIMITATIONS OF LIABILITY, IN WHICH CASE THESE LIMITATIONS APPLY TO THE EXTENT PERMITTED BY APPLICABLE LAW.</p>
+    </div>
+
+    <hr>
+
+    <h2 id="indemnification">12. Indemnification</h2>
+    <p>You agree to defend, indemnify, and hold harmless InnerShadow and its officers, directors, employees, contractors, agents, affiliates, and licensors from and against any and all claims, damages, losses, liabilities, costs, and expenses (including reasonable attorneys' fees) arising out of or related to:</p>
+    <ul>
+      <li>Your use of the Service or any activity conducted through your account</li>
+      <li>Your breach of these Terms or any representation or warranty made by you herein</li>
+      <li>Your violation of any third-party right, including any intellectual property right, privacy right, or applicable law</li>
+      <li>Any User Content you submit to the Service</li>
+      <li>Any claim that your User Content caused damage to a third party</li>
+    </ul>
+    <p>InnerShadow reserves the right, at its own expense, to assume the exclusive defence and control of any matter subject to indemnification by you, in which case you agree to cooperate fully with InnerShadow in asserting any available defences.</p>
+
+    <hr>
+
+    <h2 id="arbitration">13. Dispute Resolution and Arbitration</h2>
+
+    <div class="arb-card">
+      <p><strong>Please read this section carefully. It affects your legal rights.</strong> It requires binding arbitration for most disputes and limits how you can seek relief.</p>
+    </div>
+
+    <h3>13.1 Informal resolution first</h3>
+    <p>Before initiating any formal dispute resolution, you agree to contact us at legal@innershadow.app and provide a written description of the dispute, your proposed resolution, and your contact information. We will attempt to resolve the dispute informally within 30 days. Either party may proceed to arbitration if the dispute is not resolved within that period.</p>
+
+    <h3>13.2 Binding arbitration</h3>
+    <p>Except as set forth in Section 13.4, you and InnerShadow agree that any dispute, claim, or controversy arising out of or relating to these Terms or the Service — including questions of arbitrability — shall be resolved by binding individual arbitration administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules, rather than in court.</p>
+    <p>The arbitration shall be conducted in English. For claims under $10,000, the arbitration may be conducted by documents only, by telephone, or by videoconference. For claims over $10,000, the arbitration shall take place in New York County, New York, unless otherwise agreed.</p>
+
+    <h3>13.3 Class action waiver</h3>
+    <p><strong>YOU AND INNERSHADOW AGREE THAT EACH MAY BRING CLAIMS AGAINST THE OTHER ONLY IN YOUR OR ITS INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS, COLLECTIVE, REPRESENTATIVE, OR MULTI-PLAINTIFF ACTION OR PROCEEDING.</strong> The arbitrator may not consolidate more than one person's claims and may not preside over any form of class or representative proceeding.</p>
+    <p>If this class action waiver is found unenforceable, then the agreement to arbitrate shall be null and void with respect to that claim only, and the parties agree to litigate that claim in accordance with Section 14.</p>
+
+    <h3>13.4 Exceptions to arbitration</h3>
+    <p>Notwithstanding the above, either party may seek relief in small claims court for disputes within the scope of such court's jurisdiction. Either party may also seek emergency injunctive or equitable relief in any court of competent jurisdiction to prevent irreparable harm pending arbitration.</p>
+
+    <h3>13.5 Arbitration costs</h3>
+    <p>Payment of all AAA filing, administration, and arbitrator fees shall be governed by AAA's Consumer Arbitration Rules. InnerShadow will pay all arbitration fees for claims under $75,000, unless the arbitrator determines the claim was frivolous. You are responsible for your own attorneys' fees unless applicable law or the arbitrator's award provides otherwise.</p>
+
+    <h3>13.6 Opt-out</h3>
+    <p>You may opt out of this arbitration agreement within 30 days of creating your account by sending written notice to legal@innershadow.app with the subject line "Arbitration Opt-Out," including your full name and registered email address. Opting out does not affect any other terms.</p>
+
+    <hr>
+
+    <h2 id="governing-law">14. Governing Law and Venue</h2>
+    <p>These Terms and any dispute arising hereunder shall be governed by and construed in accordance with the laws of the State of New York, without regard to its conflict of law principles.</p>
+    <p>For any dispute not subject to arbitration under Section 13, or if the arbitration agreement is found unenforceable, you and InnerShadow consent to the exclusive personal jurisdiction and venue of the state and federal courts located in New York County, State of New York. You waive any objection to jurisdiction or venue in such courts.</p>
+    <p>The United Nations Convention on Contracts for the International Sale of Goods does not apply to these Terms.</p>
+
+    <hr>
+
+    <h2 id="termination">15. Termination</h2>
+
+    <h3>15.1 Termination by you</h3>
+    <p>You may terminate your account and these Terms at any time by deleting your account through the settings page or by contacting support@innershadow.app. Termination does not entitle you to a refund of any prepaid fees, except as provided in our refund policy.</p>
+
+    <h3>15.2 Termination by InnerShadow</h3>
+    <p>We may suspend or terminate your access to the Service at any time, with or without notice, for any reason, including if we reasonably believe you have violated these Terms, if required by law, or if we discontinue the Service. We will make reasonable efforts to provide advance notice of termination except where prohibited or impracticable.</p>
+
+    <h3>15.3 Effect of termination</h3>
+    <p>Upon termination: your license to use the Service ends; you must cease all use of the Service; provisions that by their nature should survive termination shall survive, including Sections 7, 9, 10, 11, 12, 13, 14, and 17.</p>
+    <p>Following account deletion, we will process deletion of your personal data in accordance with our Privacy Policy.</p>
+
+    <hr>
+
+    <h2 id="force-majeure">16. Force Majeure</h2>
+    <p>InnerShadow shall not be liable for any failure or delay in performance under these Terms to the extent caused by circumstances beyond its reasonable control, including but not limited to acts of God, natural disasters, pandemic, war, terrorism, civil unrest, government actions, labour disputes, power failures, internet outages, cyberattacks, or failures of third-party service providers. InnerShadow will use reasonable efforts to resume performance as soon as practicable after the force majeure event ends.</p>
+
+    <hr>
+
+    <h2 id="general">17. General Provisions</h2>
+
+    <h3>17.1 Entire agreement</h3>
+    <p>These Terms, together with the Privacy Policy and any additional terms expressly incorporated herein, constitute the entire agreement between you and InnerShadow with respect to the Service and supersede all prior or contemporaneous communications and proposals, whether oral or written.</p>
+
+    <h3>17.2 Severability</h3>
+    <p>If any provision of these Terms is found to be invalid, illegal, or unenforceable under applicable law, that provision shall be modified to the minimum extent necessary to make it enforceable, and the remaining provisions shall continue in full force and effect.</p>
+
+    <h3>17.3 Waiver</h3>
+    <p>InnerShadow's failure to enforce any right or provision of these Terms shall not constitute a waiver of that right or provision. Any waiver of a breach of these Terms shall not constitute a waiver of any subsequent breach.</p>
+
+    <h3>17.4 Assignment</h3>
+    <p>You may not assign or transfer any rights or obligations under these Terms without our prior written consent. InnerShadow may assign these Terms, in whole or in part, without restriction. Any purported assignment in violation of this section is null and void.</p>
+
+    <h3>17.5 Notices</h3>
+    <p>We may provide notices to you by email to your registered address or by posting notices within the Service. You may provide notices to us at legal@innershadow.app. Notices are effective upon transmission for email and upon posting for in-Service notices.</p>
+
+    <h3>17.6 No third-party beneficiaries</h3>
+    <p>These Terms do not confer any rights or remedies upon any third party. The parties do not intend for any third party to be a beneficiary of these Terms.</p>
+
+    <h3>17.7 Relationship of the parties</h3>
+    <p>Nothing in these Terms creates a partnership, joint venture, agency, employment, or franchise relationship between you and InnerShadow.</p>
+
+    <h3>17.8 Updates to Terms</h3>
+    <p>We reserve the right to update these Terms at any time. For material changes, we will provide at least 30 days' advance notice by email and/or prominent in-Service notice. Your continued use of the Service after the effective date of any changes constitutes acceptance. If you do not agree to updated Terms, you must stop using the Service and may delete your account.</p>
+
+    <hr>
+
+    <h2 id="contact">18. Contact</h2>
+    <p>For questions about these Terms, to exercise your legal rights, or to report a violation:</p>
+
+    <div class="contact-card">
+      <p><strong>InnerShadow Legal</strong></p>
+      <p>Email: legal@innershadow.app</p>
+      <p>Support: support@innershadow.app</p>
+      <p>For urgent legal matters, please use the subject line "Legal Notice." We aim to respond within 5 business days.</p>
+    </div>
+
+    <p style="margin-top:1.5rem;font-size:0.8125rem;color:var(--text-muted);line-height:1.7">These Terms of Service are governed by the laws of the State of New York, United States. Last reviewed January 2025. <strong>These Terms have not been reviewed by a licensed attorney. InnerShadow strongly recommends having qualified legal counsel review these Terms before launch and before relying on them for legal compliance purposes.</strong></p>
+
+  </div>
+</div>
+```
+
+  </div>
+  <script src="/js/utils.js"></script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+</body>
+</html>
