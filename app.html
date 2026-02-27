@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -12,949 +13,952 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
 
-    html, body {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg-dark);
-    }
-
-    .shell {
-      width: 100%;
-      max-width: 28rem;
-      height: 100vh;
-      height: -webkit-fill-available;
-      background: var(--bg-card);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-      border-left: 1px solid var(--border-subtle);
-      border-right: 1px solid var(--border-subtle);
-    }
-
-    /* Tab content areas */
-    .tab-panel {
-      display: none;
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      position: relative;
-    }
-
-    .tab-panel::-webkit-scrollbar { display: none; }
-
-    .tab-panel--active {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .panel-inner {
-      padding: max(1.5rem, env(safe-area-inset-top)) 1.25rem 1.5rem;
-      flex: 1;
-    }
-
-    /* ── TODAY TAB ──────────────────────────────────────── */
-
-    .today-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-    }
-
-    .today-greeting {
-      font-family: var(--font-display);
-      font-size: 1.75rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .today-greeting em {
-      font-style: italic;
-      color: var(--text-ember);
-    }
-
-    .today-date {
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
-
-    .settings-btn {
-      width: 2.5rem;
-      height: 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg-card-light);
-      border: 1px solid var(--border-soft);
-      border-radius: 0.875rem;
-      color: var(--text-secondary);
-      font-size: 1.125rem;
-      cursor: pointer;
-      transition: var(--transition-fast);
-      flex-shrink: 0;
-      text-decoration: none;
-    }
-
-    .settings-btn:active { transform: scale(0.92); }
-
-    /* Check-in card */
-    .checkin-card {
-      background: linear-gradient(135deg,
-        rgba(13,148,136,0.12),
-        rgba(217,119,6,0.08));
-      border: 1px solid var(--ember-border);
-      border-radius: 1.25rem;
-      padding: 1.375rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .checkin-card--done {
-      background: var(--ember-bg);
-    }
-
-    .checkin-label {
-      font-size: 0.8125rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-ember);
-      margin-bottom: 0.875rem;
-    }
-
-    .checkin-question {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-weight: 500;
-      color: var(--text-primary);
-      margin-bottom: 1.125rem;
-      line-height: 1.3;
-    }
-
-    /* Mood grid — 5 across */
-    .mood-row {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .mood-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.625rem 0.25rem;
-      background: rgba(255,255,255,0.04);
-      border: 2px solid transparent;
-      border-radius: 0.875rem;
-      cursor: pointer;
-      transition: all 0.18s ease;
-      font-family: var(--font-body);
-    }
-
-    .mood-btn:active { transform: scale(0.9); }
-
-    .mood-btn--selected {
-      border-color: var(--ember-border-strong);
-      background: var(--ember-bg-strong);
-    }
-
-    .mood-emoji { font-size: 1.625rem; line-height: 1; }
-
-    .mood-label {
-      font-size: 0.625rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-
-    .mood-btn--selected .mood-label { color: var(--text-ember); }
-
-    /* Note input */
-    .note-section {
-      display: none;
-      animation: fade-in 0.25s ease-out;
-    }
-
-    .note-section--show { display: block; }
-
-    .note-input {
-      width: 100%;
-      padding: 0.75rem 0.875rem;
-      background: var(--bg-input);
-      border: 1px solid var(--border-soft);
-      border-radius: 0.875rem;
-      color: var(--text-primary);
-      font-size: 15px;
-      font-family: var(--font-body);
-      resize: none;
-      min-height: 70px;
-      transition: var(--transition-base);
-      -webkit-appearance: none;
-    }
-
-    .note-input::placeholder { color: var(--text-muted); }
-
-    .note-input:focus {
-      outline: none;
-      border-color: var(--ember-border-strong);
-      background: var(--bg-input-focus);
-      box-shadow: 0 0 0 3px var(--ember-glow-soft);
-    }
-
-    /* Done state */
-    .checkin-done {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .checkin-done__emoji { font-size: 2rem; line-height: 1; }
-
-    .checkin-done__text {
-      flex: 1;
-    }
-
-    .checkin-done__title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.15rem;
-    }
-
-    .checkin-done__sub {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-    }
-
-    /* Streak bar */
-    .streak-row {
-      display: flex;
-      gap: 0.875rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .streak-chip {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-      padding: 0.875rem 1rem;
-      background: var(--gold-bg);
-      border: 1px solid var(--gold-border);
-      border-radius: 1rem;
-    }
-
-    .streak-chip__icon { font-size: 1.375rem; }
-
-    .streak-chip__count {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-gold);
-      font-family: var(--font-display);
-      line-height: 1;
-    }
-
-    .streak-chip__label {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-
-    .modules-chip {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: 0.625rem;
-      padding: 0.875rem 1rem;
-      background: var(--ember-bg);
-      border: 1px solid var(--ember-border);
-      border-radius: 1rem;
-    }
-
-    .modules-chip__icon { font-size: 1.375rem; }
-
-    .modules-chip__count {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text-ember);
-      font-family: var(--font-display);
-      line-height: 1;
-    }
-
-    .modules-chip__label {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-
-    /* Continue learning card */
-    .continue-card {
-      background: var(--gradient-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 1.25rem;
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .continue-card:hover {
-      border-color: var(--ember-border);
-      transform: translateY(-2px);
-    }
-
-    .continue-card:active { transform: scale(0.98); }
-
-    .continue-card__label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.75rem;
-    }
-
-    .continue-card__row {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-    }
-
-    .continue-card__num {
-      width: 2.75rem;
-      height: 2.75rem;
-      background: var(--gradient-main);
-      border-radius: 0.875rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1rem;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .continue-card__body { flex: 1; min-width: 0; }
-
-    .continue-card__title {
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.3;
-      margin-bottom: 0.2rem;
-    }
-
-    .continue-card__pathway {
-      font-size: 0.8125rem;
-      color: var(--text-ember);
-    }
-
-    .continue-card__arrow {
-      font-size: 1.125rem;
-      color: var(--text-muted);
-    }
-
-    /* Suggested tool */
-    .suggested-tool {
-      background: var(--gold-bg);
-      border: 1px solid var(--gold-border);
-      border-radius: 1.25rem;
-      padding: 1.125rem 1.25rem;
-      margin-bottom: 1.25rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .suggested-tool:hover {
-      border-color: var(--gold-border-strong);
-      transform: translateY(-2px);
-    }
-
-    .suggested-tool:active { transform: scale(0.98); }
-
-    .suggested-tool__label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-gold);
-      margin-bottom: 0.625rem;
-    }
-
-    .suggested-tool__row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .suggested-tool__emoji { font-size: 1.75rem; line-height: 1; }
-
-    .suggested-tool__body { flex: 1; }
-
-    .suggested-tool__name {
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.15rem;
-    }
-
-    .suggested-tool__why {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-    }
-
-    /* Pending reflection */
-    .reflection-nudge {
-      background: linear-gradient(135deg,
-        rgba(13,148,136,0.10),
-        rgba(217,119,6,0.08));
-      border: 1px solid var(--ember-border);
-      border-radius: 1.25rem;
-      padding: 1.125rem 1.25rem;
-      margin-bottom: 1.25rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .reflection-nudge:hover { transform: translateY(-2px); }
-    .reflection-nudge:active { transform: scale(0.98); }
-
-    .reflection-nudge__label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-ember);
-      margin-bottom: 0.5rem;
-    }
-
-    .reflection-nudge__text {
-      font-size: 0.9375rem;
-      color: var(--text-primary);
-      font-weight: 500;
-      line-height: 1.4;
-    }
-
-    /* ── LEARN TAB ───────────────────────────────────────── */
-
-    .learn-header {
-      margin-bottom: 1.5rem;
-    }
-
-    .learn-title {
-      font-family: var(--font-display);
-      font-size: 1.625rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-      margin-bottom: 0.25rem;
-    }
-
-    .learn-title em {
-      font-style: italic;
-      color: var(--text-ember);
-    }
-
-    .learn-sub {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-
-    /* Pathway cards */
-    .pw-card {
-      background: var(--gradient-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 1.25rem;
-      padding: 1.25rem;
-      margin-bottom: 0.875rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .pw-card:hover {
-      border-color: var(--ember-border);
-      transform: translateY(-2px);
-    }
-
-    .pw-card:active { transform: scale(0.98); }
-
-    .pw-card--locked {
-      opacity: 0.45;
-      cursor: default;
-    }
-
-    .pw-card--locked:hover {
-      transform: none;
-      border-color: var(--border-soft);
-    }
-
-    .pw-card--active {
-      border-color: var(--ember-border-strong);
-      background: var(--ember-bg);
-    }
-
-    .pw-card__header {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      margin-bottom: 0.875rem;
-    }
-
-    .pw-card__emoji { font-size: 2rem; line-height: 1; }
-
-    .pw-card__meta { flex: 1; min-width: 0; }
-
-    .pw-card__name {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 0.15rem;
-    }
-
-    .pw-card__sub {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }
-
-    .pw-card__lock {
-      font-size: 1rem;
-      color: var(--text-muted);
-    }
-
-    .pw-card__progress {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .pw-card__bar {
-      flex: 1;
-      height: 5px;
-      background: var(--border-soft);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .pw-card__bar-fill {
-      height: 100%;
-      background: var(--gradient-main);
-      border-radius: 999px;
-      transition: width 0.6s ease;
-    }
-
-    .pw-card__pct {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      min-width: 2.5rem;
-      text-align: right;
-    }
-
-    .pw-card__pct--active { color: var(--text-ember); }
-
-    /* ── TOOLS TAB ───────────────────────────────────────── */
-
-    .tools-header {
-      margin-bottom: 1.25rem;
-    }
-
-    .tools-title {
-      font-family: var(--font-display);
-      font-size: 1.625rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-      margin-bottom: 0.25rem;
-    }
-
-    .tools-title em {
-      font-style: italic;
-      color: var(--text-ember);
-    }
-
-    .tools-sub {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-
-    .tools-section-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin: 1.125rem 0 0.625rem;
-    }
-
-    .tool-row {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      padding: 0.875rem 1rem;
-      background: var(--bg-card-light);
-      border: 1px solid var(--border-soft);
-      border-radius: 1rem;
-      margin-bottom: 0.5rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .tool-row:hover {
-      border-color: var(--ember-border);
-      background: var(--ember-bg);
-      transform: translateX(3px);
-    }
-
-    .tool-row:active { transform: scale(0.98); }
-
-    .tool-row--locked {
-      opacity: 0.38;
-      cursor: default;
-      filter: grayscale(0.4);
-    }
-
-    .tool-row--locked:hover {
-      transform: none;
-      border-color: var(--border-soft);
-      background: var(--bg-card-light);
-    }
-
-    .tool-row--crisis {
-      background: var(--red-bg);
-      border-color: var(--red-border);
-    }
-
-    .tool-row--crisis:hover {
-      background: var(--red-bg-strong);
-      border-color: var(--red-border-strong);
-    }
-
-    .tool-row__emoji { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
-
-    .tool-row__body { flex: 1; min-width: 0; }
-
-    .tool-row__name {
-      font-size: 0.9375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1.3;
-      margin-bottom: 0.15rem;
-    }
-
-    .tool-row__desc {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-    }
-
-    .tool-row__lock { font-size: 0.9375rem; color: var(--text-muted); }
-
-    /* ── YOU TAB ─────────────────────────────────────────── */
-
-    .you-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .avatar {
-      width: 3.5rem;
-      height: 3.5rem;
-      border-radius: 1rem;
-      background: var(--gradient-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .you-name {
-      font-family: var(--font-display);
-      font-size: 1.375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.015em;
-    }
-
-    .you-since {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-    }
-
-    /* Stats grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.625rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .stat-chip {
-      background: var(--bg-card-light);
-      border: 1px solid var(--border-soft);
-      border-radius: 1rem;
-      padding: 0.875rem 0.75rem;
-      text-align: center;
-    }
-
-    .stat-chip__num {
-      font-family: var(--font-display);
-      font-size: 1.625rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1;
-      margin-bottom: 0.25rem;
-    }
-
-    .stat-chip__label {
-      font-size: 0.6875rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* Settings list */
-    .settings-list {
-      background: var(--gradient-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 1.25rem;
-      overflow: hidden;
-      margin-bottom: 1.25rem;
-    }
-
-    .settings-item {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      padding: 1rem 1.125rem;
-      cursor: pointer;
-      transition: background 0.15s ease;
-      border-bottom: 1px solid var(--border-subtle);
-      text-decoration: none;
-    }
-
-    .settings-item:last-child { border-bottom: none; }
-
-    .settings-item:hover { background: var(--bg-card-light); }
-    .settings-item:active { background: var(--bg-card-medium); }
-
-    .settings-item__icon {
-      font-size: 1.125rem;
-      width: 1.75rem;
-      text-align: center;
-      flex-shrink: 0;
-    }
-
-    .settings-item__label {
-      flex: 1;
-      font-size: 0.9375rem;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .settings-item__arrow {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-    }
-
-    .settings-item--danger .settings-item__label { color: var(--text-red); }
-
-    /* Pro banner */
-    .pro-banner {
-      background: var(--gradient-main);
-      border-radius: 1.25rem;
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
-      cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .pro-banner:hover { transform: translateY(-2px); }
-    .pro-banner:active { transform: scale(0.98); }
-
-    .pro-banner__title {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: white;
-      margin-bottom: 0.375rem;
-    }
-
-    .pro-banner__sub {
-      font-size: 0.875rem;
-      color: rgba(255,255,255,0.8);
-      line-height: 1.5;
-    }
-
-    .pro-banner__cta {
-      margin-top: 0.875rem;
-      font-size: 0.875rem;
-      font-weight: 700;
-      color: white;
-      opacity: 0.9;
-    }
-
-    /* ── TOOL MODAL ──────────────────────────────────────── */
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.75);
-      z-index: var(--z-modal);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-
-    .modal-overlay--show { display: flex; }
-
-    .modal-sheet {
-      width: 100%;
-      max-width: 28rem;
-      background: var(--bg-card);
-      border-radius: 1.5rem 1.5rem 0 0;
-      border: 1px solid var(--border-soft);
-      border-bottom: none;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    .modal-handle {
-      width: 2.5rem;
-      height: 4px;
-      background: var(--border-softer);
-      border-radius: 999px;
-      margin: 0.875rem auto 0;
-      flex-shrink: 0;
-    }
-
-    .modal-scroll {
-      flex: 1;
-      overflow-y: auto;
-      scrollbar-width: none;
-      padding: 1.25rem 1.5rem 1.5rem;
-    }
-
-    .modal-scroll::-webkit-scrollbar { display: none; }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      gap: 0.875rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .modal-icon { font-size: 2.5rem; line-height: 1; }
-
-    .modal-title {
-      font-family: var(--font-display);
-      font-size: 1.375rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.015em;
-      line-height: 1.2;
-    }
-
-    .modal-tagline {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin-top: 0.2rem;
-    }
-
-    .modal-section-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.75rem;
-    }
-
-    .tool-step {
-      display: flex;
-      gap: 0.875rem;
-      align-items: flex-start;
-      margin-bottom: 1rem;
-    }
-
-    .tool-step__num {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 0.5rem;
-      background: var(--gradient-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8125rem;
-      font-weight: 700;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .tool-step__text {
-      font-size: 0.9375rem;
-      color: var(--text-secondary);
-      line-height: 1.65;
-      padding-top: 0.25rem;
-    }
-
-    .tool-step__text strong { color: var(--text-primary); }
-
-    .modal-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 2rem;
-      height: 2rem;
-      background: var(--bg-card-light);
-      border: 1px solid var(--border-soft);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: var(--transition-fast);
-    }
-
-    .modal-close:active { transform: scale(0.9); }
-
-    .modal-footer {
-      padding: 0 1.5rem 0.5rem;
-      flex-shrink: 0;
-    }
-
-    @media (min-width: 640px) {
-      .shell {
-        height: 844px;
-        max-height: 92vh;
-        border-radius: 2.5rem;
-        border: 1px solid var(--border-subtle);
-      }
-    }
+```
+html, body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-dark);
+}
+
+.shell {
+  width: 100%;
+  max-width: 28rem;
+  height: 100vh;
+  height: -webkit-fill-available;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+}
+
+/* Tab content areas */
+.tab-panel {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  position: relative;
+}
+
+.tab-panel::-webkit-scrollbar { display: none; }
+
+.tab-panel--active {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-inner {
+  padding: max(1.5rem, env(safe-area-inset-top)) 1.25rem 1.5rem;
+  flex: 1;
+}
+
+/* ── TODAY TAB ──────────────────────────────────────── */
+
+.today-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.today-greeting {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.today-greeting em {
+  font-style: italic;
+  color: var(--text-ember);
+}
+
+.today-date {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.settings-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.875rem;
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.settings-btn:active { transform: scale(0.92); }
+
+/* Check-in card */
+.checkin-card {
+  background: linear-gradient(135deg,
+    rgba(13,148,136,0.12),
+    rgba(217,119,6,0.08));
+  border: 1px solid var(--ember-border);
+  border-radius: 1.25rem;
+  padding: 1.375rem;
+  margin-bottom: 1.25rem;
+}
+
+.checkin-card--done {
+  background: var(--ember-bg);
+}
+
+.checkin-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-ember);
+  margin-bottom: 0.875rem;
+}
+
+.checkin-question {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 1.125rem;
+  line-height: 1.3;
+}
+
+/* Mood grid — 5 across */
+.mood-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mood-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.625rem 0.25rem;
+  background: rgba(255,255,255,0.04);
+  border: 2px solid transparent;
+  border-radius: 0.875rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: var(--font-body);
+}
+
+.mood-btn:active { transform: scale(0.9); }
+
+.mood-btn--selected {
+  border-color: var(--ember-border-strong);
+  background: var(--ember-bg-strong);
+}
+
+.mood-emoji { font-size: 1.625rem; line-height: 1; }
+
+.mood-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.mood-btn--selected .mood-label { color: var(--text-ember); }
+
+/* Note input */
+.note-section {
+  display: none;
+  animation: fade-in 0.25s ease-out;
+}
+
+.note-section--show { display: block; }
+
+.note-input {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-soft);
+  border-radius: 0.875rem;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-family: var(--font-body);
+  resize: none;
+  min-height: 70px;
+  transition: var(--transition-base);
+  -webkit-appearance: none;
+}
+
+.note-input::placeholder { color: var(--text-muted); }
+
+.note-input:focus {
+  outline: none;
+  border-color: var(--ember-border-strong);
+  background: var(--bg-input-focus);
+  box-shadow: 0 0 0 3px var(--ember-glow-soft);
+}
+
+/* Done state */
+.checkin-done {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.checkin-done__emoji { font-size: 2rem; line-height: 1; }
+
+.checkin-done__text {
+  flex: 1;
+}
+
+.checkin-done__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.checkin-done__sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Streak bar */
+.streak-row {
+  display: flex;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.streak-chip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: 1rem;
+}
+
+.streak-chip__icon { font-size: 1.375rem; }
+
+.streak-chip__count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-gold);
+  font-family: var(--font-display);
+  line-height: 1;
+}
+
+.streak-chip__label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.modules-chip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  background: var(--ember-bg);
+  border: 1px solid var(--ember-border);
+  border-radius: 1rem;
+}
+
+.modules-chip__icon { font-size: 1.375rem; }
+
+.modules-chip__count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-ember);
+  font-family: var(--font-display);
+  line-height: 1;
+}
+
+.modules-chip__label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Continue learning card */
+.continue-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.continue-card:hover {
+  border-color: var(--ember-border);
+  transform: translateY(-2px);
+}
+
+.continue-card:active { transform: scale(0.98); }
+
+.continue-card__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.continue-card__row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.continue-card__num {
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--gradient-main);
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.continue-card__body { flex: 1; min-width: 0; }
+
+.continue-card__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 0.2rem;
+}
+
+.continue-card__pathway {
+  font-size: 0.8125rem;
+  color: var(--text-ember);
+}
+
+.continue-card__arrow {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+}
+
+/* Suggested tool */
+.suggested-tool {
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: 1.25rem;
+  padding: 1.125rem 1.25rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.suggested-tool:hover {
+  border-color: var(--gold-border-strong);
+  transform: translateY(-2px);
+}
+
+.suggested-tool:active { transform: scale(0.98); }
+
+.suggested-tool__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-gold);
+  margin-bottom: 0.625rem;
+}
+
+.suggested-tool__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.suggested-tool__emoji { font-size: 1.75rem; line-height: 1; }
+
+.suggested-tool__body { flex: 1; }
+
+.suggested-tool__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.suggested-tool__why {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Pending reflection */
+.reflection-nudge {
+  background: linear-gradient(135deg,
+    rgba(13,148,136,0.10),
+    rgba(217,119,6,0.08));
+  border: 1px solid var(--ember-border);
+  border-radius: 1.25rem;
+  padding: 1.125rem 1.25rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.reflection-nudge:hover { transform: translateY(-2px); }
+.reflection-nudge:active { transform: scale(0.98); }
+
+.reflection-nudge__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-ember);
+  margin-bottom: 0.5rem;
+}
+
+.reflection-nudge__text {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ── LEARN TAB ───────────────────────────────────────── */
+
+.learn-header {
+  margin-bottom: 1.5rem;
+}
+
+.learn-title {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.learn-title em {
+  font-style: italic;
+  color: var(--text-ember);
+}
+
+.learn-sub {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Pathway cards */
+.pw-card {
+  background: var(--gradient-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+  position: relative;
+  overflow: hidden;
+}
+
+.pw-card:hover {
+  border-color: var(--ember-border);
+  transform: translateY(-2px);
+}
+
+.pw-card:active { transform: scale(0.98); }
+
+.pw-card--locked {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.pw-card--locked:hover {
+  transform: none;
+  border-color: var(--border-soft);
+}
+
+.pw-card--active {
+  border-color: var(--ember-border-strong);
+  background: var(--ember-bg);
+}
+
+.pw-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 0.875rem;
+}
+
+.pw-card__emoji { font-size: 2rem; line-height: 1; }
+
+.pw-card__meta { flex: 1; min-width: 0; }
+
+.pw-card__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.pw-card__sub {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.pw-card__lock {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.pw-card__progress {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pw-card__bar {
+  flex: 1;
+  height: 5px;
+  background: var(--border-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.pw-card__bar-fill {
+  height: 100%;
+  background: var(--gradient-main);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.pw-card__pct {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+.pw-card__pct--active { color: var(--text-ember); }
+
+/* ── TOOLS TAB ───────────────────────────────────────── */
+
+.tools-header {
+  margin-bottom: 1.25rem;
+}
+
+.tools-title {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.tools-title em {
+  font-style: italic;
+  color: var(--text-ember);
+}
+
+.tools-sub {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.tools-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 1.125rem 0 0.625rem;
+}
+
+.tool-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.tool-row:hover {
+  border-color: var(--ember-border);
+  background: var(--ember-bg);
+  transform: translateX(3px);
+}
+
+.tool-row:active { transform: scale(0.98); }
+
+.tool-row--locked {
+  opacity: 0.38;
+  cursor: default;
+  filter: grayscale(0.4);
+}
+
+.tool-row--locked:hover {
+  transform: none;
+  border-color: var(--border-soft);
+  background: var(--bg-card-light);
+}
+
+.tool-row--crisis {
+  background: var(--red-bg);
+  border-color: var(--red-border);
+}
+
+.tool-row--crisis:hover {
+  background: var(--red-bg-strong);
+  border-color: var(--red-border-strong);
+}
+
+.tool-row__emoji { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+
+.tool-row__body { flex: 1; min-width: 0; }
+
+.tool-row__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 0.15rem;
+}
+
+.tool-row__desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.tool-row__lock { font-size: 0.9375rem; color: var(--text-muted); }
+
+/* ── YOU TAB ─────────────────────────────────────────── */
+
+.you-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: var(--gradient-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.you-name {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+}
+
+.you-since {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.625rem;
+  margin-bottom: 1.25rem;
+}
+
+.stat-chip {
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  padding: 0.875rem 0.75rem;
+  text-align: center;
+}
+
+.stat-chip__num {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.stat-chip__label {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Settings list */
+.settings-list {
+  background: var(--gradient-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.125rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid var(--border-subtle);
+  text-decoration: none;
+}
+
+.settings-item:last-child { border-bottom: none; }
+
+.settings-item:hover { background: var(--bg-card-light); }
+.settings-item:active { background: var(--bg-card-medium); }
+
+.settings-item__icon {
+  font-size: 1.125rem;
+  width: 1.75rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.settings-item__label {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.settings-item__arrow {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.settings-item--danger .settings-item__label { color: var(--text-red); }
+
+/* Pro banner */
+.pro-banner {
+  background: var(--gradient-main);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition-spring);
+}
+
+.pro-banner:hover { transform: translateY(-2px); }
+.pro-banner:active { transform: scale(0.98); }
+
+.pro-banner__title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.375rem;
+}
+
+.pro-banner__sub {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+}
+
+.pro-banner__cta {
+  margin-top: 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: white;
+  opacity: 0.9;
+}
+
+/* ── TOOL MODAL ──────────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: var(--z-modal);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-overlay--show { display: flex; }
+
+.modal-sheet {
+  width: 100%;
+  max-width: 28rem;
+  background: var(--bg-card);
+  border-radius: 1.5rem 1.5rem 0 0;
+  border: 1px solid var(--border-soft);
+  border-bottom: none;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.modal-handle {
+  width: 2.5rem;
+  height: 4px;
+  background: var(--border-softer);
+  border-radius: 999px;
+  margin: 0.875rem auto 0;
+  flex-shrink: 0;
+}
+
+.modal-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.modal-scroll::-webkit-scrollbar { display: none; }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.modal-icon { font-size: 2.5rem; line-height: 1; }
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+.modal-tagline {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 0.2rem;
+}
+
+.modal-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.tool-step {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.tool-step__num {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: var(--gradient-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.tool-step__text {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  padding-top: 0.25rem;
+}
+
+.tool-step__text strong { color: var(--text-primary); }
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  background: var(--bg-card-light);
+  border: 1px solid var(--border-soft);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.modal-close:active { transform: scale(0.9); }
+
+.modal-footer {
+  padding: 0 1.5rem 0.5rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .shell {
+    height: 844px;
+    max-height: 92vh;
+    border-radius: 2.5rem;
+    border: 1px solid var(--border-subtle);
+  }
+}
+```
+
   </style>
 </head>
 <body>
@@ -962,264 +966,267 @@
     <div class="bg-orb bg-orb--ember"></div>
     <div class="bg-orb bg-orb--amber"></div>
 
-    <!-- ── TODAY TAB ─────────────────────────────────── -->
-    <div class="tab-panel tab-panel--active" id="panel-today">
-      <div class="panel-inner">
+```
+<!-- ── TODAY TAB ─────────────────────────────────── -->
+<div class="tab-panel tab-panel--active" id="panel-today">
+  <div class="panel-inner">
 
-        <div class="today-header">
-          <div>
-            <h1 class="today-greeting" id="greeting">Good <em>morning</em></h1>
-            <p class="today-date" id="todayDate"></p>
-          </div>
-          <a href="/settings.html" class="settings-btn" aria-label="Settings">⚙</a>
-        </div>
+    <div class="today-header">
+      <div>
+        <h1 class="today-greeting" id="greeting">Good <em>morning</em></h1>
+        <p class="today-date" id="todayDate"></p>
+      </div>
+      <a href="/settings.html" class="settings-btn" aria-label="Settings">⚙</a>
+    </div>
 
-        <!-- Check-in card -->
-        <div class="checkin-card" id="checkinCard">
-          <p class="checkin-label">Daily check-in</p>
-          <p class="checkin-question">How are you feeling right now?</p>
+    <!-- Check-in card -->
+    <div class="checkin-card" id="checkinCard">
+      <p class="checkin-label">Daily check-in</p>
+      <p class="checkin-question">How are you feeling right now?</p>
 
-          <div class="mood-row" id="moodRow">
-            <button class="mood-btn" data-mood="rough"   onclick="selectMood('rough')"  >
-              <span class="mood-emoji">😞</span>
-              <span class="mood-label">Rough</span>
-            </button>
-            <button class="mood-btn" data-mood="anxious" onclick="selectMood('anxious')">
-              <span class="mood-emoji">😰</span>
-              <span class="mood-label">Anxious</span>
-            </button>
-            <button class="mood-btn" data-mood="okay"    onclick="selectMood('okay')"   >
-              <span class="mood-emoji">😐</span>
-              <span class="mood-label">Okay</span>
-            </button>
-            <button class="mood-btn" data-mood="good"    onclick="selectMood('good')"   >
-              <span class="mood-emoji">🙂</span>
-              <span class="mood-label">Good</span>
-            </button>
-            <button class="mood-btn" data-mood="great"   onclick="selectMood('great')"  >
-              <span class="mood-emoji">😊</span>
-              <span class="mood-label">Great</span>
-            </button>
-          </div>
+      <div class="mood-row" id="moodRow">
+        <button class="mood-btn" data-mood="rough"   onclick="selectMood('rough')"  >
+          <span class="mood-emoji">😞</span>
+          <span class="mood-label">Rough</span>
+        </button>
+        <button class="mood-btn" data-mood="anxious" onclick="selectMood('anxious')">
+          <span class="mood-emoji">😰</span>
+          <span class="mood-label">Anxious</span>
+        </button>
+        <button class="mood-btn" data-mood="okay"    onclick="selectMood('okay')"   >
+          <span class="mood-emoji">😐</span>
+          <span class="mood-label">Okay</span>
+        </button>
+        <button class="mood-btn" data-mood="good"    onclick="selectMood('good')"   >
+          <span class="mood-emoji">🙂</span>
+          <span class="mood-label">Good</span>
+        </button>
+        <button class="mood-btn" data-mood="great"   onclick="selectMood('great')"  >
+          <span class="mood-emoji">😊</span>
+          <span class="mood-label">Great</span>
+        </button>
+      </div>
 
-          <div class="note-section" id="noteSection">
-            <textarea
-              class="note-input"
-              id="noteInput"
-              placeholder="Anything else on your mind? (optional)"
-              maxlength="300"
-              rows="2"
-            ></textarea>
-            <button
-              class="btn btn--primary btn--sm"
-              style="margin-top:0.625rem"
-              onclick="submitCheckin()"
-              id="checkinSubmitBtn"
-            >
-              Log check-in
-            </button>
-          </div>
-        </div>
-
-        <!-- Streak + modules row -->
-        <div class="streak-row">
-          <div class="streak-chip">
-            <span class="streak-chip__icon">🔥</span>
-            <div>
-              <div class="streak-chip__count" id="streakCount">0</div>
-              <div class="streak-chip__label">day streak</div>
-            </div>
-          </div>
-          <div class="modules-chip">
-            <span class="modules-chip__icon">✅</span>
-            <div>
-              <div class="modules-chip__count" id="modulesCount">0</div>
-              <div class="modules-chip__label">modules done</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pending reflection nudge -->
-        <div class="reflection-nudge" id="reflectionNudge" style="display:none" onclick="goToReflection()">
-          <p class="reflection-nudge__label">3-day reflection ready</p>
-          <p class="reflection-nudge__text" id="reflectionNudgeText">
-            How's that commitment landing in real life?
-          </p>
-        </div>
-
-        <!-- Continue learning -->
-        <div class="continue-card" id="continueCard" onclick="goToNextModule()">
-          <p class="continue-card__label">Continue learning</p>
-          <div class="continue-card__row">
-            <div class="continue-card__num" id="nextModuleNum">1</div>
-            <div class="continue-card__body">
-              <p class="continue-card__title" id="nextModuleTitle">Loading...</p>
-              <p class="continue-card__pathway" id="nextModulePathway"></p>
-            </div>
-            <span class="continue-card__arrow">→</span>
-          </div>
-        </div>
-
-        <!-- Suggested tool (shown after check-in) -->
-        <div class="suggested-tool" id="suggestedTool" style="display:none" onclick="openSuggestedTool()">
-          <p class="suggested-tool__label">Try this now</p>
-          <div class="suggested-tool__row">
-            <span class="suggested-tool__emoji" id="suggestedToolEmoji">🌬</span>
-            <div class="suggested-tool__body">
-              <p class="suggested-tool__name" id="suggestedToolName"></p>
-              <p class="suggested-tool__why" id="suggestedToolWhy"></p>
-            </div>
-            <span style="color:var(--text-muted)">→</span>
-          </div>
-        </div>
-
+      <div class="note-section" id="noteSection">
+        <textarea
+          class="note-input"
+          id="noteInput"
+          placeholder="Anything else on your mind? (optional)"
+          maxlength="300"
+          rows="2"
+        ></textarea>
+        <button
+          class="btn btn--primary btn--sm"
+          style="margin-top:0.625rem"
+          onclick="submitCheckin()"
+          id="checkinSubmitBtn"
+        >
+          Log check-in
+        </button>
       </div>
     </div>
 
-    <!-- ── LEARN TAB ──────────────────────────────────── -->
-    <div class="tab-panel" id="panel-learn">
-      <div class="panel-inner">
-
-        <div class="learn-header">
-          <h2 class="learn-title">Your <em>pathways</em></h2>
-          <p class="learn-sub">Four pathways. 24 modules. Start with yours.</p>
+    <!-- Streak + modules row -->
+    <div class="streak-row">
+      <div class="streak-chip">
+        <span class="streak-chip__icon">🔥</span>
+        <div>
+          <div class="streak-chip__count" id="streakCount">0</div>
+          <div class="streak-chip__label">day streak</div>
         </div>
-
-        <div id="pathwaysList">
-          <!-- Rendered by JS -->
+      </div>
+      <div class="modules-chip">
+        <span class="modules-chip__icon">✅</span>
+        <div>
+          <div class="modules-chip__count" id="modulesCount">0</div>
+          <div class="modules-chip__label">modules done</div>
         </div>
-
       </div>
     </div>
 
-    <!-- ── TOOLS TAB ──────────────────────────────────── -->
-    <div class="tab-panel" id="panel-tools">
-      <div class="panel-inner">
+    <!-- Pending reflection nudge -->
+    <div class="reflection-nudge" id="reflectionNudge" style="display:none" onclick="goToReflection()">
+      <p class="reflection-nudge__label">3-day reflection ready</p>
+      <p class="reflection-nudge__text" id="reflectionNudgeText">
+        How's that commitment landing in real life?
+      </p>
+    </div>
 
-        <div class="tools-header">
-          <h2 class="tools-title">Your <em>toolkit</em></h2>
-          <p class="tools-sub">Skills you've unlocked. Always available.</p>
+    <!-- Continue learning -->
+    <div class="continue-card" id="continueCard" onclick="goToNextModule()">
+      <p class="continue-card__label">Continue learning</p>
+      <div class="continue-card__row">
+        <div class="continue-card__num" id="nextModuleNum">1</div>
+        <div class="continue-card__body">
+          <p class="continue-card__title" id="nextModuleTitle">Loading...</p>
+          <p class="continue-card__pathway" id="nextModulePathway"></p>
         </div>
-
-        <!-- Crisis tools always visible -->
-        <p class="tools-section-label">🆘 Always available — crisis tools</p>
-        <div id="crisisToolsList">
-          <!-- Rendered by JS -->
-        </div>
-
-        <!-- Earned tools -->
-        <p class="tools-section-label" id="earnedToolsLabel">✨ Earned tools</p>
-        <div id="earnedToolsList">
-          <!-- Rendered by JS -->
-        </div>
-
-        <!-- Locked tools -->
-        <p class="tools-section-label" id="lockedToolsLabel" style="display:none">🔒 Unlock by completing modules</p>
-        <div id="lockedToolsList">
-          <!-- Rendered by JS -->
-        </div>
-
+        <span class="continue-card__arrow">→</span>
       </div>
     </div>
 
-    <!-- ── YOU TAB ────────────────────────────────────── -->
-    <div class="tab-panel" id="panel-you">
-      <div class="panel-inner">
-
-        <!-- Profile header -->
-        <div class="you-header">
-          <div class="avatar">🌑</div>
-          <div>
-            <p class="you-name" id="userName">Welcome</p>
-            <p class="you-since" id="userSince">Member since today</p>
-          </div>
+    <!-- Suggested tool (shown after check-in) -->
+    <div class="suggested-tool" id="suggestedTool" style="display:none" onclick="openSuggestedTool()">
+      <p class="suggested-tool__label">Try this now</p>
+      <div class="suggested-tool__row">
+        <span class="suggested-tool__emoji" id="suggestedToolEmoji">🌬</span>
+        <div class="suggested-tool__body">
+          <p class="suggested-tool__name" id="suggestedToolName"></p>
+          <p class="suggested-tool__why" id="suggestedToolWhy"></p>
         </div>
-
-        <!-- Stats -->
-        <div class="stats-grid">
-          <div class="stat-chip">
-            <div class="stat-chip__num" id="statStreak">0</div>
-            <div class="stat-chip__label">Day streak</div>
-          </div>
-          <div class="stat-chip">
-            <div class="stat-chip__num" id="statModules">0</div>
-            <div class="stat-chip__label">Modules done</div>
-          </div>
-          <div class="stat-chip">
-            <div class="stat-chip__num" id="statTools">0</div>
-            <div class="stat-chip__label">Tools earned</div>
-          </div>
-        </div>
-
-        <!-- Pro upgrade banner (hidden for pro users) -->
-        <div class="pro-banner" id="proBanner" onclick="Nav.go('/upgrade.html')">
-          <p class="pro-banner__title">Unlock the full journey</p>
-          <p class="pro-banner__sub">All 24 modules, all 4 pathways, every tool you earn — no limits.</p>
-          <p class="pro-banner__cta">Upgrade to Pro →</p>
-        </div>
-
-        <!-- Settings list -->
-        <div class="settings-list">
-          <a href="/settings.html" class="settings-item">
-            <span class="settings-item__icon">⚙️</span>
-            <span class="settings-item__label">Settings</span>
-            <span class="settings-item__arrow">›</span>
-          </a>
-          <a href="/privacy.html" class="settings-item">
-            <span class="settings-item__icon">🔒</span>
-            <span class="settings-item__label">Privacy Policy</span>
-            <span class="settings-item__arrow">›</span>
-          </a>
-          <a href="/terms.html" class="settings-item">
-            <span class="settings-item__icon">📄</span>
-            <span class="settings-item__label">Terms of Service</span>
-            <span class="settings-item__arrow">›</span>
-          </a>
-          <div class="settings-item settings-item--danger" onclick="handleSignOut()">
-            <span class="settings-item__icon">🚪</span>
-            <span class="settings-item__label">Sign out</span>
-            <span class="settings-item__arrow">›</span>
-          </div>
-        </div>
-
-        <p style="text-align:center;font-size:0.75rem;color:var(--text-dim);line-height:1.6">
-          InnerShadow — educational content only.<br>Not a substitute for professional mental health care.
-        </p>
-
+        <span style="color:var(--text-muted)">→</span>
       </div>
     </div>
 
-    <!-- ── BOTTOM NAV ─────────────────────────────────── -->
-    <nav class="bottom-nav">
-      <button class="nav-tab nav-tab--active" id="tab-today" onclick="switchTab('today')">
-        <div class="nav-tab__icon">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <span class="nav-tab__label">Today</span>
-      </button>
-      <button class="nav-tab" id="tab-learn" onclick="switchTab('learn')">
-        <div class="nav-tab__icon">
-          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-        </div>
-        <span class="nav-tab__label">Learn</span>
-      </button>
-      <button class="nav-tab" id="tab-tools" onclick="switchTab('tools')">
-        <div class="nav-tab__icon">
-          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-        </div>
-        <span class="nav-tab__label">Tools</span>
-      </button>
-      <button class="nav-tab" id="tab-you" onclick="switchTab('you')">
-        <div class="nav-tab__icon">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <span class="nav-tab__label">You</span>
-      </button>
-    </nav>
+  </div>
+</div>
+
+<!-- ── LEARN TAB ──────────────────────────────────── -->
+<div class="tab-panel" id="panel-learn">
+  <div class="panel-inner">
+
+    <div class="learn-header">
+      <h2 class="learn-title">Your <em>pathways</em></h2>
+      <p class="learn-sub">Four pathways. 24 modules. Start with yours.</p>
+    </div>
+
+    <div id="pathwaysList">
+      <!-- Rendered by JS -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ── TOOLS TAB ──────────────────────────────────── -->
+<div class="tab-panel" id="panel-tools">
+  <div class="panel-inner">
+
+    <div class="tools-header">
+      <h2 class="tools-title">Your <em>toolkit</em></h2>
+      <p class="tools-sub">Skills you've unlocked. Always available.</p>
+    </div>
+
+    <!-- Crisis tools always visible -->
+    <p class="tools-section-label">🆘 Always available — crisis tools</p>
+    <div id="crisisToolsList">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Earned tools -->
+    <p class="tools-section-label" id="earnedToolsLabel">✨ Earned tools</p>
+    <div id="earnedToolsList">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Locked tools -->
+    <p class="tools-section-label" id="lockedToolsLabel" style="display:none">🔒 Unlock by completing modules</p>
+    <div id="lockedToolsList">
+      <!-- Rendered by JS -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ── YOU TAB ────────────────────────────────────── -->
+<div class="tab-panel" id="panel-you">
+  <div class="panel-inner">
+
+    <!-- Profile header -->
+    <div class="you-header">
+      <div class="avatar">🌑</div>
+      <div>
+        <p class="you-name" id="userName">Welcome</p>
+        <p class="you-since" id="userSince">Member since today</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-chip">
+        <div class="stat-chip__num" id="statStreak">0</div>
+        <div class="stat-chip__label">Day streak</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip__num" id="statModules">0</div>
+        <div class="stat-chip__label">Modules done</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip__num" id="statTools">0</div>
+        <div class="stat-chip__label">Tools earned</div>
+      </div>
+    </div>
+
+    <!-- Pro upgrade banner (hidden for pro users) -->
+    <div class="pro-banner" id="proBanner" onclick="Nav.go('/upgrade.html')">
+      <p class="pro-banner__title">Unlock the full journey</p>
+      <p class="pro-banner__sub">All 24 modules, all 4 pathways, every tool you earn — no limits.</p>
+      <p class="pro-banner__cta">Upgrade to Pro →</p>
+    </div>
+
+    <!-- Settings list -->
+    <div class="settings-list">
+      <a href="/settings.html" class="settings-item">
+        <span class="settings-item__icon">⚙️</span>
+        <span class="settings-item__label">Settings</span>
+        <span class="settings-item__arrow">›</span>
+      </a>
+      <a href="/privacy.html" class="settings-item">
+        <span class="settings-item__icon">🔒</span>
+        <span class="settings-item__label">Privacy Policy</span>
+        <span class="settings-item__arrow">›</span>
+      </a>
+      <a href="/terms.html" class="settings-item">
+        <span class="settings-item__icon">📄</span>
+        <span class="settings-item__label">Terms of Service</span>
+        <span class="settings-item__arrow">›</span>
+      </a>
+      <div class="settings-item settings-item--danger" onclick="handleSignOut()">
+        <span class="settings-item__icon">🚪</span>
+        <span class="settings-item__label">Sign out</span>
+        <span class="settings-item__arrow">›</span>
+      </div>
+    </div>
+
+    <p style="text-align:center;font-size:0.75rem;color:var(--text-dim);line-height:1.6">
+      InnerShadow — educational content only.<br>Not a substitute for professional mental health care.
+    </p>
+
+  </div>
+</div>
+
+<!-- ── BOTTOM NAV ─────────────────────────────────── -->
+<nav class="bottom-nav">
+  <button class="nav-tab nav-tab--active" id="tab-today" onclick="switchTab('today')">
+    <div class="nav-tab__icon">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    </div>
+    <span class="nav-tab__label">Today</span>
+  </button>
+  <button class="nav-tab" id="tab-learn" onclick="switchTab('learn')">
+    <div class="nav-tab__icon">
+      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+    </div>
+    <span class="nav-tab__label">Learn</span>
+  </button>
+  <button class="nav-tab" id="tab-tools" onclick="switchTab('tools')">
+    <div class="nav-tab__icon">
+      <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+    </div>
+    <span class="nav-tab__label">Tools</span>
+  </button>
+  <button class="nav-tab" id="tab-you" onclick="switchTab('you')">
+    <div class="nav-tab__icon">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
+    <span class="nav-tab__label">You</span>
+  </button>
+</nav>
+```
 
   </div><!-- /shell -->
 
   <!-- Tool modal -->
+
   <div class="modal-overlay" id="toolModal" onclick="closeToolModal(event)">
     <div class="modal-sheet" style="position:relative">
       <div class="modal-handle"></div>
@@ -1244,8 +1251,11 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script src="/js/supabase-client.js"></script>
+
   <script src="/js/utils.js"></script>
+
   <script>
 
     // ================================================================
@@ -1264,6 +1274,14 @@
     // ================================================================
 
     const CRISIS_TOOLS = [
+      {
+        id:      'tool-box-breathing',
+        emoji:   '⭕',
+        name:    'Box Breathing',
+        tagline: 'Regulate your nervous system with guided breath',
+        animated: true,
+        science: 'Box breathing (4-4-4-4) activates the parasympathetic nervous system by extending the exhale relative to normal breathing. Used by Navy SEALs and first responders to regulate under extreme stress. Even one full cycle measurably lowers cortisol.'
+      },
       {
         id:      'tool-physiological-sigh',
         emoji:   '🌬',
@@ -1895,6 +1913,9 @@
       const { pathways, modules } = appState;
       const list = document.getElementById('pathwaysList');
 
+      // Free pathways are always accessible regardless of DB state
+      const FREE_PATHWAYS = new Set(['emotional']);
+
       const pathwayOrder = ['emotional', 'identity', 'connection', 'living'];
 
       list.innerHTML = pathwayOrder.map(key => {
@@ -1903,7 +1924,7 @@
         const done    = mods.filter(id => modules[id]?.completed).length;
         const total   = mods.length;
         const pct     = Math.round((done / total) * 100);
-        const locked  = !pw.unlocked;
+        const locked  = !pw.unlocked && !FREE_PATHWAYS.has(key);
         const active  = pw.started && !pw.completed;
 
         return `
@@ -2036,6 +2057,89 @@
 
       activeToolId = toolId;
 
+      // Special animated breathing tool
+      if (tool.animated && toolId === 'tool-box-breathing') {
+        document.getElementById('modalContent').innerHTML = `
+          <div class="modal-header">
+            <span class="modal-icon">${tool.emoji}</span>
+            <div>
+              <h3 class="modal-title">${tool.name}</h3>
+              <p class="modal-tagline">${tool.tagline}</p>
+            </div>
+          </div>
+
+          <div id="breathingContainer" style="display:flex;flex-direction:column;align-items:center;padding:1.5rem 0 0.5rem">
+            <div style="position:relative;width:180px;height:180px;margin-bottom:1.25rem">
+              <!-- Outer pulse ring -->
+              <div id="breathRing" style="
+                position:absolute;inset:0;
+                border-radius:50%;
+                border:2px solid var(--ember-border);
+                transition:transform 4s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;
+                transform:scale(1);
+                opacity:0.4;
+              "></div>
+              <!-- Main circle -->
+              <div id="breathCircle" style="
+                position:absolute;inset:12px;
+                border-radius:50%;
+                background:var(--gradient-main);
+                opacity:0.85;
+                transition:transform 4s cubic-bezier(0.4,0,0.2,1), opacity 0.5s ease;
+                display:flex;align-items:center;justify-content:center;
+                box-shadow:0 0 30px var(--ember-glow-soft);
+              ">
+                <span id="breathPhaseLabel" style="
+                  font-family:var(--font-display);
+                  font-size:1.25rem;
+                  font-weight:600;
+                  color:white;
+                  letter-spacing:0.02em;
+                  text-align:center;
+                  line-height:1.2;
+                  padding:0 0.5rem;
+                ">Ready</span>
+              </div>
+            </div>
+
+            <div id="breathCounter" style="
+              font-size:2.5rem;
+              font-weight:600;
+              color:var(--text-ember);
+              font-family:var(--font-display);
+              line-height:1;
+              min-height:3rem;
+              margin-bottom:0.5rem;
+            "></div>
+
+            <p id="breathInstruction" style="
+              font-size:0.9375rem;
+              color:var(--text-muted);
+              text-align:center;
+              margin-bottom:1.25rem;
+            ">4 counts each phase • 4 rounds</p>
+
+            <button id="breathStartBtn" class="btn btn--primary" style="width:auto;padding:0.75rem 2rem;" onclick="startBoxBreathing()">
+              Start breathing
+            </button>
+
+            <button id="breathStopBtn" class="btn btn--ghost btn--sm" style="width:auto;margin-top:0.5rem;display:none;" onclick="stopBoxBreathing()">
+              Stop
+            </button>
+          </div>
+
+          ${tool.science ? `
+            <div style="margin-top:1rem;padding:1rem;background:var(--ember-bg);border:1px solid var(--ember-border);border-radius:0.875rem;">
+              <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-ember);margin-bottom:0.5rem">Why it works</p>
+              <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.65">${tool.science}</p>
+            </div>
+          ` : ''}
+        `;
+        document.getElementById('toolModal').classList.add('modal-overlay--show');
+        if (currentUser) DB.recordToolUsage(currentUser.id, toolId, triggeredFrom).catch(() => {});
+        return;
+      }
+
       const stepsHTML = tool.steps.map((s, i) => `
         <div class="tool-step">
           <div class="tool-step__num">${i + 1}</div>
@@ -2079,14 +2183,113 @@
 
     function closeToolModal(e) {
       if (e && e.target !== document.getElementById('toolModal')) return;
+      stopBoxBreathing();
       document.getElementById('toolModal').classList.remove('modal-overlay--show');
       activeToolId = null;
     }
 
     function markToolDone() {
+      stopBoxBreathing();
       document.getElementById('toolModal').classList.remove('modal-overlay--show');
       UI.showToast('Good work. That takes practice.', 'success');
       activeToolId = null;
+    }
+
+    // ================================================================
+    // BOX BREATHING ENGINE
+    // ================================================================
+
+    let _breathTimer = null;
+    let _breathRound = 0;
+    const TOTAL_ROUNDS = 4;
+
+    function startBoxBreathing() {
+      document.getElementById('breathStartBtn').style.display = 'none';
+      document.getElementById('breathStopBtn').style.display  = 'inline-flex';
+      document.getElementById('breathInstruction').textContent = 'Follow the circle...';
+      _breathRound = 0;
+      runBreathPhase('inhale');
+    }
+
+    function stopBoxBreathing() {
+      if (_breathTimer) { clearTimeout(_breathTimer); _breathTimer = null; }
+      const circle = document.getElementById('breathCircle');
+      const ring   = document.getElementById('breathRing');
+      if (!circle) return;
+      circle.style.transform = 'scale(1)';
+      circle.style.opacity   = '0.85';
+      if (ring) { ring.style.transform = 'scale(1)'; ring.style.opacity = '0.4'; }
+      document.getElementById('breathPhaseLabel').textContent  = 'Ready';
+      document.getElementById('breathCounter').textContent     = '';
+      document.getElementById('breathInstruction').textContent = '4 counts each phase • 4 rounds';
+      const startBtn = document.getElementById('breathStartBtn');
+      const stopBtn  = document.getElementById('breathStopBtn');
+      if (startBtn) startBtn.style.display = 'inline-flex';
+      if (stopBtn)  stopBtn.style.display  = 'none';
+    }
+
+    function runBreathPhase(phase) {
+      const circle   = document.getElementById('breathCircle');
+      const ring     = document.getElementById('breathRing');
+      const label    = document.getElementById('breathPhaseLabel');
+      const counter  = document.getElementById('breathCounter');
+      const instruct = document.getElementById('breathInstruction');
+      if (!circle) return;
+
+      const phases = {
+        inhale:  { label: 'Inhale',  count: 4, scale: '1.22', ringScale: '1.38', opacity: '0.95', next: 'hold1'   },
+        hold1:   { label: 'Hold',    count: 4, scale: '1.22', ringScale: '1.38', opacity: '0.95', next: 'exhale'  },
+        exhale:  { label: 'Exhale',  count: 4, scale: '0.82', ringScale: '0.95', opacity: '0.65', next: 'hold2'   },
+        hold2:   { label: 'Hold',    count: 4, scale: '0.82', ringScale: '0.95', opacity: '0.65', next: 'inhale'  }
+      };
+
+      const p = phases[phase];
+      label.textContent = p.label;
+
+      // Animate circle
+      circle.style.transform = `scale(${p.scale})`;
+      circle.style.opacity   = p.opacity;
+      if (ring) {
+        ring.style.transform = `scale(${p.ringScale})`;
+        ring.style.opacity   = phase === 'inhale' || phase === 'hold1' ? '0.6' : '0.2';
+      }
+
+      // Count down
+      let remaining = p.count;
+      counter.textContent = remaining;
+
+      const tick = () => {
+        remaining--;
+        if (remaining > 0) {
+          counter.textContent = remaining;
+          _breathTimer = setTimeout(tick, 1000);
+        } else {
+          counter.textContent = '';
+          // Move to next phase
+          if (phase === 'hold2') {
+            _breathRound++;
+            if (_breathRound >= TOTAL_ROUNDS) {
+              // Done
+              label.textContent   = 'Done ✓';
+              counter.textContent = '';
+              instruct.textContent = 'You completed 4 rounds. Well done.';
+              circle.style.transform = 'scale(1)';
+              circle.style.opacity   = '0.85';
+              if (ring) { ring.style.transform = 'scale(1)'; ring.style.opacity = '0.4'; }
+              const startBtn = document.getElementById('breathStartBtn');
+              const stopBtn  = document.getElementById('breathStopBtn');
+              if (startBtn) { startBtn.textContent = 'Go again'; startBtn.style.display = 'inline-flex'; }
+              if (stopBtn)  stopBtn.style.display = 'none';
+              return;
+            } else {
+              instruct.textContent = `Round ${_breathRound + 1} of ${TOTAL_ROUNDS}`;
+            }
+          }
+          _breathTimer = setTimeout(() => runBreathPhase(p.next), 300);
+        }
+      };
+
+      _breathTimer = setTimeout(tick, 1000);
     }
 
     // ================================================================
@@ -2180,5 +2383,6 @@
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
   </script>
+
 </body>
 </html>
