@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – Before We Begin</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    .inner {
+      padding: max(2rem, env(safe-area-inset-top)) 1.5rem 2rem;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 2rem 0 1.5rem;
+    }
+
+    .hero-icon {
+      width: 5rem;
+      height: 5rem;
+      margin: 0 auto 1.25rem;
+      background: var(--gradient-main);
+      border-radius: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-ember-lg);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .hero-icon svg {
+      width: 2.5rem;
+      height: 2.5rem;
+      color: white;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--text-ember);
+    }
+
+    .hero-sub {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* What InnerShadow is */
+    .is-section {
+      margin-bottom: 1rem;
+    }
+
+    .is-item {
+      display: flex;
+      gap: 0.875rem;
+      align-items: flex-start;
+      padding: 1rem;
+      border-radius: 0.875rem;
+      margin-bottom: 0.625rem;
+    }
+
+    .is-item--yes {
+      background: var(--ember-bg);
+      border: 1px solid var(--ember-border);
+    }
+
+    .is-item--no {
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+    }
+
+    .is-dot {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-top: 0.0625rem;
+    }
+
+    .is-dot--yes {
+      background: var(--ember-bg-strong);
+      color: var(--text-ember);
+    }
+
+    .is-dot--no {
+      background: var(--red-bg-strong);
+      color: var(--text-red);
+    }
+
+    .is-text {
+      font-size: 0.9375rem;
+      line-height: 1.55;
+      color: var(--text-secondary);
+    }
+
+    .is-text strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* Crisis box */
+    .crisis-box {
+      background: linear-gradient(135deg,
+        rgba(220,38,38,0.12),
+        rgba(220,38,38,0.06));
+      border: 1px solid var(--red-border-strong);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .crisis-box__header {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .crisis-box__icon {
+      font-size: 1.375rem;
+      line-height: 1;
+    }
+
+    .crisis-box__title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-red);
+    }
+
+    .crisis-box__body {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .crisis-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .crisis-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(220,38,38,0.12);
+      border: 1px solid var(--red-border);
+      border-radius: 0.75rem;
+      text-decoration: none;
+      transition: var(--transition-base);
+    }
+
+    .crisis-link:hover {
+      background: rgba(220,38,38,0.18);
+      text-decoration: none;
+    }
+
+    .crisis-link__name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-red);
+    }
+
+    .crisis-link__detail {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    /* Privacy note */
+    .privacy-note {
+      background: var(--ember-bg);
+      border: 1px solid var(--ember-border);
+      border-radius: 1rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .privacy-note__icon {
+      font-size: 1.125rem;
+      flex-shrink: 0;
+      margin-top: 0.0625rem;
+    }
+
+    .privacy-note__text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .privacy-note__text strong {
+      color: var(--text-ember);
+    }
+
+    /* Checkbox agreement */
+    .agreement {
+      display: flex;
+      gap: 0.875rem;
+      align-items: flex-start;
+      padding: 1rem;
+      background: var(--bg-card-light);
+      border: 2px solid var(--border-soft);
+      border-radius: 1rem;
+      margin-bottom: 1.25rem;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .agreement:hover {
+      border-color: var(--ember-border);
+      background: var(--ember-bg);
+    }
+
+    .agreement--checked {
+      border-color: var(--ember-border-strong);
+      background: var(--ember-bg-strong);
+    }
+
+    .agreement__checkbox {
+      width: 1.375rem;
+      height: 1.375rem;
+      flex-shrink: 0;
+      accent-color: var(--ember);
+      cursor: pointer;
+      margin-top: 0.0625rem;
+    }
+
+    .agreement__text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .agreement__text strong {
+      color: var(--text-primary);
+    }
+
+    /* CTA footer */
+    .cta-area {
+      padding: 1.25rem 1.5rem max(1.5rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95);
+      border-top: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .section-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="scroll-area" id="scrollArea">
+      <div class="inner">
+
+        <!-- Hero -->
+        <div class="hero animate-fade-in">
+          <div class="hero-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+          </div>
+          <h1 class="hero-title">Before we <em>begin</em></h1>
+          <p class="hero-sub">A few honest things you should know about InnerShadow and what it is — and isn't.</p>
+        </div>
+
+        <!-- What InnerShadow IS -->
+        <div class="card card--gradient mb-lg">
+          <p class="section-label">What InnerShadow is</p>
+
+          <div class="is-section">
+            <div class="is-item is-item--yes">
+              <div class="is-dot is-dot--yes">✓</div>
+              <p class="is-text"><strong>Evidence-based education.</strong> Every module is grounded in real psychology — CBT, attachment theory, ACT, somatic work, self-compassion research. This is the curriculum a therapist might teach, made accessible.</p>
+            </div>
+
+            <div class="is-item is-item--yes">
+              <div class="is-dot is-dot--yes">✓</div>
+              <p class="is-text"><strong>Skill-building.</strong> You will learn specific, practisable tools — not inspiration, not affirmations. Real skills that change how you relate to your emotions, your patterns, and the people in your life.</p>
+            </div>
+
+            <div class="is-item is-item--yes">
+              <div class="is-dot is-dot--yes">✓</div>
+              <p class="is-text"><strong>A private space.</strong> Your worksheets, reflections, and progress are yours alone. We don't share, sell, or analyse your personal data. Ever.</p>
+            </div>
+
+            <div class="is-item is-item--yes">
+              <div class="is-dot is-dot--yes">✓</div>
+              <p class="is-text"><strong>Self-paced and non-judgmental.</strong> There is no right speed. No performance required. You can stop, restart, skip, and return as many times as you need.</p>
+            </div>
+          </div>
+
+          <p class="section-label" style="margin-top:1rem">What InnerShadow is not</p>
+
+          <div class="is-section">
+            <div class="is-item is-item--no">
+              <div class="is-dot is-dot--no">✗</div>
+              <p class="is-text"><strong>Not therapy.</strong> InnerShadow does not provide clinical treatment, diagnosis, or therapeutic care. There is no licensed therapist on the other end of this app.</p>
+            </div>
+
+            <div class="is-item is-item--no">
+              <div class="is-dot is-dot--no">✗</div>
+              <p class="is-text"><strong>Not a crisis service.</strong> If you are in immediate danger or experiencing a mental health crisis, InnerShadow is not the right resource. Please use the services below.</p>
+            </div>
+
+            <div class="is-item is-item--no">
+              <div class="is-dot is-dot--no">✗</div>
+              <p class="is-text"><strong>Not a replacement for professional support.</strong> If you are managing a serious mental health condition, please work with a qualified clinician. InnerShadow can complement that work — it cannot replace it.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Crisis resources -->
+        <div class="crisis-box">
+          <div class="crisis-box__header">
+            <span class="crisis-box__icon">🆘</span>
+            <span class="crisis-box__title">If you're in crisis right now</span>
+          </div>
+          <p class="crisis-box__body">
+            If you're having thoughts of suicide, self-harm, or are in immediate danger — please reach out to one of these services. They are free, confidential, and available right now.
+          </p>
+          <div class="crisis-links">
+            <a href="tel:988" class="crisis-link">
+              <span class="crisis-link__name">988 Suicide & Crisis Lifeline</span>
+              <span class="crisis-link__detail">Call or text 988</span>
+            </a>
+            <a href="sms:741741&body=HOME" class="crisis-link">
+              <span class="crisis-link__name">Crisis Text Line</span>
+              <span class="crisis-link__detail">Text HOME to 741741</span>
+            </a>
+            <a href="tel:911" class="crisis-link">
+              <span class="crisis-link__name">Emergency Services</span>
+              <span class="crisis-link__detail">Call 911</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Who InnerShadow is for -->
+        <div class="card mb-lg">
+          <p class="section-label">Who this is for</p>
+          <p class="text-secondary text-sm" style="line-height:1.75">
+            InnerShadow is designed for people in the gap — between struggling alone and sitting in a therapist's office. People who want to understand their emotions, break old patterns, build more genuine connections, and live a life that actually feels like theirs.
+          </p>
+          <div style="margin-top:1rem;padding:1rem;background:var(--ember-bg);border-radius:0.875rem;border:1px solid var(--ember-border)">
+            <p class="text-secondary text-sm" style="line-height:1.75">
+              <span style="color:var(--text-ember);font-weight:600">The four pathways</span> cover emotional regulation, self-knowledge, connection, and meaningful living. Each one is grounded in real psychology and written to feel human — not clinical.
+            </p>
+          </div>
+        </div>
+
+        <!-- Privacy -->
+        <div class="privacy-note mb-lg">
+          <span class="privacy-note__icon">🔒</span>
+          <p class="privacy-note__text">
+            <strong>Your privacy matters.</strong> Your worksheet responses, reflections, and check-ins are stored securely and encrypted. We do not sell your data, share it with advertisers, or use it to profile you. You can delete your account and all associated data at any time from Settings.
+          </p>
+        </div>
+
+        <!-- Agreement -->
+        <label class="agreement" id="agreementLabel" for="agreementCheckbox">
+          <input
+            type="checkbox"
+            id="agreementCheckbox"
+            class="agreement__checkbox"
+            onchange="handleAgreementChange(this)"
+          >
+          <p class="agreement__text">
+            I understand that <strong>InnerShadow is an educational app</strong>, not a clinical service or substitute for professional mental health treatment. I will seek appropriate professional support if I am in crisis or managing a serious condition.
+          </p>
+        </label>
+
+        <div style="height:0.5rem"></div>
+
+      </div><!-- /inner -->
+    </div><!-- /scroll-area -->
+
+    <!-- CTA -->
+    <div class="cta-area">
+      <button
+        class="btn btn--primary btn--lg"
+        id="continueBtn"
+        onclick="handleContinue()"
+        disabled
+      >
+        I understand — let's begin
+      </button>
+      <p style="text-align:center;font-size:0.75rem;color:var(--text-dim);margin-top:0.75rem;line-height:1.5">
+        By continuing you also agree to our
+        <a href="/terms.html" style="color:var(--text-ember)">Terms of Service</a>
+        and
+        <a href="/privacy.html" style="color:var(--text-ember)">Privacy Policy</a>
+      </p>
+    </div>
+
+  </div><!-- /shell -->
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script>
+    // ================================================================
+    // DISCLAIMER PAGE
+    // ================================================================
+
+    let currentUser  = null;
+    let agreed       = false;
+
+    // ── Init ──────────────────────────────────────────────
+
+    async function init() {
+      // Require auth — bounce to index if not logged in
+      const session = await Auth.requireAuth('/index.html');
+      if (!session) return;
+
+      currentUser = session.user;
+
+      // If already accepted, go straight to next step
+      const alreadyAccepted = localStorage.getItem('innershadow_disclaimer_acknowledged');
+      if (alreadyAccepted === 'true') {
+        await routeAfterDisclaimer();
+        return;
+      }
+
+      UI.markLoaded();
+    }
+
+    // ── Agreement checkbox ─────────────────────────────────
+
+    function handleAgreementChange(checkbox) {
+      agreed = checkbox.checked;
+      const label = document.getElementById('agreementLabel');
+      const btn   = document.getElementById('continueBtn');
+
+      label.classList.toggle('agreement--checked', agreed);
+      btn.disabled = !agreed;
+    }
+
+    // ── Continue button ────────────────────────────────────
+
+    async function handleContinue() {
+      if (!agreed || !currentUser) return;
+
+      UI.showLoading('Setting things up...');
+
+      try {
+        // Save disclaimer acceptance
+        await DB.updateUserState(currentUser.id, {
+          disclaimer_accepted:    true,
+          disclaimer_accepted_at: new Date().toISOString()
+        });
+
+        // Save locally so we don't check Supabase every time
+        localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+
+        await routeAfterDisclaimer();
+
+      } catch (err) {
+        console.error('Disclaimer acceptance failed:', err);
+        UI.hideLoading();
+        // Still let them through — don't block on DB error
+        localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+        await routeAfterDisclaimer();
+      }
+    }
+
+    // ── Route to right next step ───────────────────────────
+
+    async function routeAfterDisclaimer() {
+      try {
+        // Check if assessment is done
+        const { data: userState } = await DB.getUserState(currentUser.id);
+
+        if (userState?.assessment_completed) {
+          // Go to main app
+          Nav.go('/app.html', 'Welcome back...');
+        } else {
+          // Go to assessment — first time user
+          Nav.go('/assessment.html', 'Getting started...');
+        }
+      } catch (err) {
+        // Default to assessment on error
+        Nav.go('/assessment.html', 'Getting started...');
+      }
+    }
+
+    // ── Run ────────────────────────────────────────────────
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

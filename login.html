@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – Sign In</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    .inner {
+      padding: max(2rem, env(safe-area-inset-top)) 1.5rem 2rem;
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .back-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.75rem;
+      color: var(--text-primary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn:active {
+      transform: scale(0.92);
+      background: var(--bg-card-medium);
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 1.625rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.015em;
+      line-height: 1.2;
+    }
+
+    .page-title em {
+      font-style: italic;
+      color: var(--text-ember);
+    }
+
+    .page-sub {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+    }
+
+    /* Google button */
+    .btn-google {
+      background: var(--text-primary);
+      color: #1f2937;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .btn-google:hover:not(:disabled) {
+      background: #f9fafb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    }
+
+    /* Forgot password */
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 0.875rem;
+      color: var(--text-ember);
+      margin-top: 0.375rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .forgot-link:hover {
+      color: var(--text-ember);
+      text-decoration: underline;
+    }
+
+    /* Reset password panel */
+    .reset-panel {
+      display: none;
+      animation: fade-in 0.3s ease-out;
+    }
+
+    .reset-panel--show {
+      display: block;
+    }
+
+    /* Switch auth footer */
+    .switch-auth {
+      text-align: center;
+      padding: 1.25rem 1.5rem max(1.25rem, env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(10,15,30,0.95);
+      flex-shrink: 0;
+    }
+
+    .switch-auth p {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+    }
+
+    .switch-auth a {
+      color: var(--text-ember);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .switch-auth a:hover {
+      color: var(--text-ember);
+      text-decoration: underline;
+    }
+
+    /* Welcome back message */
+    .welcome-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--ember-bg);
+      border: 1px solid var(--ember-border);
+      border-radius: 999px;
+      padding: 0.375rem 0.875rem;
+      font-size: 0.8125rem;
+      color: var(--text-ember);
+      font-weight: 500;
+      margin-bottom: 1.75rem;
+    }
+
+    /* Reset success */
+    .reset-success {
+      display: none;
+      text-align: center;
+      padding: 1.5rem 0;
+      animation: scale-in 0.3s ease-out;
+    }
+
+    .reset-success--show {
+      display: block;
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="scroll-area">
+      <div class="inner">
+
+        <!-- Header -->
+        <div class="page-header animate-fade-in">
+          <button class="back-btn" onclick="Nav.back('/index.html')" aria-label="Back">←</button>
+          <div>
+            <h1 class="page-title">Welcome <em>back</em></h1>
+            <p class="page-sub">Sign in to continue your journey.</p>
+          </div>
+        </div>
+
+        <!-- Welcome chip — shown if we know their name -->
+        <div id="welcomeChip" class="welcome-chip" style="display:none">
+          <span>🌑</span>
+          <span id="welcomeName"></span>
+        </div>
+
+        <!-- Main login form -->
+        <div id="loginSection" class="animate-fade-in">
+
+          <!-- Google -->
+          <button class="btn btn-google btn--lg mb-lg" id="googleBtn" onclick="handleGoogle()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            Continue with Google
+          </button>
+
+          <div class="divider">
+            <div class="divider__line"></div>
+            <span class="divider__text">or sign in with email</span>
+            <div class="divider__line"></div>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label class="form-label" for="emailInput">Email address</label>
+            <input
+              type="email"
+              id="emailInput"
+              class="form-input"
+              placeholder="you@example.com"
+              autocomplete="email"
+              autocapitalize="none"
+              spellcheck="false"
+              inputmode="email"
+              onkeydown="handleEnter(event)"
+            >
+          </div>
+
+          <!-- Password -->
+          <div class="form-group" style="margin-bottom:0.25rem">
+            <label class="form-label" for="passwordInput">Password</label>
+            <input
+              type="password"
+              id="passwordInput"
+              class="form-input"
+              placeholder="Your password"
+              autocomplete="current-password"
+              onkeydown="handleEnter(event)"
+            >
+            <span class="forgot-link" onclick="showResetPanel()">Forgot your password?</span>
+          </div>
+
+          <!-- Error -->
+          <div class="error-message" id="errorMessage" style="margin-top:0.75rem"></div>
+
+          <!-- Submit -->
+          <button
+            class="btn btn--primary btn--lg"
+            id="submitBtn"
+            onclick="handleSignIn()"
+            style="margin-top:1.25rem"
+          >
+            Sign in
+          </button>
+
+        </div><!-- /loginSection -->
+
+        <!-- Reset password panel -->
+        <div class="reset-panel" id="resetPanel">
+
+          <!-- Reset form -->
+          <div id="resetForm">
+            <div class="card card--amber mb-lg">
+              <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.625rem">
+                <span style="font-size:1.25rem">🔑</span>
+                <h3 style="font-size:1rem;font-weight:600;color:var(--text-gold)">Reset your password</h3>
+              </div>
+              <p class="text-secondary text-sm" style="line-height:1.6">
+                Enter the email address you used to sign up. We'll send you a link to create a new password.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="resetEmailInput">Email address</label>
+              <input
+                type="email"
+                id="resetEmailInput"
+                class="form-input"
+                placeholder="you@example.com"
+                autocomplete="email"
+                autocapitalize="none"
+                inputmode="email"
+                onkeydown="handleResetEnter(event)"
+              >
+            </div>
+
+            <div class="error-message" id="resetErrorMessage"></div>
+
+            <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
+              <button
+                class="btn btn--ghost btn--sm"
+                style="flex:1"
+                onclick="hideResetPanel()"
+              >
+                Cancel
+              </button>
+              <button
+                class="btn btn--tertiary btn--sm"
+                style="flex:2"
+                id="resetBtn"
+                onclick="handleResetPassword()"
+              >
+                Send reset link
+              </button>
+            </div>
+          </div>
+
+          <!-- Reset success -->
+          <div class="reset-success" id="resetSuccess">
+            <div style="font-size:3rem;margin-bottom:1rem">📬</div>
+            <h3 style="font-family:var(--font-display);font-size:1.375rem;margin-bottom:0.625rem;color:var(--text-primary)">
+              Check your email
+            </h3>
+            <p class="text-secondary text-sm" style="line-height:1.7;margin-bottom:1.5rem">
+              We've sent a password reset link to <strong id="resetEmailSent" style="color:var(--text-primary)"></strong>. Click the link to create a new password.
+            </p>
+            <button class="btn btn--ghost btn--sm" onclick="hideResetPanel()">
+              Back to sign in
+            </button>
+          </div>
+
+        </div><!-- /resetPanel -->
+
+      </div><!-- /inner -->
+    </div><!-- /scroll-area -->
+
+    <!-- Switch to signup -->
+    <div class="switch-auth">
+      <p>Don't have an account? <a href="/signup.html">Create one free</a></p>
+    </div>
+
+  </div><!-- /shell -->
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Signing in...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script>
+
+    // ── Init ──────────────────────────────────────────────
+
+    async function init() {
+      const redirected = await Auth.redirectIfLoggedIn('/app.html');
+      if (redirected) return;
+
+      // Pre-fill email if coming from signup confirmation
+      const params = Nav.getParams();
+      if (params.email) {
+        document.getElementById('emailInput').value =
+          decodeURIComponent(params.email);
+      }
+
+      // Check for returning user hint in localStorage
+      const lastEmail = localStorage.getItem('innershadow_last_email');
+      if (lastEmail) {
+        document.getElementById('emailInput').value = lastEmail;
+        const chip = document.getElementById('welcomeChip');
+        const name = document.getElementById('welcomeName');
+        name.textContent = 'Welcome back, ' + lastEmail.split('@')[0];
+        chip.style.display = 'inline-flex';
+      }
+
+      UI.markLoaded();
+      UI.fixIOSKeyboard();
+    }
+
+    // ── Enter key shortcut ─────────────────────────────────
+
+    function handleEnter(e) {
+      if (e.key === 'Enter') handleSignIn();
+    }
+
+    function handleResetEnter(e) {
+      if (e.key === 'Enter') handleResetPassword();
+    }
+
+    // ── Google ─────────────────────────────────────────────
+
+    async function handleGoogle() {
+      const btn = document.getElementById('googleBtn');
+      btn.disabled = true;
+      UI.showLoading('Connecting to Google...');
+      const { error } = await Auth.signInWithGoogle('/disclaimer.html');
+      if (error) {
+        btn.disabled = false;
+        UI.hideLoading();
+        UI.showInlineError('errorMessage',
+          'Google sign-in failed. ' + (error.message || 'Please try again.'));
+      }
+    }
+
+    // ── Sign in ────────────────────────────────────────────
+
+    async function handleSignIn() {
+      const email    = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+
+      UI.hideInlineError('errorMessage');
+
+      if (!Validate.email(email)) {
+        UI.showInlineError('errorMessage', 'Please enter a valid email address.');
+        document.getElementById('emailInput').focus();
+        return;
+      }
+
+      if (!password) {
+        UI.showInlineError('errorMessage', 'Please enter your password.');
+        document.getElementById('passwordInput').focus();
+        return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      UI.showLoading('Signing in...');
+
+      const { data, error } = await Auth.signIn(email, password);
+
+      if (error) {
+        btn.disabled = false;
+        UI.hideLoading();
+
+        let msg = 'Something went wrong. Please try again.';
+        if (
+          error.message.includes('Invalid login') ||
+          error.message.includes('invalid credentials') ||
+          error.message.includes('Email not confirmed')
+        ) {
+          msg = 'Incorrect email or password. Please check your details and try again.';
+        } else if (error.message.includes('Too many')) {
+          msg = 'Too many attempts. Please wait a few minutes and try again.';
+        } else if (error.message.includes('not confirmed')) {
+          msg = 'Please confirm your email address first. Check your inbox for the confirmation link.';
+        }
+
+        UI.showInlineError('errorMessage', msg);
+        return;
+      }
+
+      // Save email hint for next time
+      localStorage.setItem('innershadow_last_email', email);
+
+      // Route correctly
+      const disclaimerAccepted = localStorage.getItem(
+        'innershadow_disclaimer_acknowledged'
+      );
+
+      Nav.go(
+        disclaimerAccepted === 'true' ? '/app.html' : '/disclaimer.html',
+        'Welcome back...'
+      );
+    }
+
+    // ── Forgot password ────────────────────────────────────
+
+    function showResetPanel() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('resetPanel').classList.add('reset-panel--show');
+
+      // Pre-fill email if already entered
+      const email = document.getElementById('emailInput').value.trim();
+      if (email) {
+        document.getElementById('resetEmailInput').value = email;
+      }
+
+      setTimeout(() => {
+        document.getElementById('resetEmailInput').focus();
+      }, 100);
+    }
+
+    function hideResetPanel() {
+      document.getElementById('resetPanel').classList.remove('reset-panel--show');
+      document.getElementById('loginSection').style.display = 'block';
+
+      // Reset the reset panel back to form state
+      document.getElementById('resetForm').style.display    = 'block';
+      document.getElementById('resetSuccess').classList.remove('reset-success--show');
+      document.getElementById('resetEmailInput').value = '';
+      UI.hideInlineError('resetErrorMessage');
+    }
+
+    async function handleResetPassword() {
+      const email = document.getElementById('resetEmailInput').value.trim();
+      UI.hideInlineError('resetErrorMessage');
+
+      if (!Validate.email(email)) {
+        UI.showInlineError('resetErrorMessage', 'Please enter a valid email address.');
+        return;
+      }
+
+      const btn = document.getElementById('resetBtn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      const { error } = await Auth.resetPassword(email);
+
+      btn.disabled = false;
+      btn.textContent = 'Send reset link';
+
+      if (error) {
+        UI.showInlineError('resetErrorMessage',
+          'Unable to send reset link. Please check the email address and try again.');
+        return;
+      }
+
+      // Show success
+      document.getElementById('resetEmailSent').textContent = email;
+      document.getElementById('resetForm').style.display    = 'none';
+      document.getElementById('resetSuccess').classList.add('reset-success--show');
+    }
+
+    // ── Run ────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

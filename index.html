@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="InnerShadow">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#0d0906">
+    <meta name="description" content="Your journey to authentic wellbeing. Emotional skills, self-knowledge, and a life that feels like yours.">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌑</text></svg>">
+
+    <!-- Google Fonts – Cormorant Garamond & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <title>InnerShadow – Welcome</title>
+
+    <style>
+        /* ========== CRITICAL FIXES ========== */
+        body.loading {
+            visibility: hidden;
+            opacity: 0;
+        }
+        html, body {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            -webkit-overflow-scrolling: auto !important;
+        }
+        body, .container, .content, p, span, h1, h2, h3, .tagline, .subtitle, .btn, .feature-content, .footer {
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .tagline, .subtitle, .feature-content p, .footer p {
+            line-height: 1.6 !important;
+            letter-spacing: 0.01em !important;
+            word-spacing: 0.05em !important;
+        }
+
+        /* ========== DESIGN TOKENS ========== */
+        :root {
+            --bg-dark: #0a0f1e;
+            --bg-card: rgba(12, 18, 34, 0.97);
+            --bg-card-light: rgba(255, 255, 255, 0.04);
+            --bg-card-dark: rgba(10, 15, 30, 0.45);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-softer: rgba(255, 255, 255, 0.15);
+
+            --primary-teal: #0d9488;
+            --primary-teal-dark: #0a7c6e;
+            --teal-glow: rgba(13, 148, 136, 0.35);
+
+            --accent-amber: #d97706;
+            --accent-amber-dark: #b45309;
+            --amber-glow: rgba(217, 119, 6, 0.35);
+
+            --text-teal-light: #5eead4;
+            --text-teal: #5eead4;
+            --text-teal-dark: #0d9488;
+            --text-amber-light: #fbbf24;
+            --text-amber: #fbbf24;
+            --text-amber-dark: #d97706;
+            --success-emerald: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.15);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            --text-dim: #334155;
+
+            --blur-teal: rgba(13, 148, 136, 0.08);
+            --blur-amber: rgba(217, 119, 6, 0.07);
+            --blur-radius: 140px;
+
+            --gradient-main: linear-gradient(135deg, #0d9488, #d97706);
+            --gradient-teal-heavy: linear-gradient(to right, #0d9488 70%, #d97706);
+            --gradient-subtle: linear-gradient(135deg, rgba(13,148,136,0.12), rgba(217,119,6,0.08));
+            --gradient-success: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.08));
+
+            --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+
+            --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+            --font-body: Outfit, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* ========== BASE & LAYOUT ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        html, body {
+            font-family: var(--font-body);
+            overscroll-behavior: none;
+            touch-action: pan-y;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            background: var(--bg-dark);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        body.loaded {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 28rem;
+            height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            border: 1px solid var(--border-subtle);
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            margin-top: env(safe-area-inset-top);
+            margin-bottom: env(safe-area-inset-bottom);
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        body.loaded .container {
+            opacity: 1;
+        }
+
+        .container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bg-blur-1 {
+            position: absolute;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30rem;
+            height: 30rem;
+            background: var(--blur-ember);
+            border-radius: 50%;
+            filter: blur(var(--blur-radius));
+            pointer-events: none;
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+
+        .bg-blur-2 {
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 25rem;
+            height: 25rem;
+            background: var(--blur-gold);
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+            padding: max(2rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-left)) max(2rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-right));
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: min-content;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 4.5rem;
+            height: 4.5rem;
+            margin: 0 auto 1rem;
+            background: var(--gradient-main);
+            border-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 40px var(--ember-glow);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .logo-icon svg {
+            width: 40px !important;
+            height: 40px !important;
+            color: var(--text-primary);
+        }
+
+        h1 {
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+            font-family: var(--font-display);
+        }
+
+        h1 em {
+            font-style: italic;
+            color: var(--text-ember);
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+            word-spacing: 0.05em;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .auth-buttons {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            border-radius: 1rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            min-height: 48px;
+            -webkit-appearance: none;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            user-select: none;
+            font-family: var(--font-body);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--gradient-main);
+            color: var(--text-primary);
+            box-shadow: 0 10px 25px var(--ember-glow);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 15px 35px var(--ember-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card-light);
+            color: var(--text-primary);
+            border: 1px solid var(--border-softer);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: var(--text-muted);
+        }
+
+        .btn-google {
+            background: var(--text-primary);
+            color: #1f2937;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-google:hover:not(:disabled) {
+            background: #f9fafb;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn svg {
+            width: 20px !important;
+            height: 20px !important;
+            flex-shrink: 0;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border-softer);
+        }
+
+        .divider-text {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .features {
+            margin-top: 2rem;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .feature {
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            background: var(--bg-card-light);
+            border-radius: 1rem;
+            border: 1px solid var(--border-softer);
+        }
+
+        .feature-icon {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feature-icon svg {
+            width: 20px !important;
+            height: 20px !important;
+            color: var(--text-primary);
+        }
+
+        .feature-content h3 {
+            color: var(--text-primary);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-content p {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .feature:nth-child(1) .feature-icon {
+            background: linear-gradient(135deg, var(--ember), var(--ember-dark));
+        }
+
+        .feature:nth-child(2) .feature-icon {
+            background: linear-gradient(135deg, var(--sage), #059669);
+        }
+
+        .feature:nth-child(3) .feature-icon {
+            background: linear-gradient(135deg, var(--ember), var(--gold));
+        }
+
+        .footer {
+            text-align: center;
+            padding: max(1.5rem, env(safe-area-inset-bottom)) 1.5rem 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .footer a {
+            color: var(--text-ember);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+            color: var(--text-ember-bright);
+        }
+
+        .footer p {
+            line-height: 1.6;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 1rem;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid var(--border-softer);
+            border-top: 3px solid var(--ember);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            color: #fca5a5;
+            font-size: 0.875rem;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @media (min-width: 640px) {
+            .container {
+                height: 844px;
+                max-height: 90vh;
+                border-radius: 2.5rem;
+                margin: 20px;
+            }
+            .content {
+                padding: 3rem 2rem;
+            }
+            .logo-icon {
+                width: 5rem;
+                height: 5rem;
+            }
+            .logo-icon svg {
+                width: 48px !important;
+                height: 48px !important;
+            }
+            h1 { font-size: 3rem; }
+            .tagline { font-size: 1.125rem; }
+            .btn {
+                padding: 1rem 1.5rem;
+                font-size: 1rem;
+            }
+            .btn svg {
+                width: 24px !important;
+                height: 24px !important;
+            }
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            body { height: -webkit-fill-available; }
+            .container {
+                height: -webkit-fill-available;
+                max-height: -webkit-fill-available;
+            }
+            .btn { min-height: 44px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bg-blur-1"></div>
+        <div class="bg-blur-2"></div>
+
+        <div class="content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <!-- Moon / inner shadow icon -->
+                    <svg width="40" height="40" preserveAspectRatio="xMidYMid meet"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </div>
+                <h1>Inner<em>Shadow</em></h1>
+                <p class="tagline">The skills nobody taught you, for the life you actually want to live.</p>
+                <p class="subtitle">Evidence-based psychology tools. No therapy required.</p>
+            </div>
+
+            <div class="auth-buttons">
+                <button class="btn btn--ghost" id="googleBtn">
+                    <svg width="20" height="20" preserveAspectRatio="xMidYMid meet"
+                         viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <div class="divider">
+                    <div class="divider-line"></div>
+                    <span class="divider-text">or</span>
+                    <div class="divider-line"></div>
+                </div>
+
+                <button class="btn btn--primary" id="signupBtn">
+                    <svg width="20" height="20" preserveAspectRatio="xMidYMid meet"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    Create Account
+                </button>
+
+                <button class="btn btn--secondary" id="loginBtn">
+                    Already have an account? Sign In
+                </button>
+
+                <div class="error-message" id="errorMessage"></div>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" preserveAspectRatio="xMidYMid meet"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Private & Secure</h3>
+                        <p>Your data is encrypted and never shared</p>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" preserveAspectRatio="xMidYMid meet"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Start Immediately</h3>
+                        <p>No credit card required, free to begin</p>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg width="20" height="20" preserveAspectRatio="xMidYMid meet"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Evidence-Based</h3>
+                        <p>Skills grounded in psychology research</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>By continuing, you agree to our <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a></p>
+            <p style="margin-top: 0.25rem; font-size: 0.7rem;">⚠️ Educational content only. Not a substitute for therapy or medical treatment.</p>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Loading...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ========== AUTH STATE MANAGEMENT ==========
+        let isInitialized = false;
+        let isProcessingAuth = false;
+        let loadTimer = null;
+
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        const SUPABASE_URL = 'https://ocdwpaefmslyidelkzde.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHdwYWVmbXNseWlkZWxremRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0NjQ1OTQsImV4cCI6MjA4NTA0MDU5NH0.OAYuCQhxrmZMLI_H8OuaJvs7dKVm82gUPgGzQDUYq-Q';
+
+        let sbClient = null;
+
+        function showLoading(message = 'Loading...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const text = document.getElementById('loadingText');
+            if (text) text.textContent = message;
+            overlay.classList.add('show');
+            if (loadTimer) clearTimeout(loadTimer);
+            loadTimer = setTimeout(hideLoading, 15000);
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('show');
+            if (loadTimer) { clearTimeout(loadTimer); loadTimer = null; }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            if (!errorDiv) return;
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => errorDiv.classList.remove('show'), 5000);
+        }
+
+        function resetAuthState() {
+            isProcessingAuth = false;
+            ['googleBtn', 'signupBtn', 'loginBtn'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = false;
+            });
+            hideLoading();
+        }
+
+        async function handleGoogleSignIn() {
+            if (isProcessingAuth) return;
+            if (!sbClient) {
+                showError('Authentication service not available. Please refresh the page.');
+                return;
+            }
+            const googleBtn = document.getElementById('googleBtn');
+            if (!googleBtn) return;
+
+            googleBtn.disabled = true;
+            isProcessingAuth = true;
+            showLoading('Connecting to Google...');
+
+            try {
+                const redirectTo = window.location.origin + '/disclaimer.html';
+                const { data, error } = await sbClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: redirectTo,
+                        skipBrowserRedirect: isIOS ? true : false
+                    }
+                });
+                if (error) throw error;
+                if (isIOS && data?.url) window.location.href = data.url;
+            } catch (error) {
+                console.error('Google sign-in error:', error);
+                resetAuthState();
+                let msg = 'Unable to sign in with Google. ';
+                if (error.message.includes('popup')) {
+                    msg += 'Please allow popups for this site.';
+                } else if (isIOS) {
+                    msg += 'Please ensure Safari cookies are enabled.';
+                } else {
+                    msg += error.message || 'Please try again.';
+                }
+                showError(msg);
+            }
+        }
+
+        function handleSignUp() {
+            if (isProcessingAuth) return;
+            isProcessingAuth = true;
+            document.getElementById('signupBtn').disabled = true;
+            showLoading('Loading...');
+            setTimeout(() => { window.location.href = 'signup.html'; }, 300);
+        }
+
+        function handleLogin() {
+            if (isProcessingAuth) return;
+            isProcessingAuth = true;
+            document.getElementById('loginBtn').disabled = true;
+            showLoading('Loading...');
+            setTimeout(() => { window.location.href = 'login.html'; }, 300);
+        }
+
+        async function checkSession() {
+            if (!sbClient) return false;
+            try {
+                const { data: { session }, error } = await sbClient.auth.getSession();
+                if (error) return false;
+                if (session) {
+                    const disclaimerAcknowledged = localStorage.getItem('innershadow_disclaimer_acknowledged');
+                    showLoading('Welcome back...');
+                    setTimeout(() => {
+                        window.location.href = disclaimerAcknowledged === 'true'
+                            ? 'app.html'
+                            : 'disclaimer.html';
+                    }, 800);
+                    return true;
+                }
+                return false;
+            } catch (err) {
+                return false;
+            }
+        }
+
+        async function initializeApp() {
+            if (isInitialized) return;
+            isInitialized = true;
+
+            try {
+                sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true,
+                        flowType: 'pkce'
+                    }
+                });
+            } catch (error) {
+                showError('Unable to initialize. Please refresh the page.');
+            }
+
+            document.getElementById('googleBtn')?.addEventListener('click', handleGoogleSignIn);
+            document.getElementById('signupBtn')?.addEventListener('click', handleSignUp);
+            document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
+
+            if (isIOS) {
+                const setVH = () => {
+                    const vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', `${vh}px`);
+                };
+                setVH();
+                window.addEventListener('resize', setVH);
+            }
+
+            setTimeout(() => document.body.classList.add('loaded'), 100);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                setTimeout(() => { if (isProcessingAuth) resetAuthState(); }, 500);
+            }
+        });
+
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) resetAuthState();
+        });
+
+        window.addEventListener('focus', () => {
+            setTimeout(() => {
+                if (isProcessingAuth && !document.getElementById('loadingOverlay').classList.contains('show')) {
+                    resetAuthState();
+                }
+            }, 300);
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeApp();
+            setTimeout(checkSession, 1000);
+        });
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => {
+                        console.log('[InnerShadow] SW registered:', reg.scope);
+
+                        // Check for updates every time app loads
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New version available — could show update banner here
+                                    console.log('[InnerShadow] New version available');
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => console.log('[InnerShadow] SW failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
