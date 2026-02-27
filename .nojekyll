@@ -1,0 +1,10 @@
+# In your terminal, navigate to your project folder
+cd your-project-folder
+
+# Create empty .nojekyll file
+touch .nojekyll
+
+# Add it to git
+git add .nojekyll
+git commit -m "Disable Jekyll build for GitHub Pages"
+git push
