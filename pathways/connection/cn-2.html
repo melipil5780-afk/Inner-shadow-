@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – The Art of Actually Listening</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { position: fixed; width: 100%; height: 100%; overflow: hidden; }
+    body { display: flex; align-items: center; justify-content: center; background: var(--bg-dark); }
+
+    .shell {
+      width: 100%; max-width: 28rem; height: 100vh; height: -webkit-fill-available;
+      background: var(--bg-card); display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+      border-left: 1px solid var(--border-subtle); border-right: 1px solid var(--border-subtle);
+    }
+
+    .module-header {
+      padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+      background: rgba(10,15,30,0.95); border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0; z-index: 10; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+
+    .module-header__row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+
+    .header-back {
+      width: 2.25rem; height: 2.25rem; display: flex; align-items: center; justify-content: center;
+      background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.625rem;
+      color: var(--text-primary); font-size: 1rem; cursor: pointer; transition: var(--transition-fast); flex-shrink: 0;
+    }
+    .header-back:active { transform: scale(0.92); }
+
+    .header-title { flex: 1; font-size: 0.875rem; font-weight: 600; color: var(--text-primary); line-height: 1.3; text-align: center; }
+    .header-count { font-size: 0.8125rem; color: var(--text-muted); font-weight: 500; min-width: 2.25rem; text-align: right; }
+
+    .progress-dots { display: flex; gap: 0.3rem; }
+    .progress-dot { flex: 1; height: 3px; background: rgba(148,163,184,0.15); border-radius: 999px; transition: background 0.4s ease; }
+    .progress-dot--active { background: var(--gradient-main); }
+
+    .module-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .module-scroll::-webkit-scrollbar { display: none; }
+    .step-wrap { padding: 1.375rem 1.25rem 2rem; }
+
+    .cta-area {
+      padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95); border-top: 1px solid var(--border-subtle);
+      display: flex; gap: 0.75rem; align-items: center; flex-shrink: 0;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+
+    .back-btn-sm {
+      width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center;
+      background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.875rem;
+      color: var(--text-secondary); font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); flex-shrink: 0;
+    }
+    .back-btn-sm:active { transform: scale(0.92); }
+    .back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+    /* Listening habit chips */
+    .habit-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .habit-chip {
+      padding: 0.4375rem 1rem; background: var(--bg-card-light);
+      border: 1.5px solid var(--border-soft); border-radius: 999px;
+      font-size: 0.8125rem; color: var(--text-secondary);
+      cursor: pointer; transition: all 0.18s ease; font-family: var(--font-body);
+    }
+    .habit-chip:active { transform: scale(0.92); }
+    .habit-chip--selected {
+      border-color: var(--red-border, rgba(239,68,68,0.5));
+      background: var(--red-bg, rgba(239,68,68,0.08));
+      color: var(--text-red, #f87171); font-weight: 600;
+    }
+
+    /* Response type cards — selectable */
+    .response-option {
+      display: flex; align-items: flex-start; gap: 0.875rem;
+      padding: 0.9375rem 1rem;
+      background: var(--bg-card-light); border: 2px solid var(--border-soft);
+      border-radius: 1rem; cursor: pointer; transition: all 0.18s ease;
+      margin-bottom: 0.5rem; font-family: var(--font-body); text-align: left; width: 100%;
+    }
+    .response-option:active { transform: scale(0.98); }
+    .response-option--selected { border-color: var(--ember-border-strong); background: var(--ember-bg); }
+
+    .response-option__emoji { font-size: 1.375rem; line-height: 1; flex-shrink: 0; margin-top: 0.125rem; }
+    .response-option__body { flex: 1; }
+    .response-option__name { font-size: 0.9375rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem; }
+    .response-option--selected .response-option__name { color: var(--text-ember); }
+    .response-option__desc { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.55; }
+
+    /* Conversation type */
+    .convo-card {
+      background: var(--bg-card-light); border: 1px solid var(--border-soft);
+      border-radius: 1.125rem; overflow: hidden; margin-bottom: 0.75rem;
+    }
+    .convo-card__speaker {
+      padding: 0.625rem 1rem 0;
+      font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .convo-card__speaker--a { color: var(--text-muted); }
+    .convo-card__speaker--b { color: var(--text-ember); }
+    .convo-card__text { padding: 0.25rem 1rem 0.875rem; font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.65; }
+
+    @media (min-width: 640px) {
+      .shell { height: 844px; max-height: 92vh; border-radius: 2.5rem; border: 1px solid var(--border-subtle); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="module-header">
+      <div class="module-header__row">
+        <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+        <p class="header-title" id="moduleTitle">The Art of Actually Listening</p>
+        <span class="header-count" id="stepCounter"></span>
+      </div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="module-scroll" id="moduleScroll">
+      <div class="step-wrap" id="stepContent"></div>
+    </div>
+
+    <div class="cta-area">
+      <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+      <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/module-engine.js"></script>
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Poor listening habit selector ─────────────────────
+
+  const selectedHabits = new Set();
+
+  function toggleHabit(el, name) {
+    el.classList.toggle('habit-chip--selected');
+    if (selectedHabits.has(name)) { selectedHabits.delete(name); } else { selectedHabits.add(name); }
+    const hidden = document.getElementById('habitsHidden');
+    if (hidden) hidden.value = Array.from(selectedHabits).join(', ');
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = selectedHabits.size === 0;
+  }
+
+  // ── Response type selector ────────────────────────────
+
+  let selectedResponseType = '';
+
+  function selectResponseType(el, name) {
+    document.querySelectorAll('.response-option').forEach(o => o.classList.remove('response-option--selected'));
+    el.classList.add('response-option--selected');
+    selectedResponseType = name;
+    const hidden = document.getElementById('responseTypeHidden');
+    if (hidden) hidden.value = name;
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = false;
+  }
+
+  // ================================================================
+  // MODULE CN-2: THE ART OF ACTUALLY LISTENING
+  // ================================================================
+
+  const CN2_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('Most people are not listening. They\'re waiting to speak.')}
+        ${B.para('This is not a character flaw. It\'s the default state of a mind that has been trained to produce — to respond, solve, advise, reassure, one-up, redirect. The mind treats conversation as a problem to solve rather than a person to understand.')}
+        ${B.para('The result is that people spend entire conversations technically present while being fundamentally absent. The other person can feel it — even when they can\'t name it.')}
+        ${B.callout('Real listening is one of the rarest and most valuable things one human can offer another. When someone feels genuinely heard — not managed, not fixed, not redirected — something fundamental shifts. It\'s one of the most powerful acts of connection that exists.')}
+        ${B.para('This module is about the difference between hearing and listening, and the specific skills that make the second one real.')}
+      `
+    },
+
+    // ── STEP 2: Concept — Two kinds of listening ──────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('Listening to respond vs listening to understand.')}
+        ${B.para('There are two fundamentally different orientations you can bring to a conversation. They produce completely different outcomes.')}
+
+        ${B.compare(
+          'Listening to respond: monitoring the conversation for your next entry point. Preparing your reply while the other person is still speaking. Waiting for a pause. Filtering what they say through the lens of your own experience.',
+          'Listening to understand: genuinely curious about what\'s happening for the other person. Following their experience rather than your reaction to it. Willing to be surprised. Not needing to have a response ready.'
+        )}
+
+        ${B.para('The difference is not technique — it\'s orientation. Where is your attention actually going? Onto the other person and their inner world, or onto yourself and what you\'re going to say?')}
+
+        ${B.insight('What the other person experiences', 'People can feel — even if they can\'t articulate it — whether you are genuinely with them or performing presence. Genuine attention is physically different to receive. It\'s why people say certain conversations felt life-changing and others felt hollow despite covering the same ground.')}
+
+        ${B.steps([
+          '<strong>Level 1 listening — Listening to yourself.</strong> Attention primarily on your own reactions, judgments, and what you\'re going to say. The other person\'s words filter through your own frame.',
+          '<strong>Level 2 listening — Listening to the other person.</strong> Attention on their words, their meaning, their emotional state. You track them rather than your response to them.',
+          '<strong>Level 3 listening — Listening to the field.</strong> Attention on everything — their words, their tone, their body language, what\'s not being said, the energy of the whole exchange.'
+        ])}
+      `
+    },
+
+    // ── STEP 3: Concept — The five blockers ───────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The five things that block real listening.')}
+        ${B.para('These are the specific habits that pull attention away from the other person and back onto yourself. Most people do several of them without noticing.')}
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem">
+          ${[
+            ['Rehearsing', 'Preparing what you\'ll say while the other person is still speaking. Your attention splits — part tracking them, part managing your upcoming contribution.'],
+            ['Filtering', 'Selectively attending to parts of what someone says while blocking other parts. Usually filtering for what fits your existing view or what\'s relevant to you.'],
+            ['Advising', 'Jumping to solutions before the other person has finished explaining. Feels helpful; usually it isn\'t. Often it communicates "I don\'t need to hear more to know what you should do."'],
+            ['Relating', 'Responding to what someone shares by immediately pivoting to your own similar experience. "That reminds me of when I..." — the conversation becomes about you.'],
+            ['Reassuring', 'Moving quickly to make the other person feel better before they\'ve finished being heard. "It\'ll be okay!" — well-intentioned but shuts down depth.']
+          ].map(([name, desc]) => `
+            <div style="padding:0.875rem 1rem;background:var(--bg-card-light);border:1px solid var(--border-soft);border-radius:0.875rem">
+              <p style="font-size:0.875rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem">${name}</p>
+              <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5">${desc}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        ${B.callout('None of these are bad impulses. They come from wanting to help, wanting to connect, wanting to be useful. The problem is they substitute your agenda for the other person\'s actual need in that moment.')}
+      `
+    },
+
+    // ── STEP 4: Concept — What real listening looks like ──
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('What actually makes someone feel heard.')}
+        ${B.para('Real listening has specific, learnable components. This is not about performing interest — it\'s about genuinely directing attention and communicating that you\'re following.')}
+
+        ${B.steps([
+          '<strong>Presence first.</strong> Put the phone down. Actually put it down. Turn toward the person. Let your body communicate that you are not going anywhere.',
+          '<strong>Track their experience, not the facts.</strong> The content is rarely what matters most. What matters is what the content means to them emotionally. Follow the feeling, not just the story.',
+          '<strong>Don\'t fill silences immediately.</strong> Silence is not failure. It\'s often where the real thing is — just behind the first version. Sitting with a pause often produces more depth than rushing to fill it.',
+          '<strong>Reflect before responding.</strong> Before you say anything, check: have I understood what they actually said? Not what I think they should have said, or what I\'d feel in that situation — what they actually said.',
+          '<strong>Ask the next question rather than making the next point.</strong> If you\'re uncertain whether to share your own experience or ask another question — almost always ask the question. Stay curious longer than feels comfortable.'
+        ])}
+
+        <div class="convo-card">
+          <p class="convo-card__speaker convo-card__speaker--a">Person A</p>
+          <p class="convo-card__text">"Work has been really difficult lately. I feel like nothing I do is good enough."</p>
+          <p class="convo-card__speaker convo-card__speaker--b">Poor listening response</p>
+          <p class="convo-card__text">"I know, work is so stressful. You should try setting clearer boundaries with your manager. That worked for me."</p>
+          <p class="convo-card__speaker convo-card__speaker--b" style="color:var(--text-ember)">Real listening response</p>
+          <p class="convo-card__text">"Nothing you do feels good enough — what does that feel like? Is that about specific feedback you\'ve been getting, or more of a general feeling?"</p>
+        </div>
+
+        ${B.para('The second response stays with the person. The first one leaves them immediately.')}
+      `
+    },
+
+    // ── STEP 5: Worksheet — Listening audit ───────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Your listening audit.')}
+        ${B.para('Honest self-assessment. Most people think they\'re better listeners than they are — because the habits are so automatic they feel like listening.')}
+
+        ${B.divider('Your honest habits')}
+        <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:0.75rem;line-height:1.6">
+          Select the listening habits you recognise in yourself — even if uncomfortable:
+        </p>
+
+        <div class="habit-grid">
+          ${[
+            'Planning my response while others speak',
+            'Jumping to advice too quickly',
+            'Relating everything to my own experience',
+            'Reassuring before they\'re finished',
+            'Getting distracted by my phone',
+            'Filtering for what\'s relevant to me',
+            'Finishing people\'s sentences',
+            'Waiting for the part I can respond to',
+            'Glazing over in longer stories',
+            'Redirecting to what I find more interesting',
+            'Mentally disagreeing and preparing a rebuttal',
+            'Asking questions that redirect to my agenda'
+          ].map(h => `<button class="habit-chip" onclick="toggleHabit(this,'${h.replace(/'/g,"\\'")}' )">${h}</button>`).join('')}
+        </div>
+        <input type="hidden" id="habitsHidden" data-key="listeningHabits" value="">
+
+        ${B.keyedTextarea('listening-honest', 'The honest truth about how I listen in most conversations is...', 'What would someone who\'d had many conversations with you say about how present you are?', '80px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 6: Worksheet — Your default response type ────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('What do you default to?')}
+        ${B.para('When someone comes to you with something difficult, which of these is your automatic response? Pick the one that\'s most honest — not the one that sounds best.')}
+
+        <div style="margin-bottom:1rem">
+          ${[
+            ['🔧', 'The fixer', 'You immediately move to solutions. "Here\'s what you should do." Feels helpful; can communicate that their feelings are an inconvenience on the way to the solution.'],
+            ['🪞', 'The mirror', 'You reflect their experience back to you. "That reminds me of when I..." — you connect through shared experience but the conversation pivots to you.'],
+            ['☀️', 'The silver-liner', 'You look for the bright side. "But at least..." — well-intentioned but can feel dismissive of the actual difficulty they\'re in.'],
+            ['🧐', 'The analyser', 'You go into problem-solving mode — picking apart the situation, asking lots of questions about logistics rather than feelings.'],
+            ['🤫', 'The withholder', 'You go quiet, nod, but don\'t engage much. You\'re present but not really responding — can feel like absence to the other person.'],
+            ['🌊', 'The container', 'You stay with their experience. You follow their lead. You ask about their inner world rather than redirecting. This one takes practice.']
+          ].map(([emoji, name, desc]) => `
+            <button
+              class="response-option"
+              onclick="selectResponseType(this, '${name}')"
+            >
+              <span class="response-option__emoji">${emoji}</span>
+              <div class="response-option__body">
+                <p class="response-option__name">${name}</p>
+                <p class="response-option__desc">${desc}</p>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="responseTypeHidden" data-key="responseType" value="">
+
+        ${B.keyedTextarea('response-why', 'I default to this because...', 'Where did this pattern come from? Was this how people responded to you? How you learned conversations were supposed to go?', '80px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 7: Worksheet — Practise the container ────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Practising the container response.')}
+        ${B.para('Read the following and write the response that genuinely stays with the person — not fixes, silver-lines, mirrors, or analyses. Just follows their experience with curiosity.')}
+
+        <div style="
+          background:var(--bg-card-light); border:1px solid var(--border-soft);
+          border-radius:1.125rem; padding:1.125rem; margin-bottom:1.25rem;
+        ">
+          <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.625rem">Someone says to you:</p>
+          <p style="font-size:1rem;color:var(--text-primary);line-height:1.7;font-style:italic">
+            "I've been feeling really disconnected from everyone lately. Like I'm going through the motions but nothing actually touches me. I don't know how to explain it."
+          </p>
+        </div>
+
+        ${B.keyedTextarea('container-response', 'My container response — staying with their experience — would be...', 'Not fixing, not silver-lining, not "I know how you feel." Genuinely curious about their specific experience.', '90px')}
+
+        ${B.divider('Reflection')}
+        ${B.keyedTextarea('hard-part', 'The hardest part of not immediately fixing or reassuring is...', 'What pulls you out of the container? What makes staying with discomfort difficult?', '75px')}
+
+        ${B.insight('Why staying is hard', 'Other people\'s pain creates discomfort in us — and the impulse to fix or reassure is often as much about managing our own discomfort as it is about helping them. Noticing this is most of the work.')}
+      `
+    },
+
+    // ── STEP 8: Skill ──────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your second tool in this pathway.')}
+        ${B.para('Five moves that transform your listening from hearing the content to actually receiving the person.')}
+        ${B.skill(
+          'Deep Listening',
+          'Be genuinely present with another person\'s inner experience.',
+          [
+            '<strong>Remove the exit routes.</strong> Phone away. No half-attention. Your body turned toward them. Make the physical commitment before you try the mental one.',
+            '<strong>Track the feeling, not just the facts.</strong> What are they feeling about what they\'re telling you? That\'s what they\'re actually sharing — the content is the vehicle.',
+            '<strong>Reflect before you respond.</strong> When they pause, don\'t immediately fill the space. Take a breath. Ask yourself: what did they actually just say? What might they need me to understand?',
+            '<strong>Ask inward, not outward.</strong> "What was that like for you?" not "What happened next?" "What\'s the hardest part?" not "What did you do?" Follow them inward, not outward into more facts.',
+            '<strong>Say less than you think you need to.</strong> Most people use too many words when listening. "That sounds really difficult." "I hear you." "Tell me more." These land more than long responses. Less is almost always more.'
+          ]
+        )}
+        ${B.compare(
+          'Typical conversation: Person shares → you process through your frame → you respond with your reaction or experience → attention moves onto you → they feel heard for about thirty seconds.',
+          'Deep listening: Person shares → you track their experience → you reflect or ask inward → they go deeper → they feel actually understood → connection happens.'
+        )}
+      `
+    },
+
+    // ── STEP 9: Commitment ─────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('Deep listening is uncomfortable at first because your habitual response patterns are so practiced. The commitment is not to be perfect — it\'s to catch yourself when you default to the old pattern and redirect at least once.')}
+        ${B.para('Pick one upcoming conversation where you\'ll practise listening to understand rather than listening to respond.')}
+        ${B.commitment(
+          'Name the conversation, your likely default pattern, and what staying with the other person will look like instead.',
+          'This week in [specific conversation or relationship], I\'m going to practise deep listening. My usual default is to [pattern from worksheet]. Instead, I\'ll track their feeling rather than the facts, and when I feel the pull to [fix/reassure/relate], I\'ll pause and ask [a question that stays with their experience] instead.'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ──────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'The Art of Actually Listening',
+        'connection',
+        'cn-3',
+        '👂',
+        'Deep Listening',
+        'Be genuinely present with another person\'s inner experience'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('cn-2', CN2_STEPS);
+  });
+
+  </script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+</body>
+</html>

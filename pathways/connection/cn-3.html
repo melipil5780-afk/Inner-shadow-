@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – Saying What's Actually True</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .module-header {
+      padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+      background: rgba(10,15,30,0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .module-header__row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .header-back {
+      width: 2.25rem;
+      height: 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.625rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .header-back:active { transform: scale(0.92); }
+
+    .header-title {
+      flex: 1;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .header-count {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      min-width: 2.25rem;
+      text-align: right;
+    }
+
+    .progress-dots { display: flex; gap: 0.3rem; }
+
+    .progress-dot {
+      flex: 1;
+      height: 3px;
+      background: rgba(148,163,184,0.15);
+      border-radius: 999px;
+      transition: background 0.4s ease;
+    }
+
+    .progress-dot--active { background: var(--gradient-main); }
+
+    .module-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .module-scroll::-webkit-scrollbar { display: none; }
+
+    .step-wrap { padding: 1.375rem 1.25rem 2rem; }
+
+    .cta-area {
+      padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .back-btn-sm {
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn-sm:active { transform: scale(0.92); }
+    .back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+    /* Things-you-swallow chip selector */
+    .swallow-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .swallow-chip {
+      padding: 0.4375rem 1rem;
+      background: var(--bg-card-light);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: var(--font-body);
+    }
+
+    .swallow-chip:active { transform: scale(0.92); }
+
+    .swallow-chip--selected {
+      border-color: var(--amber-border, #d97706);
+      background: var(--gold-bg);
+      color: var(--text-gold);
+      font-weight: 600;
+    }
+
+    /* NVC four-part cards */
+    .nvc-card {
+      border-radius: 1rem;
+      padding: 1rem 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .nvc-card--obs  { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.28); }
+    .nvc-card--feel { background: var(--ember-bg); border: 1px solid var(--ember-border); }
+    .nvc-card--need { background: var(--gold-bg); border: 1px solid var(--gold-border); }
+    .nvc-card--req  { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.28); }
+
+    .nvc-card__num {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.375rem;
+    }
+
+    .nvc-card--obs  .nvc-card__num { color: #818cf8; }
+    .nvc-card--feel .nvc-card__num { color: var(--text-ember); }
+    .nvc-card--need .nvc-card__num { color: var(--text-gold); }
+    .nvc-card--req  .nvc-card__num { color: #10b981; }
+
+    .nvc-card__name {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+    }
+
+    .nvc-card__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 0.375rem;
+    }
+
+    .nvc-card__example {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    /* Before / after conversation example */
+    .convo-example {
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 1.125rem;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+
+    .convo-example__row {
+      padding: 0.875rem 1.125rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .convo-example__row:last-child { border-bottom: none; }
+
+    .convo-example__label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.375rem;
+    }
+
+    .convo-example__label--before { color: var(--text-red, #f87171); }
+    .convo-example__label--after  { color: var(--text-ember); }
+
+    .convo-example__text {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="module-header">
+      <div class="module-header__row">
+        <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+        <p class="header-title" id="moduleTitle">Saying What's Actually True</p>
+        <span class="header-count" id="stepCounter"></span>
+      </div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="module-scroll" id="moduleScroll">
+      <div class="step-wrap" id="stepContent"></div>
+    </div>
+
+    <div class="cta-area">
+      <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+      <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/module-engine.js"></script>
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Things-you-swallow selector ────────────────────────
+
+  const selectedSwallowed = new Set();
+
+  function toggleSwallowed(el, name) {
+    el.classList.toggle('swallow-chip--selected');
+    if (selectedSwallowed.has(name)) {
+      selectedSwallowed.delete(name);
+    } else {
+      selectedSwallowed.add(name);
+    }
+    const hidden = document.getElementById('swallowedHidden');
+    if (hidden) hidden.value = Array.from(selectedSwallowed).join(', ');
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = selectedSwallowed.size === 0;
+  }
+
+  // ================================================================
+  // MODULE CN-3: SAYING WHAT'S ACTUALLY TRUE
+  // ================================================================
+
+  const CN3_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('Most people don\'t say what\'s actually true. They say what they think is sayable.')}
+        ${B.para('There\'s a version of what you really think, feel, or need — and then there\'s the edited version that comes out after filtering for how it will land, what it will cost, whether you\'ll be judged for it. The editing happens so fast most people don\'t notice they\'re doing it.')}
+        ${B.para('The result: conversations that are technically honest but not really true. Relationships that are functional but never quite arrive at the thing that would actually matter.')}
+        ${B.callout('Honest expression is not the same as blurting everything out. It\'s the skill of saying what\'s real in a way the other person can actually receive — without swallowing it, softening it to meaninglessness, or delivering it as an attack.')}
+        ${B.para('This module is about closing the gap between what\'s actually happening inside you and what you say out loud.')}
+      `
+    },
+
+    // ── STEP 2: Concept — Why people don\'t say it ─────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('Why people don\'t say what\'s true.')}
+        ${B.steps([
+          '<strong>Fear of conflict.</strong> If I say this, it will cause a fight. Better to keep it in and manage the discomfort quietly. The short-term cost of saying it feels higher than the long-term cost of swallowing it.',
+          '<strong>Fear of burdening.</strong> My feelings aren\'t their problem. They have enough going on. I don\'t want to add to it. This sounds generous — it often isn\'t.',
+          '<strong>Fear of rejection.</strong> If they know how I really feel, they might pull away. The relationship only stays safe if I don\'t push it too far.',
+          '<strong>The performance habit.</strong> I\'ve been presenting the functional version for so long that I\'m not even sure what the real version is anymore. Honesty requires first knowing what\'s true.',
+          '<strong>Belief it won\'t change anything.</strong> I\'ve said things before and nothing shifted. What\'s the point of going through the discomfort?',
+          '<strong>Not having the words.</strong> I know something is wrong but I can\'t get it into language that doesn\'t sound wrong, excessive, or like an accusation.'
+        ])}
+        ${B.insight('The hidden cost', 'Every unexpressed truth becomes a small wall between you and the other person. The walls accumulate. Eventually people wonder why they feel distant from someone they see every day — and the answer is the sum of everything that was never said.')}
+      `
+    },
+
+    // ── STEP 3: Concept — Honesty vs weaponised honesty ───
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The difference between honesty and weaponised honesty.')}
+        ${B.para('"I\'m just being honest" is one of the most misused phrases in relationships. Honesty is not a licence to say whatever you think without regard for impact. And it is not a virtue if the real goal is to wound, control, or win an argument.')}
+        ${B.compare(
+          'Weaponised honesty: using truth as ammunition. Delivering criticism when it will land hardest. Being "honest" about someone\'s flaws primarily to make them feel small or to dominate.',
+          'Real honesty: saying what\'s true in a way that serves the relationship and the other person\'s understanding. Caring about impact. Choosing timing and delivery with intention — not to soften the message, but to help it land.'
+        )}
+        ${B.steps([
+          '<strong>Ask: why am I saying this?</strong> To be understood? To repair something? To get a need met? These are honest goals. To punish? To win? To relieve frustration onto them? These are not — and the other person will sense the difference even if they can\'t name it.',
+          '<strong>Ask: is this the right moment?</strong> Honesty delivered during flooding, in public, or when the other person is in crisis lands completely differently than the same words offered in a quiet, private moment when both people are regulated.',
+          '<strong>Separate observation from judgment.</strong> "You didn\'t call when you said you would" is an observation. "You\'re unreliable and don\'t care about my time" is a judgment. Observations open conversation. Judgments close it.'
+        ])}
+      `
+    },
+
+    // ── STEP 4: Concept — The NVC structure ───────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The structure that makes honest expression land.')}
+        ${B.para('Nonviolent Communication, developed by Marshall Rosenberg, offers a four-part structure that has more research support than any other communication framework for enabling difficult, honest expression without escalation.')}
+
+        <div class="nvc-card nvc-card--obs">
+          <p class="nvc-card__num">Step 1</p>
+          <p class="nvc-card__name">Observation</p>
+          <p class="nvc-card__desc">What I actually saw or heard — no interpretation, no judgment. What a camera would record.</p>
+          <p class="nvc-card__example">"When you didn\'t respond to my message for two days..."</p>
+        </div>
+
+        <div class="nvc-card nvc-card--feel">
+          <p class="nvc-card__num">Step 2</p>
+          <p class="nvc-card__name">Feeling</p>
+          <p class="nvc-card__desc">What I actually felt — a real emotion word, not a thought dressed as a feeling. "I felt like you didn\'t care" is a thought. "I felt anxious" is a feeling.</p>
+          <p class="nvc-card__example">"...I felt anxious and disconnected..."</p>
+        </div>
+
+        <div class="nvc-card nvc-card--need">
+          <p class="nvc-card__num">Step 3</p>
+          <p class="nvc-card__name">Need</p>
+          <p class="nvc-card__desc">The underlying need connected to the feeling. What was missing or at risk — connection, reliability, respect, safety, honesty.</p>
+          <p class="nvc-card__example">"...because I need to feel like I can reach you when something matters to me..."</p>
+        </div>
+
+        <div class="nvc-card nvc-card--req">
+          <p class="nvc-card__num">Step 4</p>
+          <p class="nvc-card__name">Request</p>
+          <p class="nvc-card__desc">A specific, actionable, positive request — what you\'d like, not what you don\'t want. Positive means stated as a yes, not a no.</p>
+          <p class="nvc-card__example">"...would you be willing to let me know if you\'re going to be slow to respond?"</p>
+        </div>
+
+        ${B.callout('This structure is not a script. It\'s a discipline for separating what happened from what you made it mean — and for arriving at a conversation with a request rather than an accusation.')}
+      `
+    },
+
+    // ── STEP 5: Worksheet — What you tend to swallow ──────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('What you tend to swallow.')}
+        ${B.para('Most people have predictable categories of unsaid things — shaped by their specific fears, their history, and what they were taught was acceptable to express.')}
+        ${B.para('Select what you recognise most in yourself:', 'margin-bottom:0.875rem')}
+
+        <div class="swallow-grid">
+          ${[
+            'Frustration with people I\'m close to',
+            'Hurt feelings I think I shouldn\'t have',
+            'Needs that feel like too much to ask',
+            'Disagreement when conflict feels risky',
+            'Disappointment when I expected more',
+            'Appreciation that feels awkward to say',
+            'Anger I\'m ashamed of',
+            'Loneliness I don\'t want to admit',
+            'Fear about the relationship',
+            'When I\'m not actually okay',
+            'What I actually want',
+            'When something crossed a line'
+          ].map(s => `<button class="swallow-chip" onclick="toggleSwallowed(this,'${s.replace(/'/g,"\\'")}' )">${s}</button>`).join('')}
+        </div>
+        <input type="hidden" id="swallowedHidden" data-key="swallowed" value="">
+
+        ${B.keyedTextarea('swallow-why', 'The main reason I swallow things instead of saying them is...', 'What\'s the specific fear or belief that makes silence feel safer than honesty? Where did it come from?', '80px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 6: Worksheet — The unsaid thing ──────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Something you\'ve been not saying.')}
+        ${B.para('Think of a current relationship — someone you see or speak to regularly. There is almost certainly something that hasn\'t been said. Something you\'ve been carrying that the other person doesn\'t know about.')}
+        ${B.para('Write it here. This is for you — not something you have to send or say directly. Just getting it into honest language is the first step.')}
+
+        ${B.keyedTextarea('unsaid', 'Something I\'ve been not saying in a current relationship is...', 'Write the raw version — not the edited, careful version. The thing as it actually sits inside you.', '100px')}
+
+        ${B.keyedTextarea('unsaid-who', 'The relationship this is with...', 'Their role — partner, parent, close friend, colleague. Not their name.', '45px')}
+
+        ${B.keyedTextarea('unsaid-cost', 'What staying silent has cost me in this relationship...', 'What has not saying this produced? Distance? Resentment? Feeling unknown? A slow hollowing out of the connection?', '80px')}
+
+        ${B.insight('Why language matters', 'Unexpressed things live in the body as tension, in the mind as rumination, and in the relationship as invisible distance. Putting something into words — even privately — changes your relationship to it. The fog becomes something you can look at.')}
+      `
+    },
+
+    // ── STEP 7: Worksheet — Build the expression ──────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Build the honest expression.')}
+        ${B.para('Take what you identified in the last step and put it through the four-part structure. This is practice — not necessarily what you\'ll say word for word. The discipline is in separating observation from judgment and arriving at a request rather than an accusation.')}
+
+        ${B.divider('Step 1 — Observation')}
+        ${B.keyedTextarea('nvc-obs', 'When you...', 'Camera-reportable facts only. What did you see or hear — no interpretation, no "you always," no character judgment.', '55px')}
+
+        ${B.divider('Step 2 — Feeling')}
+        ${B.keyedTextarea('nvc-feel', 'I felt...', 'A real emotion word: hurt, scared, disconnected, angry, sad, confused. Not "I felt like you didn\'t care" — that\'s a thought.', '50px')}
+
+        ${B.divider('Step 3 — Need')}
+        ${B.keyedTextarea('nvc-need', 'Because I need...', 'What underlying need was touched? Connection, reliability, honesty, respect, to be heard, to feel safe.', '50px')}
+
+        ${B.divider('Step 4 — Request')}
+        ${B.keyedTextarea('nvc-request', 'Would you be willing to...', 'A specific, positive ask — not "stop doing X" but "would you be willing to Y?" Something they can actually do.', '55px')}
+
+        <div class="convo-example" style="margin-top:1.25rem">
+          <div class="convo-example__row">
+            <p class="convo-example__label convo-example__label--before">What usually comes out</p>
+            <p class="convo-example__text">"You never actually listen. You just wait for your turn to talk."</p>
+          </div>
+          <div class="convo-example__row">
+            <p class="convo-example__label convo-example__label--after">What the structure produces</p>
+            <p class="convo-example__text">"When I share something difficult and the conversation moves on quickly, I feel unheard and a bit alone in it — because I need to know what I say actually reaches you. Would you be willing to reflect back what you heard before responding?"</p>
+          </div>
+        </div>
+
+        ${B.para('Notice: same core truth. Completely different effect. One closes the other person down. One opens a conversation.')}
+      `
+    },
+
+    // ── STEP 8: Skill ──────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your third tool in this pathway.')}
+        ${B.para('The structure for saying what\'s true — combined with the conditions that let it land without becoming an attack or disappearing into appeasement.')}
+        ${B.skill(
+          'Honest Expression',
+          'Say what\'s true in a way the other person can actually receive.',
+          [
+            '<strong>Check the motive first.</strong> Why am I saying this? To be understood and get a need met — or to vent, wound, or win? Only proceed honestly with the first category.',
+            '<strong>Use the four-part structure.</strong> Observation → Feeling → Need → Request. Separate what happened from what you made it mean. Arrive at the conversation with a request, not an accusation.',
+            '<strong>Choose your moment deliberately.</strong> Not during conflict. Not when either person is flooded. Not in public or mid-task. A quiet moment, both regulated, enough time to actually talk.',
+            '<strong>Open with intention.</strong> "There\'s something I\'ve been wanting to say and I\'m not sure how it\'ll land — can I try?" This single sentence changes how everything that follows is received. It signals care, not attack.',
+            '<strong>Stay after you say it.</strong> Don\'t deliver the honest thing and then leave — physically or emotionally. The conversation that follows the initial disclosure is where connection actually happens.'
+          ]
+        )}
+        ${B.compare(
+          'Swallowed: "I\'m fine." The unsaid thing becomes a wall. Repeated enough, the walls become a room you both live in — together, but not touching.',
+          'Expressed: observation, feeling, need, request — the conversation is uncomfortable for a moment, and then the distance closes rather than widens. The relationship becomes more real.'
+        )}
+      `
+    },
+
+    // ── STEP 9: Commitment ─────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('The thing you identified in this module is either worth saying or worth consciously letting go of. Both are valid. Leaving it exactly as it is — unexamined, unaddressed, sitting between you — is the most costly option.')}
+        ${B.para('Honest expression gets easier with practice and harder with avoidance. Each time you swallow something that needed to be said, the habit of silence strengthens.')}
+        ${B.commitment(
+          'Decide what you\'re doing with the specific thing you identified — saying it, preparing to say it, or consciously releasing it. Write your opening sentence if you\'re saying it.',
+          'The thing I\'ve been not saying is [what]. I\'m going to [say it / let it go because]. If I\'m saying it, my opening will be: "..." The right moment to do this is [specific context]. What I\'m most afraid will happen is... and the cost of staying silent is...'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ──────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'Saying What\'s Actually True',
+        'connection',
+        'cn-4',
+        '💬',
+        'Honest Expression',
+        'Say what\'s true in a way the other person can receive'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('cn-3', CN3_STEPS);
+  });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
