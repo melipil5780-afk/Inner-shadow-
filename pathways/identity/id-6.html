@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – Living as Yourself</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .module-header {
+      padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+      background: rgba(10,15,30,0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .module-header__row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .header-back {
+      width: 2.25rem;
+      height: 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.625rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .header-back:active { transform: scale(0.92); }
+
+    .header-title {
+      flex: 1;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .header-count {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      min-width: 2.25rem;
+      text-align: right;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .progress-dot {
+      flex: 1;
+      height: 3px;
+      background: rgba(148,163,184,0.15);
+      border-radius: 999px;
+      transition: background 0.4s ease;
+    }
+
+    .progress-dot--active {
+      background: var(--gradient-main);
+    }
+
+    .module-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .module-scroll::-webkit-scrollbar { display: none; }
+
+    .step-wrap {
+      padding: 1.375rem 1.25rem 2rem;
+    }
+
+    .cta-area {
+      padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .back-btn-sm {
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn-sm:active { transform: scale(0.92); }
+    .back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+    /* Authenticity barrier chips */
+    .barrier-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+      padding: 0.875rem 1rem;
+      background: var(--bg-card-light);
+      border: 2px solid var(--border-soft);
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 0.5rem;
+      font-family: var(--font-body);
+      text-align: left;
+      width: 100%;
+    }
+
+    .barrier-option:active { transform: scale(0.98); }
+
+    .barrier-option--selected {
+      border-color: var(--ember-border-strong);
+      background: var(--ember-bg);
+    }
+
+    .barrier-option__emoji {
+      font-size: 1.375rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    .barrier-option__body { flex: 1; }
+
+    .barrier-option__name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .barrier-option--selected .barrier-option__name { color: var(--text-ember); }
+
+    .barrier-option__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .barrier-option__check {
+      width: 1.375rem;
+      height: 1.375rem;
+      border-radius: 50%;
+      border: 2px solid var(--border-softer);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
+      margin-top: 0.125rem;
+    }
+
+    .barrier-option--selected .barrier-option__check {
+      background: var(--ember);
+      border-color: var(--ember);
+      color: white;
+    }
+
+    /* Self-portrait card */
+    .portrait-card {
+      background: var(--gradient-card);
+      border: 1px solid var(--ember-border);
+      border-radius: 1.25rem;
+      padding: 1.375rem;
+      margin-bottom: 1rem;
+    }
+
+    .portrait-card__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-ember);
+      margin-bottom: 0.875rem;
+    }
+
+    /* Design principle rows */
+    .principle-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+      padding: 0.875rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .principle-row:last-child { border-bottom: none; }
+
+    .principle-num {
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 0.5rem;
+      background: var(--gradient-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    .principle-body { flex: 1; }
+
+    .principle-title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .principle-desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="module-header">
+      <div class="module-header__row">
+        <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+        <p class="header-title" id="moduleTitle">Living as Yourself</p>
+        <span class="header-count" id="stepCounter"></span>
+      </div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="module-scroll" id="moduleScroll">
+      <div class="step-wrap" id="stepContent"></div>
+    </div>
+
+    <div class="cta-area">
+      <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+      <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/module-engine.js"></script>
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Barrier selector ───────────────────────────────────
+
+  const selectedBarriers = new Set();
+
+  function toggleBarrier(el, name) {
+    el.classList.toggle('barrier-option--selected');
+    if (selectedBarriers.has(name)) {
+      selectedBarriers.delete(name);
+    } else {
+      selectedBarriers.add(name);
+    }
+    const hidden = document.getElementById('barriersHidden');
+    if (hidden) hidden.value = Array.from(selectedBarriers).join(', ');
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = selectedBarriers.size === 0;
+  }
+
+  // ================================================================
+  // MODULE ID-6: LIVING AS YOURSELF
+  // ================================================================
+
+  const ID6_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('You\'ve spent five modules finding out who you actually are. This one is about choosing to live as that person.')}
+        ${B.para('Knowing yourself and living as yourself are different skills. Most people have moments — sometimes long stretches — where they know exactly what they value, what they need, what feels true. And then don\'t live that way.')}
+        ${B.para('Not from failure of character. From the accumulated pressure of other people\'s expectations, old habits, the genuine difficulty of making your actual self visible in a world that rewards performance.')}
+        ${B.callout('Authenticity is not a personality trait you either have or don\'t. It\'s a practice — a daily series of small choices about whether to show up as the person you actually are or the person you think you\'re supposed to be.')}
+        ${B.para('This final module brings together everything from this pathway into a single question: what would it actually look like to live as yourself — not perfectly, not all at once, but with more intention than you have been?')}
+      `
+    },
+
+    // ── STEP 2: Concept — What authenticity actually means ─
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('What authenticity actually is — and isn\'t.')}
+        ${B.para('Authenticity has become a word so overused it\'s almost lost meaning. Let\'s be specific about what it actually means and doesn\'t mean.')}
+
+        ${B.compare(
+          'Authenticity is NOT: saying everything you think, performing rawness, having no filter, treating self-expression as an excuse for harm, being immune to feedback, refusing to adapt to context.',
+          'Authenticity IS: acting from genuine values rather than fear, being consistent across contexts rather than performing different characters, letting what you say match what you actually think and feel, making choices that serve who you are rather than who others want you to be.'
+        )}
+
+        ${B.para('The distinction matters because many people either perform authenticity — wearing it as another mask — or use it to justify behaviour that\'s actually about avoiding accountability.')}
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem">
+          ${[
+            ['Authentic adaptation', 'Adjusting your communication style for context while your values and genuine self remain consistent. Different register, same person.'],
+            ['Inauthentic performance', 'Becoming a different character entirely depending on who\'s watching. The work self has nothing to do with the private self.'],
+            ['Authentic disclosure', 'Choosing what to share based on relationship depth, safety, and relevance. Not hiding — discerning.'],
+            ['Inauthenticity by omission', 'Never letting anyone see past the curated version. Performing adequacy so consistently that you lose access to the rest.']
+          ].map(([title, desc]) => `
+            <div style="padding:0.875rem 1rem;background:var(--bg-card-light);border:1px solid var(--border-soft);border-radius:0.875rem">
+              <p style="font-size:0.875rem;font-weight:700;color:var(--text-primary);margin-bottom:0.25rem">${title}</p>
+              <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5">${desc}</p>
+            </div>
+          `).join('')}
+        </div>
+      `
+    },
+
+    // ── STEP 3: Concept — The cost of inauthenticity ───────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('What living inauthentically actually costs.')}
+        ${B.para('The costs are real and they accumulate slowly enough that most people don\'t connect them to the cause.')}
+
+        ${B.steps([
+          '<strong>Chronic exhaustion.</strong> Maintaining a performance — even a subtle one — requires continuous energy. People who feel inexplicably tired despite adequate sleep are often exhausted by the effort of being someone slightly different from who they are.',
+          '<strong>A creeping sense of fraudulence.</strong> Impostor syndrome is partly a rational response to performing a self that isn\'t quite yours. If the self you\'re presenting isn\'t fully real, of course it feels like it could be exposed.',
+          '<strong>Shallow relationships.</strong> People can only connect with what you show them. If you show a curated version, you get connection with a curated version — which satisfies nothing deep.',
+          '<strong>Decisions that don\'t fit.</strong> When you\'re optimising for other people\'s approval rather than your own actual values, you make choices that look right from the outside but feel wrong from the inside. The accumulation of these choices is a life that doesn\'t quite fit.',
+          '<strong>Loss of self over time.</strong> The performed self gradually colonises more territory. People who have performed a version of themselves for long enough sometimes find, in quiet moments, that they genuinely don\'t know what they actually want or feel.'
+        ])}
+
+        ${B.callout('None of this is dramatic or sudden. It\'s the slow drift of a life lived for an audience rather than from the inside. But it\'s reversible — and it starts with exactly what you\'ve been doing in this pathway.')}
+      `
+    },
+
+    // ── STEP 4: Concept — Designing for yourself ──────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The life that actually fits.')}
+        ${B.para('Stanford professor Bill Burnett talks about designing your life — treating your existence not as something that happens to you but as something you can actively shape around what you actually know about yourself.')}
+        ${B.para('You now have significant self-knowledge. The question is whether the architecture of your life actually reflects it.')}
+
+        <div style="background:var(--gradient-card);border:1px solid var(--border-soft);border-radius:1.25rem;padding:1.375rem;margin-bottom:1.25rem">
+          <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem">Design principles — from this pathway</p>
+
+          <div class="principle-row">
+            <div class="principle-num">1</div>
+            <div class="principle-body">
+              <p class="principle-title">Build from examined values, not inherited ones</p>
+              <p class="principle-desc">The five values you identified are the load-bearing structure. Major decisions should be tested against them.</p>
+            </div>
+          </div>
+
+          <div class="principle-row">
+            <div class="principle-num">2</div>
+            <div class="principle-body">
+              <p class="principle-title">Invest in what demonstrably makes you happy</p>
+              <p class="principle-desc">Not predicted happiness — the happiness your history actually confirms. The audit showed you where it reliably comes from.</p>
+            </div>
+          </div>
+
+          <div class="principle-row">
+            <div class="principle-num">3</div>
+            <div class="principle-body">
+              <p class="principle-title">Keep revising the story</p>
+              <p class="principle-desc">The narrative edit is ongoing. As you grow, the old story needs updating. You are the author — keep writing.</p>
+            </div>
+          </div>
+
+          <div class="principle-row">
+            <div class="principle-num">4</div>
+            <div class="principle-body">
+              <p class="principle-title">Create conditions for authentic expression</p>
+              <p class="principle-desc">Relationships, environments, and contexts where you don't have to perform. These aren't luxuries — they're maintenance.</p>
+            </div>
+          </div>
+
+          <div class="principle-row">
+            <div class="principle-num">5</div>
+            <div class="principle-body">
+              <p class="principle-title">Let the shadow have legitimate expression</p>
+              <p class="principle-desc">The parts of yourself you've suppressed need conscious channels, not permanent exile. Integration over time.</p>
+            </div>
+          </div>
+        </div>
+      `
+    },
+
+    // ── STEP 5: Worksheet — What stops you ────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('What actually stops you from living as yourself?')}
+        ${B.para('This is the real question. Most people know more about who they are than they live. The gap between knowing and living has causes — and they\'re worth naming directly.')}
+
+        <div style="margin-bottom:1rem">
+          ${[
+            ['😨', 'Fear of rejection', 'If people see who I actually am, they won\'t want me. The performance keeps me safe.'],
+            ['🎭', 'The performance is habitual', 'I\'ve been doing this so long I don\'t always know when I\'m performing and when I\'m not.'],
+            ['👀', 'Specific relationships that require the performance', 'Family, workplace, or social contexts where the real version wouldn\'t be accepted.'],
+            ['🪨', 'I don\'t fully know who I am yet', 'This pathway has started the work but the self I\'m supposed to live as is still coming into focus.'],
+            ['💸', 'Material constraints', 'The authentic path would require changes I can\'t currently afford — financially, professionally, relationally.'],
+            ['🌊', 'The gap feels too large', 'The distance between where I am and where I\'d live authentically feels overwhelming to bridge.'],
+            ['😶', 'I don\'t trust myself', 'I\'m not sure my own judgement about what\'s true for me is reliable enough to act on.'],
+            ['🤝', 'Genuine obligations', 'Real responsibilities to real people that legitimately shape what\'s possible right now.']
+          ].map(([emoji, name, desc]) => `
+            <button
+              class="barrier-option"
+              onclick="toggleBarrier(this, '${name.replace(/'/g, "\\'")}')"
+            >
+              <span class="barrier-option__emoji">${emoji}</span>
+              <div class="barrier-option__body">
+                <p class="barrier-option__name">${name}</p>
+                <p class="barrier-option__desc">${desc}</p>
+              </div>
+              <span class="barrier-option__check">✓</span>
+            </button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="barriersHidden" data-key="barriers" value="">
+
+        ${B.keyedTextarea('barrier-biggest', 'The biggest thing stopping me from living more as myself is...', 'In your own words — what\'s the most honest answer?', '80px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 6: Worksheet — Self-portrait ─────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('A self-portrait.')}
+        ${B.para('Using everything you\'ve discovered in this pathway — your values, your story, your shadow, what makes you genuinely happy, what you\'ve inherited and what you\'ve chosen — write a description of who you actually are.')}
+        ${B.para('Not who you wish you were. Not who others see. Not the curated version. The real, complicated, still-becoming person you\'ve been discovering across these six modules.')}
+
+        <div class="portrait-card">
+          <p class="portrait-card__label">Your self-portrait</p>
+          <textarea
+            class="step-textarea"
+            data-key="selfPortrait"
+            placeholder="I am someone who... I value... I have spent much of my life... The things that genuinely make me happy are... I\'ve been hiding... I\'m still working out... What I know for certain is..."
+            style="min-height:200px;width:100%;background:transparent;border:none;resize:none;color:var(--text-secondary);font-size:0.9375rem;line-height:1.75;font-family:var(--font-body);outline:none"
+          ></textarea>
+        </div>
+
+        ${B.insight('What this is for', 'This portrait is for you. It\'s a reference point — something to return to when you feel lost, when you\'ve been performing too long, when you need to remember what\'s actually true. It will need updating as you grow. That\'s the point.')}
+      `
+    },
+
+    // ── STEP 7: Worksheet — One design change ─────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('One design change.')}
+        ${B.para('Knowing yourself is not enough. The pathway ends with action — not a complete life transformation, but one concrete, achievable change to the architecture of your life that would bring it into better alignment with who you actually are.')}
+        ${B.para('Small changes compound. The most significant life redesigns happen through hundreds of small adjustments, not one dramatic overhaul.')}
+
+        ${B.divider('The misalignment')}
+        ${B.keyedTextarea('misalignment', 'The biggest gap between who I am and how I\'m living is...', 'Where is the distance between your actual self and your actual life most painful or obvious?', '80px')}
+
+        ${B.divider('The one change')}
+        ${B.keyedTextarea('one-change', 'One concrete, achievable change that would bring more alignment is...', 'Not the whole redesign. The one next step that\'s actually within your reach.', '80px')}
+
+        ${B.keyedTextarea('what-it-requires', 'Making this change requires...', 'What would you need to do, say, stop doing, or start? Be specific.', '75px')}
+
+        ${B.keyedTextarea('what-at-stake', 'The cost of not making this change is...', 'What does another year of the same misalignment actually cost you?', '70px')}
+
+        ${B.callout('The best time to start living as yourself was when you were young. The second best time is now, with the self-knowledge you\'ve built in this pathway.')}
+      `
+    },
+
+    // ── STEP 8: Skill ──────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your final tool in this pathway.')}
+        ${B.para('Everything from this pathway synthesised into a daily practice. Not a checklist — a way of moving through your life with more self-awareness and intention.')}
+        ${B.skill(
+          'The Authenticity Check',
+          'A daily compass for living as yourself rather than performing yourself.',
+          [
+            '<strong>Morning: the intention.</strong> Before the day begins — what matters today? Not what\'s on the task list. Which of my values does today have an opportunity to express? Who do I want to be today?',
+            '<strong>During: the pause.</strong> When you notice you\'re performing — saying something you don\'t mean, agreeing to something that violates your values, hiding something true — just notice it. You don\'t have to fix it immediately. Just know it\'s happening.',
+            '<strong>The inheritance check on decisions.</strong> When making significant choices: is this what I actually want, or what I was taught to want? Is this aligned with my examined values, or with someone else\'s?',
+            '<strong>Evening: the honest question.</strong> When did I feel most like myself today? When did I feel least like myself? No judgment — just the data.',
+            '<strong>Monthly: the self-portrait review.</strong> Look at what you wrote. Does it still fit? What needs updating? Who are you becoming that the portrait doesn\'t yet capture?'
+          ]
+        )}
+        ${B.compare(
+          'Before: living by default — the accumulated result of other people\'s needs, old habits, unchecked inheritance, and the path of least resistance.',
+          'After: living by design — checking in regularly, making intentional choices, updating the story as you grow, building a life that actually fits the person you\'ve discovered yourself to be.'
+        )}
+      `
+    },
+
+    // ── STEP 9: Commitment ─────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your final commitment in this pathway.')}
+        ${B.para('You\'ve spent six modules excavating who you actually are. The commitment at the end of this pathway isn\'t to a technique — it\'s to a way of being. To checking in. To updating the story. To making the one design change you identified.')}
+        ${B.commitment(
+          'Write your commitment to living more as yourself — what that means specifically, what the one change you\'re making is, and what you\'ll do when you notice you\'ve drifted back into performance.',
+          'My commitment is to live more as [the self I described in my self-portrait]. The one design change I\'m making is [specific change]. I\'ll know I\'ve drifted back into performance when [specific signal]. When that happens, I\'ll [specific return move]. This matters because...'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ──────────────────────────────────
+    {
+      type: 'complete',
+      render: () => `
+        <div style="text-align:center;padding:0.5rem 0 1.5rem">
+          <div style="font-size:4rem;margin-bottom:1rem;animation:float 3s ease-in-out infinite">🪞</div>
+          <h2 style="
+            font-family:var(--font-display);
+            font-size:2rem;font-weight:600;
+            color:var(--text-primary);
+            letter-spacing:-0.02em;
+            margin-bottom:0.5rem;
+          ">Pathway complete.</h2>
+          <p style="
+            font-family:var(--font-display);
+            font-size:1.125rem;
+            font-style:italic;
+            color:var(--text-ember);
+            margin-bottom:1.25rem;
+          ">Knowing Yourself</p>
+          <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.75;max-width:22rem;margin:0 auto">
+            Six modules. Six tools. A foundation for living from the inside out rather than performing your way through.
+          </p>
+        </div>
+
+        <div style="
+          background:linear-gradient(135deg,rgba(13,148,136,0.14),rgba(217,119,6,0.10));
+          border:1px solid var(--ember-border);
+          border-radius:1.25rem;
+          padding:1.375rem;
+          margin-bottom:1.25rem;
+        ">
+          <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-ember);margin-bottom:0.875rem">
+            Final tool unlocked
+          </p>
+          <div style="display:flex;align-items:center;gap:0.875rem">
+            <span style="font-size:2.5rem">🧭</span>
+            <div>
+              <p style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.2rem">The Authenticity Check</p>
+              <p style="font-size:0.875rem;color:var(--text-secondary)">A daily compass for living as yourself</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="
+          background:var(--gradient-card);
+          border:1px solid var(--border-soft);
+          border-radius:1.25rem;
+          padding:1.25rem;
+          margin-bottom:1.25rem;
+        ">
+          <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.875rem">
+            Your toolkit — 6 tools earned
+          </p>
+          ${[
+            ['🔍', 'The Inheritance Check'],
+            ['🧭', 'The Values Check'],
+            ['✍️', 'The Narrative Edit'],
+            ['☀️', 'The Happiness Audit'],
+            ['🌑', 'Shadow Integration Practice'],
+            ['🧭', 'The Authenticity Check']
+          ].map(([emoji, name]) => `
+            <div style="
+              display:flex;align-items:center;gap:0.75rem;
+              padding:0.625rem 0;
+              border-bottom:1px solid var(--border-subtle);
+            ">
+              <span style="font-size:1.25rem">${emoji}</span>
+              <p style="font-size:0.9375rem;color:var(--text-primary);font-weight:500">${name}</p>
+              <span style="margin-left:auto;color:var(--text-ember);font-size:0.875rem">✓</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.75rem">
+          <button
+            class="btn btn--primary btn--lg"
+            onclick="Nav.go('/pathways/identity/complete.html')"
+          >
+            See what\'s next →
+          </button>
+          <button
+            class="btn btn--ghost btn--sm"
+            onclick="Nav.go('/app.html')"
+          >
+            Back to home
+          </button>
+        </div>
+      `
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('id-6', ID6_STEPS);
+  });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

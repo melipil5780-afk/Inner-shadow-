@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – What Actually Makes You Happy</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .module-header {
+      padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+      background: rgba(10,15,30,0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .module-header__row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .header-back {
+      width: 2.25rem;
+      height: 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.625rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .header-back:active { transform: scale(0.92); }
+
+    .header-title {
+      flex: 1;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .header-count {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      min-width: 2.25rem;
+      text-align: right;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .progress-dot {
+      flex: 1;
+      height: 3px;
+      background: rgba(148,163,184,0.15);
+      border-radius: 999px;
+      transition: background 0.4s ease;
+    }
+
+    .progress-dot--active {
+      background: var(--gradient-main);
+    }
+
+    .module-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .module-scroll::-webkit-scrollbar { display: none; }
+
+    .step-wrap {
+      padding: 1.375rem 1.25rem 2rem;
+    }
+
+    .cta-area {
+      padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .back-btn-sm {
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn-sm:active { transform: scale(0.92); }
+    .back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+    /* Happiness source chips */
+    .source-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .source-chip {
+      padding: 0.4375rem 1rem;
+      background: var(--bg-card-light);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: var(--font-body);
+    }
+
+    .source-chip:active { transform: scale(0.92); }
+    .source-chip--selected {
+      border-color: var(--amber-border, #d97706);
+      background: var(--gold-bg);
+      color: var(--text-gold);
+      font-weight: 600;
+    }
+
+    /* Predicted vs actual grid */
+    .pa-card {
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 1.125rem;
+      overflow: hidden;
+      margin-bottom: 0.75rem;
+    }
+
+    .pa-card__row {
+      display: flex;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .pa-card__row:last-child { border-bottom: none; }
+
+    .pa-card__cell {
+      flex: 1;
+      padding: 0.875rem 1rem;
+    }
+
+    .pa-card__cell:first-child {
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .pa-card__label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.375rem;
+    }
+
+    .pa-card__label--predicted { color: var(--text-gold); }
+    .pa-card__label--actual    { color: var(--text-ember); }
+
+    .pa-card__text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* Joy inventory item */
+    .joy-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.875rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .joy-item:last-child { border-bottom: none; }
+
+    .joy-item__dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+      margin-top: 0.4rem;
+    }
+
+    .joy-item__text {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    /* Forecast vs reality rating */
+    .rating-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .rating-btn {
+      flex: 1;
+      padding: 0.625rem 0.25rem;
+      background: var(--bg-card-light);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 0.75rem;
+      font-size: 1.25rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: center;
+      font-family: var(--font-body);
+    }
+
+    .rating-btn:active { transform: scale(0.92); }
+    .rating-btn--selected {
+      border-color: var(--ember-border-strong);
+      background: var(--ember-bg-strong);
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="module-header">
+      <div class="module-header__row">
+        <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+        <p class="header-title" id="moduleTitle">What Actually Makes You Happy</p>
+        <span class="header-count" id="stepCounter"></span>
+      </div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="module-scroll" id="moduleScroll">
+      <div class="step-wrap" id="stepContent"></div>
+    </div>
+
+    <div class="cta-area">
+      <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+      <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/module-engine.js"></script>
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Happiness source selector ──────────────────────────
+
+  const selectedSources = new Set();
+
+  function toggleSource(el, name) {
+    el.classList.toggle('source-chip--selected');
+    if (selectedSources.has(name)) {
+      selectedSources.delete(name);
+    } else {
+      selectedSources.add(name);
+    }
+    const hidden = document.getElementById('sourcesHidden');
+    if (hidden) hidden.value = Array.from(selectedSources).join(', ');
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = selectedSources.size === 0;
+  }
+
+  // ── Rating selector ────────────────────────────────────
+
+  function selectRating(groupId, el, value) {
+    document.querySelectorAll(`[data-group="${groupId}"]`)
+      .forEach(b => b.classList.remove('rating-btn--selected'));
+    el.classList.add('rating-btn--selected');
+    const hidden = document.getElementById(`${groupId}Hidden`);
+    if (hidden) hidden.value = value;
+  }
+
+  // ================================================================
+  // MODULE ID-4: WHAT ACTUALLY MAKES YOU HAPPY
+  // ================================================================
+
+  const ID4_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('You are a bad predictor of what will make you happy. So is everyone else.')}
+        ${B.para('This is not an insult. It\'s one of the most replicated findings in all of psychology. Humans are systematically, reliably wrong about what will make them feel good — and about how long that feeling will last.')}
+        ${B.para('We pursue things with enormous energy, sacrifice, and urgency — and when we get them, the happiness is briefer and smaller than we predicted. Then we conclude we need more, or a different version, or that happiness must be somewhere slightly ahead of where we are now.')}
+        ${B.callout('The hedonic treadmill keeps running because we keep being wrong about what we\'re running toward. This module is about finding out what actually works — for you, specifically — based on evidence from your actual life rather than what you predict or what culture tells you to want.')}
+      `
+    },
+
+    // ── STEP 2: Concept — Affective forecasting ───────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('Why your predictions about happiness are wrong.')}
+        ${B.para('Psychologist Daniel Gilbert\'s research on affective forecasting — predicting future emotional states — identified two consistent errors:')}
+
+        ${B.steps([
+          '<strong>Impact bias.</strong> We overestimate how much events will affect us — both positive and negative. The promotion, the relationship, the house, the achievement: we predict they\'ll make us significantly happier than they do. The loss, the failure, the rejection: we predict they\'ll devastate us more than they actually will.',
+          '<strong>Duration neglect.</strong> We overestimate how long emotional states will last. Adaptation — the process by which we return to baseline after both positive and negative events — is faster and more thorough than we ever predict.'
+        ])}
+
+        <div class="pa-card">
+          <div class="pa-card__row">
+            <div class="pa-card__cell">
+              <p class="pa-card__label pa-card__label--predicted">Predicted</p>
+              <p class="pa-card__text">"Getting this promotion will finally make me feel successful and satisfied."</p>
+            </div>
+            <div class="pa-card__cell">
+              <p class="pa-card__label pa-card__label--actual">Actual</p>
+              <p class="pa-card__text">Three months later: back to baseline, focused on the next level, new problems to solve.</p>
+            </div>
+          </div>
+          <div class="pa-card__row">
+            <div class="pa-card__cell">
+              <p class="pa-card__label pa-card__label--predicted">Predicted</p>
+              <p class="pa-card__text">"If this relationship ends I don\'t know how I\'ll survive."</p>
+            </div>
+            <div class="pa-card__cell">
+              <p class="pa-card__label pa-card__label--actual">Actual</p>
+              <p class="pa-card__text">Eighteen months later: rebuilt, often in a better place, more self-knowledge than before.</p>
+            </div>
+          </div>
+        </div>
+
+        ${B.insight('The useful implication', 'If you\'re bad at predicting what will make you happy, then looking backwards — at what has actually made you happy — is far more reliable than looking forward. Your history is the data.')}
+      `
+    },
+
+    // ── STEP 3: Concept — Hedonic adaptation ──────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('You adapt to everything. Including the things you thought would save you.')}
+        ${B.para('Hedonic adaptation is the psychological immune system that returns you to baseline after both positive and negative events. It\'s why lottery winners report similar happiness levels to non-winners within a year. It\'s why people who become paraplegic report similar happiness levels to able-bodied people within two years.')}
+        ${B.para('Adaptation is not a bug. It\'s what allows humans to survive terrible things and to keep wanting things after getting them. But it has a consequence:')}
+        ${B.callout('Almost nothing you\'re currently pursuing will make you as happy as you think, for as long as you think. The things most likely to produce sustained wellbeing are things we systematically underinvest in.')}
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem">
+          <div style="padding:1rem;background:var(--red-bg);border:1px solid var(--red-border);border-radius:0.875rem">
+            <p style="font-size:0.8125rem;font-weight:700;color:var(--text-red);margin-bottom:0.375rem">What we over-pursue (adapts quickly)</p>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.55">Status, income beyond comfort, possessions, appearance changes, achievement milestones, validation from others</p>
+          </div>
+          <div style="padding:1rem;background:var(--ember-bg);border:1px solid var(--ember-border);border-radius:0.875rem">
+            <p style="font-size:0.8125rem;font-weight:700;color:var(--text-ember);margin-bottom:0.375rem">What actually sustains wellbeing (adapts slowly)</p>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.55">Deep relationships, meaning and purpose, autonomy and mastery, experiences over things, contributing to something larger than yourself, physical health</p>
+          </div>
+        </div>
+
+        ${B.para('This isn\'t prescriptive — you get to want what you want. But knowing which category something falls into helps you make decisions with clearer eyes.')}
+      `
+    },
+
+    // ── STEP 4: Concept — Two kinds of happiness ──────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('There are two kinds of happiness. You probably want both — but they come from different places.')}
+        ${B.para('The ancient Greeks identified a distinction that modern psychology has since confirmed:')}
+
+        <div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.25rem">
+          <div style="padding:1.25rem;background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:1rem">
+            <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-gold);margin-bottom:0.5rem">Hedonia</p>
+            <p style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.375rem">Pleasure and positive emotion</p>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6">Feeling good in the moment. Enjoyment, delight, comfort, pleasure. Important and worth having. Also adapts quickly and requires ongoing input.</p>
+          </div>
+          <div style="padding:1.25rem;background:var(--ember-bg);border:1px solid var(--ember-border);border-radius:1rem">
+            <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-ember);margin-bottom:0.5rem">Eudaimonia</p>
+            <p style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.375rem">Meaning and flourishing</p>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6">Doing things that matter. Using your strengths. Being part of something. Living in alignment with your values. Often not pleasurable in the moment — but deeply satisfying in retrospect.</p>
+          </div>
+        </div>
+
+        ${B.para('Most people optimise for hedonia and wonder why they still feel empty. Eudaimonia often requires discomfort — parenting, difficult creative work, caring for someone, building something — but it\'s what produces the deeper sense that life is being well-lived.')}
+        ${B.insight('The practical question', 'When you look at your genuine moments of happiness, which kind are they mostly? And does the proportion you\'re currently living reflect what you actually want?')}
+      `
+    },
+
+    // ── STEP 5: Worksheet — Joy inventory ─────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('The joy inventory.')}
+        ${B.para('Forget what you think should make you happy. Forget what you aspire to want. Look backwards at your actual experience.')}
+        ${B.para('Think about the last few years. When did you feel genuinely, unmistakably good? Not relieved, not successful — genuinely alive and well. What were you doing? Who were you with? What was present?')}
+
+        ${B.divider('Your actual sources of joy')}
+        <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:0.75rem">
+          Select everything that has genuinely, reliably contributed to your happiness — not what you think should:
+        </p>
+
+        <div class="source-grid">
+          ${[
+            'Deep conversations','Solitude','Physical movement',
+            'Creative work','Being in nature','Learning something new',
+            'Cooking or eating well','Music','Helping someone concretely',
+            'Making something with my hands','Animals','Travel',
+            'Laughter with people I trust','Reading','Feeling competent at something',
+            'Sex and physical intimacy','Spiritual or contemplative practice',
+            'Watching something absorbing','Planning and organising',
+            'Spontaneity','Being seen and known','Flow state work',
+            'Children or family','Exercise','Rest without guilt'
+          ].map(s => `
+            <button class="source-chip" onclick="toggleSource(this,'${s}')">${s}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="sourcesHidden" data-key="joySources" value="">
+
+        ${B.keyedTextarea('joy-own', 'Things that genuinely make me happy that aren\'t on that list...', 'What\'s specific to you that I didn\'t include?', '65px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 6: Worksheet — Forecast vs reality ───────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Where have your predictions been wrong?')}
+        ${B.para('Think of three things you pursued or achieved in the last few years expecting significant happiness. How did reality compare to the forecast?')}
+
+        ${B.divider('Pursuit 1')}
+        ${B.keyedTextarea('p1-pursuit', 'I thought this would make me happy...', 'What you pursued or achieved', '50px')}
+        <p style="font-size:0.8125rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.5rem">How did reality compare to prediction?</p>
+        <div class="rating-row">
+          ${['😞 Much less','😐 About right','😊 More than expected'].map((label, i) => `
+            <button
+              class="rating-btn"
+              data-group="p1"
+              onclick="selectRating('p1', this, '${['less','right','more'][i]}')"
+            >${label}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="p1Hidden" data-key="p1-rating" value="">
+
+        ${B.divider('Pursuit 2')}
+        ${B.keyedTextarea('p2-pursuit', 'I thought this would make me happy...', '', '50px')}
+        <p style="font-size:0.8125rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.5rem">How did reality compare?</p>
+        <div class="rating-row">
+          ${['😞 Much less','😐 About right','😊 More than expected'].map((label, i) => `
+            <button
+              class="rating-btn"
+              data-group="p2"
+              onclick="selectRating('p2', this, '${['less','right','more'][i]}')"
+            >${label}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="p2Hidden" data-key="p2-rating" value="">
+
+        ${B.divider('The pattern')}
+        ${B.keyedTextarea('forecast-pattern', 'Looking at where my predictions have been wrong, I notice...', 'What do you tend to overestimate? What do you underestimate? What does this tell you about where to actually invest your energy?', '85px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = false;
+      }
+    },
+
+    // ── STEP 7: Worksheet — The gap ───────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('What you\'re currently investing in vs what actually pays off.')}
+        ${B.para('This is the most uncomfortable question in this module. Look honestly at where your time, attention, and energy are currently going — and compare it to what you know actually produces genuine wellbeing in your life.')}
+
+        ${B.divider('What you\'re currently investing most in')}
+        ${B.keyedTextarea('investing-in', 'Most of my time and energy currently goes to...', 'Be honest — not what sounds good, what\'s actually true', '75px')}
+
+        ${B.divider('What actually produces wellbeing for you')}
+        ${B.keyedTextarea('what-works', 'The things I know from experience actually make me genuinely happy are...', 'From your joy inventory — the things that reliably work', '75px')}
+
+        ${B.divider('The gap')}
+        ${B.keyedTextarea('the-gap', 'The biggest mismatch is...', 'Where are you investing most that pays back least? Where are you underinvesting in what you know works?', '80px')}
+
+        ${B.callout('This gap is not a character flaw. It\'s the result of optimising for predicted happiness rather than demonstrated happiness. The data was always there — you just hadn\'t looked at it this way.')}
+      `
+    },
+
+    // ── STEP 8: Skill ──────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your fourth tool in this pathway.')}
+        ${B.para('A weekly practice that uses your actual experience as data — rather than your predictions — to calibrate where you invest your life.')}
+        ${B.skill(
+          'The Happiness Audit',
+          'Use evidence from your own life to calibrate what actually works.',
+          [
+            '<strong>Weekly: the peak moment scan.</strong> At the end of the week ask: when did I feel most genuinely alive, present, and well? Not most successful — most genuinely good. Write it down. One sentence.',
+            '<strong>Notice the pattern over time.</strong> After four weeks you\'ll have data. What keeps showing up? What never shows up despite taking up significant time? That\'s your happiness profile.',
+            '<strong>Before a pursuit, ask: is this hedonic or eudaimonic?</strong> Not whether to pursue it — but knowing which kind of return to expect. Hedonic returns are real and valid. Eudaimonic returns are deeper and more durable.',
+            '<strong>The investment question.</strong> Once a month: is my life currently invested in proportion to what I know actually makes me happy? If not — what\'s one small reallocation?',
+            '<strong>Track what you underestimated.</strong> When something gives you more happiness than you expected — especially something simple — note it. These are the undervalued assets in your wellbeing portfolio.'
+          ]
+        )}
+        ${B.compare(
+          'Without the audit: pursuing predicted happiness, adapting to everything, wondering why nothing is quite enough, repeating the same investments expecting different returns.',
+          'With the audit: building evidence from your actual life, investing proportionally in what demonstrably works, spending less on what adapts quickly and more on what sustains.'
+        )}
+      `
+    },
+
+    // ── STEP 9: Commitment ─────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('The happiness audit only produces insight if it\'s done consistently. One week of data tells you very little. Four weeks tells you something real.')}
+        ${B.para('The commitment is simple: end of each day this week, one sentence. When did I feel most genuinely well today? Not best, not most successful — most genuinely alive and present.')}
+        ${B.commitment(
+          'Write your commitment and one specific thing you\'re going to do this week to invest more in what you know actually works — even if it\'s small.',
+          'This week I will do the peak moment scan each evening — one sentence, just for me. And based on what I know actually makes me happy, I\'m going to do more of [specific thing] even though it\'s easy to deprioritise because...'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ──────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'What Actually Makes You Happy',
+        'identity',
+        'id-5',
+        '☀️',
+        'The Happiness Audit',
+        'Use evidence from your own life to find what actually works'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('id-4', ID4_STEPS);
+  });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

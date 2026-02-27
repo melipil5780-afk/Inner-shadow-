@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – The Story You Tell About Yourself</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .module-header {
+      padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+      background: rgba(10,15,30,0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .module-header__row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .header-back {
+      width: 2.25rem;
+      height: 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.625rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .header-back:active { transform: scale(0.92); }
+
+    .header-title {
+      flex: 1;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .header-count {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      min-width: 2.25rem;
+      text-align: right;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .progress-dot {
+      flex: 1;
+      height: 3px;
+      background: rgba(148,163,184,0.15);
+      border-radius: 999px;
+      transition: background 0.4s ease;
+    }
+
+    .progress-dot--active {
+      background: var(--gradient-main);
+    }
+
+    .module-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .module-scroll::-webkit-scrollbar { display: none; }
+
+    .step-wrap {
+      padding: 1.375rem 1.25rem 2rem;
+    }
+
+    .cta-area {
+      padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .back-btn-sm {
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn-sm:active { transform: scale(0.92); }
+    .back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+    /* Narrative tone chips */
+    .tone-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tone-chip {
+      padding: 0.4375rem 1rem;
+      background: var(--bg-card-light);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: var(--font-body);
+    }
+
+    .tone-chip:active { transform: scale(0.92); }
+    .tone-chip--selected {
+      border-color: var(--ember-border-strong);
+      background: var(--ember-bg-strong);
+      color: var(--text-ember);
+      font-weight: 600;
+    }
+
+    /* Chapter cards */
+    .chapter-card {
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 1.125rem;
+      overflow: hidden;
+      margin-bottom: 0.625rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .chapter-card__header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+    }
+
+    .chapter-card__num {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 0.5rem;
+      background: var(--gradient-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .chapter-card__title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .chapter-card__body {
+      padding: 0 1rem 1rem;
+    }
+
+    /* Turning point selector */
+    .turning-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      background: var(--bg-card-light);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      margin-bottom: 0.5rem;
+      font-family: var(--font-body);
+      text-align: left;
+      width: 100%;
+    }
+
+    .turning-option:active { transform: scale(0.98); }
+
+    .turning-option--selected {
+      border-color: var(--ember-border-strong);
+      background: var(--ember-bg);
+    }
+
+    .turning-option__emoji {
+      font-size: 1.375rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    .turning-option__body { flex: 1; }
+
+    .turning-option__name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.2rem;
+    }
+
+    .turning-option--selected .turning-option__name { color: var(--text-ember); }
+
+    .turning-option__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="module-header">
+      <div class="module-header__row">
+        <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+        <p class="header-title" id="moduleTitle">The Story You Tell About Yourself</p>
+        <span class="header-count" id="stepCounter"></span>
+      </div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="module-scroll" id="moduleScroll">
+      <div class="step-wrap" id="stepContent"></div>
+    </div>
+
+    <div class="cta-area">
+      <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+      <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/module-engine.js"></script>
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Tone chip selector ─────────────────────────────────
+
+  const selectedTones = new Set();
+
+  function toggleTone(el, name) {
+    el.classList.toggle('tone-chip--selected');
+    if (selectedTones.has(name)) {
+      selectedTones.delete(name);
+    } else {
+      selectedTones.add(name);
+    }
+    const hidden = document.getElementById('tonesHidden');
+    if (hidden) hidden.value = Array.from(selectedTones).join(', ');
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = selectedTones.size === 0;
+  }
+
+  // ── Turning point selector ─────────────────────────────
+
+  const selectedTurnings = new Set();
+
+  function toggleTurning(el, name) {
+    el.classList.toggle('turning-option--selected');
+    if (selectedTurnings.has(name)) {
+      selectedTurnings.delete(name);
+    } else {
+      selectedTurnings.add(name);
+    }
+    const hidden = document.getElementById('turningsHidden');
+    if (hidden) hidden.value = Array.from(selectedTurnings).join(', ');
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = selectedTurnings.size === 0;
+  }
+
+  // ================================================================
+  // MODULE ID-3: THE STORY YOU TELL ABOUT YOURSELF
+  // ================================================================
+
+  const ID3_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('You are not your history. But you are the story you tell about your history.')}
+        ${B.para('There is a difference between what happened to you and the narrative you\'ve built around it. The events are fixed. The meaning you\'ve made of them — the through-line you\'ve drawn, the character you\'ve become in the telling — that\'s something you\'ve constructed.')}
+        ${B.para('And constructions can be revised.')}
+        ${B.callout('Psychologist Dan McAdams spent decades studying what he called narrative identity — the internalized, evolving story we tell about our lives that gives them coherence, meaning, and direction. His finding: the quality of that story shapes psychological wellbeing more than the events themselves.')}
+        ${B.para('This module helps you see the story you\'re currently telling — its tone, its themes, its turning points. And then asks whether that story is serving you, or whether you\'ve outgrown it and never updated it.')}
+      `
+    },
+
+    // ── STEP 2: Concept — Narrative identity ──────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('You are running a story about who you are. It\'s shaping everything.')}
+        ${B.para('Narrative identity is not the same as memory. It\'s the edited, interpreted, meaning-laden version of your past that you use to understand who you are and why you do what you do.')}
+        ${B.para('It answers questions like: Why am I the way I am? What has my life been about? What am I capable of? What do I deserve? Where am I heading?')}
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem">
+          ${[
+            ['The redemption story', 'Bad things happened — but they led somewhere meaningful. Suffering as transformation. Common in people with high resilience.'],
+            ['The contamination story', 'Good things were ruined. Promise was spoiled. Things that started well ended badly. Associated with depression and stuck-ness.'],
+            ['The agency story', 'I acted, I changed things, I shaped my life. Authorship and influence as the through-line.'],
+            ['The communion story', 'My life has been about relationships, connection, belonging. Love as the central thread.'],
+            ['The victim story', 'Things happened to me. I was acted upon. Others held the power. Often accurate — and also often limiting.'],
+            ['The survivor story', 'Like the victim story, but with a turn: I came through it. The events don\'t define me — the coming-through does.']
+          ].map(([type, desc]) => `
+            <div style="
+              padding:0.875rem 1rem;
+              background:var(--bg-card-light);
+              border:1px solid var(--border-soft);
+              border-radius:0.875rem;
+            ">
+              <p style="font-size:0.875rem;font-weight:700;color:var(--text-primary);margin-bottom:0.3rem">${type}</p>
+              <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5">${desc}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        ${B.insight('The key finding', 'McAdams found that people who tell redemption stories — not because their lives were easier, but because they frame difficulty as meaningful — show significantly higher wellbeing, generativity, and life satisfaction than those telling contamination stories about similar events.')}
+      `
+    },
+
+    // ── STEP 3: Concept — Narrative traps ────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('How stories go wrong.')}
+        ${B.para('A narrative doesn\'t have to be false to be limiting. Some of the most constraining stories are accurate — they just stop too early, or frame too narrowly, or cast you in a role you\'ve outgrown.')}
+
+        ${B.steps([
+          '<strong>The story that ends in the past.</strong> "I was someone who..." — a fixed, completed identity with no room for revision. The person you were at your worst, or your most wounded, treated as the final word.',
+          '<strong>The story with only one theme.</strong> Everything filtered through one lens: everything is about abandonment, or about proving yourself, or about not being good enough. Real lives are more complex than their loudest theme.',
+          '<strong>The story where you\'re only a supporting character.</strong> Your life told through what others did to you, thought of you, needed from you. Your own agency invisible or absent.',
+          '<strong>The story without turning points.</strong> A flat narrative where nothing fundamentally changed you — which is almost never true, but feels true when the turns haven\'t been acknowledged.',
+          '<strong>The story that\'s still someone else\'s.</strong> The version of your life that your family tells, that your culture expects, that you\'ve never questioned because you absorbed it before you could.'
+        ])}
+
+        ${B.callout('A story that served you at 15 or 25 may be actively misleading you at 35 or 45. Stories need to be updated as you grow — but most people\'s self-narrative is years or decades behind who they\'ve actually become.')}
+      `
+    },
+
+    // ── STEP 4: Concept — Authorship ─────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The shift from character to author.')}
+        ${B.para('There are two positions you can occupy in relation to your life story:')}
+
+        ${B.compare(
+          'As character: the story happens to you. Events arrive, people act upon you, the plot unfolds. Your role is to react, survive, endure, or enjoy — but not to shape.',
+          'As author: you write meaning onto events. You decide which experiences were formative. You choose which themes matter. You revise what things meant as you gain perspective. You control the arc.'
+        )}
+
+        ${B.para('Being the author of your story doesn\'t mean pretending bad things didn\'t happen or weren\'t as bad as they were. It means claiming the right to decide what those things mean about you, what they led to, and what they make possible.')}
+        ${B.para('Viktor Frankl, writing from a concentration camp, put it this way: everything can be taken from a person except the freedom to choose one\'s attitude toward a given set of circumstances.')}
+        ${B.callout('Authorship is not optimism. It\'s not reframing suffering as secretly good. It\'s the act of saying: I am not only what happened to me. I am also what I make of it.')}
+      `
+    },
+
+    // ── STEP 5: Worksheet — The tone of your story ────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('What is the tone of your story right now?')}
+        ${B.para('If someone who knew you well were to describe the overall emotional register of your life story — the feeling it leaves behind — which words would they use? Select all that feel accurate.')}
+        ${B.para('Be honest. Not what you wish the tone were — what it actually is.', 'margin-bottom:0.875rem')}
+
+        <div class="tone-grid">
+          ${[
+            'Ongoing struggle','Hard-won','Unresolved','Searching',
+            'Marked by loss','Building toward something','Interrupted',
+            'Mostly survived','Finding my way','Shaped by others',
+            'Surprising','Quietly meaningful','Still becoming',
+            'Defined by one thing','Resilient','Stuck','Complicated',
+            'Largely unlived','Coming into focus','Unfinished'
+          ].map(t => `
+            <button class="tone-chip" onclick="toggleTone(this,'${t}')">${t}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="tonesHidden" data-key="tones" value="">
+
+        ${B.keyedTextarea('tone-expand', 'The overall feeling of my story, in my own words, is...', 'Not a summary of events — the emotional quality of it. What does your life story feel like from the inside?', '80px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 6: Worksheet — The chapters ──────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('The chapters of your life.')}
+        ${B.para('Most lives divide naturally into periods — not by age, but by theme, location, relationship, or inner state. Think of yours.')}
+        ${B.para('Give each chapter a title — not a date range, but a name that captures what that period was really about.')}
+
+        <div class="chapter-card">
+          <div class="chapter-card__header">
+            <div class="chapter-card__num">1</div>
+            <p class="chapter-card__title">The beginning</p>
+          </div>
+          <div class="chapter-card__body">
+            ${B.keyedTextarea('ch1-title', 'Chapter title...', 'e.g. "Learning to be invisible" / "Before I knew any better" / "The golden years"', '40px')}
+            ${B.keyedTextarea('ch1-desc', 'What this chapter was really about...', '', '55px')}
+          </div>
+        </div>
+
+        <div class="chapter-card">
+          <div class="chapter-card__header">
+            <div class="chapter-card__num">2</div>
+            <p class="chapter-card__title">A defining period</p>
+          </div>
+          <div class="chapter-card__body">
+            ${B.keyedTextarea('ch2-title', 'Chapter title...', '', '40px')}
+            ${B.keyedTextarea('ch2-desc', 'What this chapter was really about...', '', '55px')}
+          </div>
+        </div>
+
+        <div class="chapter-card">
+          <div class="chapter-card__header">
+            <div class="chapter-card__num">3</div>
+            <p class="chapter-card__title">Where you are now</p>
+          </div>
+          <div class="chapter-card__body">
+            ${B.keyedTextarea('ch3-title', 'Chapter title...', 'What would you call this period of your life?', '40px')}
+            ${B.keyedTextarea('ch3-desc', 'What this chapter is really about...', '', '55px')}
+          </div>
+        </div>
+
+        ${B.keyedTextarea('chapters-theme', 'The theme that runs through all my chapters is...', 'What\'s the thread connecting them? What question has your life been trying to answer?', '70px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = false;
+      }
+    },
+
+    // ── STEP 7: Worksheet — Turning points ────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('The moments that changed you.')}
+        ${B.para('Turning points are the events — planned or not — that fundamentally altered your story\'s direction. They\'re the moments where you became measurably different from who you were before.')}
+        ${B.para('Select the types of turning points that appear in your story:')}
+
+        <div style="margin-bottom:1rem">
+          ${[
+            ['💔', 'A loss or ending', 'Death, relationship ending, failure — something that closed a door you thought would stay open'],
+            ['🔥', 'A crisis or collapse', 'Something that fell apart and forced a rebuild you didn\'t choose'],
+            ['🌱', 'An unexpected beginning', 'Something that arrived and opened a direction you hadn\'t seen'],
+            ['🧠', 'A moment of clarity', 'Something you understood that you couldn\'t unknow — a realisation that changed your frame'],
+            ['🧳', 'A displacement', 'Moving, leaving, being removed from a world that had defined you'],
+            ['🤝', 'A relationship that changed you', 'A person — for better or worse — who made you different by knowing them'],
+            ['💥', 'A confrontation with yourself', 'A moment of honest reckoning — with a pattern, a lie you\'d been telling, or a choice you\'d been avoiding'],
+            ['✨', 'An experience of aliveness', 'Something that showed you what you\'re actually capable of, or what actually matters to you']
+          ].map(([emoji, name, desc]) => `
+            <button
+              class="turning-option"
+              onclick="toggleTurning(this, '${name.replace(/'/g, "\\'")}')"
+            >
+              <span class="turning-option__emoji">${emoji}</span>
+              <div class="turning-option__body">
+                <p class="turning-option__name">${name}</p>
+                <p class="turning-option__desc">${desc}</p>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="turningsHidden" data-key="turnings" value="">
+
+        ${B.keyedTextarea('biggest-turning', 'The turning point that changed me most was...', 'Describe it — what happened, and how the direction of your story shifted because of it.', '90px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 8: Worksheet — Reauthoring ───────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Becoming the author.')}
+        ${B.para('You\'ve mapped the story as it currently stands — its tone, chapters, themes, turning points. Now the harder question:')}
+
+        ${B.divider('The story you\'re currently telling')}
+        ${B.keyedTextarea('current-story', 'In one or two sentences, the story I\'ve been telling about my life is...', 'The condensed narrative — the version you\'d tell a stranger if they asked "what\'s your life been about?"', '80px')}
+
+        ${B.divider('What the story leaves out')}
+        ${B.keyedTextarea('leaves-out', 'But that story leaves out...', 'What gets edited out of your standard telling? What strengths, turns, moments of agency, or unexpected parts get omitted?', '80px')}
+
+        ${B.divider('A more complete version')}
+        ${B.keyedTextarea('fuller-story', 'A fuller, more honest version of my story would include...', 'Not more positive — more complete. What would change if you told the whole story rather than the highlight reel of difficulty, or the highlight reel of success?', '90px')}
+
+        ${B.insight('What authorship looks like in practice', 'It\'s not changing what happened. It\'s expanding what you include, revising what you conclude, and choosing which parts you let define you going forward.')}
+      `
+    },
+
+    // ── STEP 9: Skill ──────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your third tool in this pathway.')}
+        ${B.para('A practice for when you notice the old story running — the one that\'s too small, too dark, or too fixed to be the whole truth.')}
+        ${B.skill(
+          'The Narrative Edit',
+          'Step from character into author. Expand what\'s true.',
+          [
+            '<strong>Notice the story running.</strong> "I\'m someone who always..." / "This always happens to me..." / "I knew this would end this way." The narrative signature — fixed, familiar, limiting.',
+            '<strong>Ask: is this the whole story?</strong> Not whether it\'s false — whether it\'s complete. What\'s being left out? What happened before, or after, that complicates this version?',
+            '<strong>Find your agency.</strong> Where in this story did you act, choose, resist, survive, create, connect? Even in the hardest stories, there are almost always moments of agency that don\'t make it into the standard telling.',
+            '<strong>Look for the turn.</strong> What did this experience — however painful — make possible, teach you, open in you? Not silver lining. Just: what exists now that didn\'t before?',
+            '<strong>Write or say the fuller version.</strong> Even a single sentence that holds more than the limiting story. "This happened — and also..." The "and also" is the authorial move.'
+          ]
+        )}
+        ${B.compare(
+          'The old story: "I\'m someone things don\'t work out for. I tried and failed. This is who I am." — Fixed. Closed. Character-position.',
+          'The narrative edit: "I tried something hard and it didn\'t work the way I hoped. And I learned what I actually value. And I\'m still here asking questions." — Open. Accurate. Author-position.'
+        )}
+      `
+    },
+
+    // ── STEP 10: Commitment ────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('The old story runs automatically — years of practice, deeply grooved. The narrative edit requires deliberate effort. The commitment is to catch the old story and add the "and also" at least once this week.')}
+        ${B.commitment(
+          'Identify the specific limiting story you tell most often — about yourself, your past, or what\'s possible for you. Write the old version and then the fuller version that includes what it leaves out.',
+          'The story I most often tell about myself is: "..." This week when I catch myself running that story, I will add: "And also..." The fuller version of my story includes...'
+        )}
+      `
+    },
+
+    // ── STEP 11: Complete ──────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'The Story You Tell About Yourself',
+        'identity',
+        'id-4',
+        '✍️',
+        'The Narrative Edit',
+        'Step from character into author — expand what\'s true'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('id-3', ID3_STEPS);
+  });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

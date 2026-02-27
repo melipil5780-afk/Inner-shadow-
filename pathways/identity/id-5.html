@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – The Parts You Keep Hidden</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .module-header {
+      padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+      background: rgba(10,15,30,0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .module-header__row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .header-back {
+      width: 2.25rem;
+      height: 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.625rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .header-back:active { transform: scale(0.92); }
+
+    .header-title {
+      flex: 1;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .header-count {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      min-width: 2.25rem;
+      text-align: right;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .progress-dot {
+      flex: 1;
+      height: 3px;
+      background: rgba(148,163,184,0.15);
+      border-radius: 999px;
+      transition: background 0.4s ease;
+    }
+
+    .progress-dot--active {
+      background: var(--gradient-main);
+    }
+
+    .module-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .module-scroll::-webkit-scrollbar { display: none; }
+
+    .step-wrap {
+      padding: 1.375rem 1.25rem 2rem;
+    }
+
+    .cta-area {
+      padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .back-btn-sm {
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn-sm:active { transform: scale(0.92); }
+    .back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+    /* Shadow trait chips */
+    .trait-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .trait-chip {
+      padding: 0.4375rem 1rem;
+      background: var(--bg-card-light);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: var(--font-body);
+    }
+
+    .trait-chip:active { transform: scale(0.92); }
+
+    .trait-chip--selected {
+      border-color: rgba(139, 92, 246, 0.6);
+      background: rgba(139, 92, 246, 0.12);
+      color: #f5c865;
+      font-weight: 600;
+    }
+
+    /* Shadow signal cards */
+    .signal-card {
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 1rem;
+      padding: 1rem 1.125rem;
+      margin-bottom: 0.625rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+    }
+
+    .signal-card__icon {
+      font-size: 1.375rem;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+
+    .signal-card__body { flex: 1; }
+
+    .signal-card__name {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .signal-card__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* Gold in the shadow */
+    .gold-card {
+      background: linear-gradient(135deg, rgba(217,119,6,0.12), rgba(13,148,136,0.08));
+      border: 1px solid var(--gold-border);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .gold-card__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-gold);
+      margin-bottom: 0.625rem;
+    }
+
+    .gold-card__text {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* Mirror exercise */
+    .mirror-card {
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .mirror-card__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #f5c865;
+      margin-bottom: 0.625rem;
+    }
+
+    .mirror-card__text {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="module-header">
+      <div class="module-header__row">
+        <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+        <p class="header-title" id="moduleTitle">The Parts You Keep Hidden</p>
+        <span class="header-count" id="stepCounter"></span>
+      </div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="module-scroll" id="moduleScroll">
+      <div class="step-wrap" id="stepContent"></div>
+    </div>
+
+    <div class="cta-area">
+      <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+      <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/module-engine.js"></script>
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Trait selector ─────────────────────────────────────
+
+  const selectedTraits = new Set();
+
+  function toggleTrait(el, name) {
+    el.classList.toggle('trait-chip--selected');
+    if (selectedTraits.has(name)) {
+      selectedTraits.delete(name);
+    } else {
+      selectedTraits.add(name);
+    }
+    const hidden = document.getElementById('traitsHidden');
+    if (hidden) hidden.value = Array.from(selectedTraits).join(', ');
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = selectedTraits.size === 0;
+  }
+
+  // ================================================================
+  // MODULE ID-5: THE PARTS YOU KEEP HIDDEN
+  // ================================================================
+
+  const ID5_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('Everything you\'ve rejected about yourself is still there. It\'s just running underground.')}
+        ${B.para('Carl Jung called it the shadow — the parts of yourself you learned were unacceptable, dangerous, embarrassing, or wrong. Not necessarily dark in the way that word implies. Often just... inconvenient. Too much. Not enough. Not what was wanted.')}
+        ${B.para('The shadow isn\'t evil. It\'s everything that got pushed out of the light: the anger you weren\'t allowed to have, the ambition that seemed ugly, the vulnerability that felt dangerous, the need for attention that seemed shameful, the creativity that got laughed at.')}
+        ${B.callout('What you push into the shadow doesn\'t disappear. It runs from underground — showing up as disproportionate reactions, the qualities that bother you most in others, the things you find yourself doing and then wondering why.')}
+        ${B.para('This module is not about unleashing your darkness. It\'s about becoming whole — knowing all of what you are, so it can\'t surprise you or undermine you from places you can\'t see.')}
+      `
+    },
+
+    // ── STEP 2: Concept — How the shadow forms ─────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('How the shadow gets built.')}
+        ${B.para('The shadow isn\'t something you chose to create. It accumulated through the slow process of learning what was acceptable.')}
+
+        ${B.steps([
+          '<strong>Early conditioning.</strong> A parent\'s face when you expressed certain emotions. Being shamed for crying, or for being too exuberant, or for wanting things. Learning which parts of you made love conditional.',
+          '<strong>Social learning.</strong> Watching which expressions of self got rewarded and which got punished. The kid who got laughed at for their enthusiasm. The teenager who learned that sensitivity was weakness.',
+          '<strong>Cultural messages.</strong> What your gender, class, culture said you were allowed to feel, want, need, or express. The ambient weight of expectation about who you were supposed to be.',
+          '<strong>Trauma response.</strong> Parts of self that got split off because integrating them felt too dangerous — too much feeling in a system that couldn\'t handle it.'
+        ])}
+
+        ${B.insight('The critical point', 'The shadow is not who you really are underneath the mask. It\'s the parts of you that are real but were deemed unacceptable. Integration doesn\'t mean acting on everything in the shadow — it means knowing it\'s there so it stops running you from the dark.')}
+      `
+    },
+
+    // ── STEP 3: Concept — Shadow signals ──────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('How to know when your shadow is speaking.')}
+        ${B.para('The shadow announces itself in predictable ways. Learning to recognise these signals is the first step toward integration.')}
+
+        <div class="signal-card">
+          <span class="signal-card__icon">🔥</span>
+          <div class="signal-card__body">
+            <p class="signal-card__name">Disproportionate reactions</p>
+            <p class="signal-card__desc">When your reaction is significantly bigger than the situation warrants, the shadow is usually involved. What gets triggered is almost never really about what triggered it.</p>
+          </div>
+        </div>
+
+        <div class="signal-card">
+          <span class="signal-card__icon">🪞</span>
+          <div class="signal-card__body">
+            <p class="signal-card__name">Strong reactions to qualities in others</p>
+            <p class="signal-card__desc">The traits that irritate you most intensely in other people are often your own shadow traits — the very qualities you've suppressed in yourself, watching someone else express freely.</p>
+          </div>
+        </div>
+
+        <div class="signal-card">
+          <span class="signal-card__icon">😳</span>
+          <div class="signal-card__body">
+            <p class="signal-card__name">Deep shame or embarrassment</p>
+            <p class="signal-card__desc">Intense shame — out of proportion to the situation — often marks shadow territory. The parts of yourself you most wish others would never see.</p>
+          </div>
+        </div>
+
+        <div class="signal-card">
+          <span class="signal-card__icon">🌑</span>
+          <div class="signal-card__body">
+            <p class="signal-card__name">Fascination or envy</p>
+            <p class="signal-card__desc">What you envy often contains something you've exiled in yourself. The freedom, the expression, the way of being that part of you wants but won't allow.</p>
+          </div>
+        </div>
+
+        <div class="signal-card">
+          <span class="signal-card__icon">🎭</span>
+          <div class="signal-card__body">
+            <p class="signal-card__name">Acting out of character</p>
+            <p class="signal-card__desc">Moments when you do something that surprises you — that doesn't fit the self-image you maintain. The shadow breaking through when the container is under pressure.</p>
+          </div>
+        </div>
+
+        ${B.para('These signals are not problems. They\'re information — breadcrumbs leading back to the parts of yourself that need to be reclaimed rather than continued to be managed.')}
+      `
+    },
+
+    // ── STEP 4: Concept — Gold in the shadow ──────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The shadow isn\'t only darkness. There\'s gold in there too.')}
+        ${B.para('Jung made a distinction many people miss: not everything in the shadow is difficult. Some of it is positive.')}
+
+        <div class="gold-card">
+          <p class="gold-card__label">The golden shadow</p>
+          <p class="gold-card__text">
+            The golden shadow contains positive qualities, gifts, and capacities that got exiled alongside the difficult ones. 
+            Creativity that was dismissed as impractical. Leadership that felt too arrogant to claim. 
+            Sensitivity that felt too exposed to allow. Ambition that seemed unseemly. 
+            Intelligence that seemed threatening. Tenderness that felt too soft.
+          </p>
+        </div>
+
+        ${B.para('Often the most meaningful work in shadow integration is recovering not the darkness but the light — the capacities and qualities that were buried not because they were harmful but because they weren\'t safe to express.')}
+
+        ${B.compare(
+          'Common shadow material (difficult): anger, selfishness, neediness, envy, arrogance, laziness, aggression, manipulation',
+          'Golden shadow material (suppressed gifts): creativity, ambition, leadership, sensitivity, playfulness, sensuality, strength, tenderness, wildness'
+        )}
+
+        ${B.callout('The question to ask about any strongly suppressed quality: did I exile this because it was genuinely harmful — or because someone important to me couldn\'t handle it?')}
+      `
+    },
+
+    // ── STEP 5: Worksheet — Shadow inventory ───────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('What\'s in your shadow?')}
+        ${B.para('This takes courage. Select the traits or qualities you\'ve suppressed, hidden, or denied in yourself — not because they\'re absent, but because they felt unacceptable.')}
+        ${B.para('Include both difficult traits and positive ones you\'ve been afraid to claim.', 'margin-bottom:0.875rem')}
+
+        <div class="trait-grid">
+          ${[
+            'Anger','Neediness','Ambition','Envy','Selfishness',
+            'Arrogance','Aggression','Sensitivity','Laziness','Manipulation',
+            'Sexuality','Playfulness','Tenderness','Weakness','Strength',
+            'Vulnerability','Jealousy','Greed','Creativity','Leadership',
+            'Desire for attention','Sadness','Fear','Defiance','Wildness',
+            'Competitiveness','Control','Desperation','Pride','Shame'
+          ].map(t => `
+            <button class="trait-chip" onclick="toggleTrait(this,'${t}')">${t}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="traitsHidden" data-key="shadowTraits" value="">
+
+        ${B.keyedTextarea('shadow-own', 'Other parts of myself I\'ve hidden or suppressed...', 'What\'s specific to you that isn\'t on that list?', '60px')}
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 6: Worksheet — The mirror ────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('The mirror exercise.')}
+        ${B.para('This is the most revealing exercise in shadow work. The people who trigger you most intensely are often holding a mirror up to your own shadow.')}
+
+        <div class="mirror-card">
+          <p class="mirror-card__label">How it works</p>
+          <p class="mirror-card__text">
+            The qualities that bother you most in others are frequently the qualities you've most suppressed in yourself. 
+            Not always — sometimes someone is genuinely difficult. But the <em>intensity</em> of the reaction is the clue.
+            Mild irritation is probably just about them. Intense, disproportionate reaction is often about you.
+          </p>
+        </div>
+
+        ${B.divider('Person or type who triggers you')}
+        ${B.keyedTextarea('trigger-person', 'Someone who reliably irritates or bothers me is...', 'A specific person, or a type of person — what do they do that gets to you?', '65px')}
+
+        ${B.keyedTextarea('trigger-quality', 'The specific quality that bothers me most is...', 'Name it as precisely as you can', '50px')}
+
+        ${B.divider('The mirror question')}
+        ${B.keyedTextarea('mirror-question', 'Is this quality present in me, even in a different form?', 'Do I have this quality but suppress it? Express it differently? Wish I could express it? Fear I do?', '80px')}
+
+        ${B.keyedTextarea('mirror-insight', 'What this reflection might be telling me about myself...', 'What part of you might be asking for acknowledgment through this reaction?', '80px')}
+
+        ${B.insight('The paradox', 'We are most disturbed by what we most need to integrate. The intensity of the reaction is roughly proportional to the importance of the shadow material.')}
+      `
+    },
+
+    // ── STEP 7: Worksheet — Integration ───────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Moving from suppression to integration.')}
+        ${B.para('Integration doesn\'t mean acting on everything in your shadow. It means knowing it\'s there and having a conscious relationship with it — so it stops running you from underground.')}
+        ${B.para('Pick one shadow trait from your inventory — ideally one of the more difficult ones, or one of the golden ones you\'ve been afraid to claim.')}
+
+        ${B.divider('The chosen trait')}
+        ${B.keyedTextarea('chosen-trait', 'The shadow trait I\'m working with is...', 'Name it', '45px')}
+
+        ${B.keyedTextarea('how-exiled', 'I exiled this part of myself because...', 'Who or what taught you this was unacceptable? What was the cost of expressing it?', '75px')}
+
+        ${B.keyedTextarea('how-running', 'This part still runs underground by...', 'How does it show up despite being suppressed? Where do you see it leaking out?', '75px')}
+
+        <div class="gold-card">
+          <p class="gold-card__label">The integration question</p>
+          <p class="gold-card__text">
+            If you were to consciously acknowledge this part of yourself — not act on it indiscriminately, 
+            but simply know it exists and give it some legitimate expression — what might that look like? 
+            What would it mean to own this quality rather than be owned by it?
+          </p>
+        </div>
+
+        ${B.keyedTextarea('integration-look', 'Consciously integrating this part might look like...', 'Not acting it out — finding legitimate, intentional ways to acknowledge and express it', '85px')}
+      `
+    },
+
+    // ── STEP 8: Skill ──────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your fifth tool in this pathway.')}
+        ${B.para('Shadow work is ongoing — it\'s not a one-time exercise but a continuing practice of noticing what\'s being suppressed and finding ways to integrate it consciously.')}
+        ${B.skill(
+          'Shadow Integration Practice',
+          'Notice, name, and consciously relate to what you\'ve been hiding.',
+          [
+            '<strong>Notice the signal.</strong> Disproportionate reaction. Intense irritation at someone\'s quality. Deep shame. Envy that feels almost physical. Acting out of character. These are shadow announcements.',
+            '<strong>Name it without judgment.</strong> "Part of me is [angry / needy / envious / arrogant]." Not "I am" — "part of me is." This creates enough distance to look at it.',
+            '<strong>Ask: where did this get exiled?</strong> When did you learn this was unacceptable? Who taught you? What was the cost of expressing it? Just curiosity — not blame.',
+            '<strong>Find a legitimate expression.</strong> Not suppression, not indiscriminate acting out — a conscious, intentional channel. Anger expressed through physical movement or honest speech. Ambition pursued openly rather than disguised. Sensitivity honoured rather than hidden.',
+            '<strong>Use the mirror.</strong> When someone strongly triggers you, ask: is this showing me something about myself? Not always — but often enough to be worth asking.'
+          ]
+        )}
+        ${B.compare(
+          'Suppression: shadow material running underground, showing up as disproportionate reactions, projection, acting out of character, generalised inner conflict.',
+          'Integration: knowing what\'s there, having a conscious relationship with it, choosing how to express it, no longer being surprised or controlled by what you couldn\'t see.'
+        )}
+        ${B.para('You don\'t have to like everything in your shadow. You just have to know it\'s yours.')}
+      `
+    },
+
+    // ── STEP 9: Commitment ─────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('Shadow work is uncomfortable by definition — you\'re looking at what you\'ve worked hard not to look at. The commitment is simply to keep looking. Not to fix, not to transform overnight. Just to stop pretending it isn\'t there.')}
+        ${B.commitment(
+          'Write the one shadow trait you most need to integrate right now — the one you selected in the worksheet — and what one small act of conscious acknowledgment looks like this week.',
+          'The shadow part I\'m committing to integrating is [trait]. I\'ve suppressed it because [reason]. This week I\'m going to acknowledge it exists by [specific act — journalling about it, expressing it in a safe way, noticing when it shows up without shame, telling one trusted person]. The hardest part will be...'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ──────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'The Parts You Keep Hidden',
+        'identity',
+        'id-6',
+        '🌑',
+        'Shadow Integration Practice',
+        'Notice, name, and consciously relate to what you\'ve been hiding'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('id-5', ID5_STEPS);
+  });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
