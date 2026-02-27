@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – Regulating Your Nervous System</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .module-header {
+      padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+      background: rgba(10,15,30,0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .module-header__row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .header-back {
+      width: 2.25rem;
+      height: 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.625rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .header-back:active { transform: scale(0.92); }
+
+    .header-title {
+      flex: 1;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    .header-count {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      min-width: 2.25rem;
+      text-align: right;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .progress-dot {
+      flex: 1;
+      height: 3px;
+      background: rgba(148,163,184,0.15);
+      border-radius: 999px;
+      transition: background 0.4s ease;
+    }
+
+    .progress-dot--active {
+      background: var(--gradient-main);
+    }
+
+    .module-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .module-scroll::-webkit-scrollbar { display: none; }
+
+    .step-wrap {
+      padding: 1.375rem 1.25rem 2rem;
+    }
+
+    .cta-area {
+      padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95);
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .back-btn-sm {
+      width: 3rem;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn-sm:active { transform: scale(0.92); }
+    .back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+    /* Window states */
+    .window-card {
+      border-radius: 1.125rem;
+      padding: 1.125rem 1.25rem;
+      margin-bottom: 0.625rem;
+    }
+
+    .window-card--green {
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.25);
+    }
+
+    .window-card--amber {
+      background: var(--gold-bg);
+      border: 1px solid var(--gold-border);
+    }
+
+    .window-card--red {
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+    }
+
+    .window-card__label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.375rem;
+    }
+
+    .window-card--green .window-card__label  { color: #10b981; }
+    .window-card--amber .window-card__label  { color: var(--text-gold); }
+    .window-card--red   .window-card__label  { color: var(--text-red); }
+
+    .window-card__title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.375rem;
+    }
+
+    .window-card__desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Tool selector for regulation menu */
+    .tool-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.875rem 1rem;
+      background: var(--bg-card-light);
+      border: 1.5px solid var(--border-soft);
+      border-radius: 1rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: var(--font-body);
+      text-align: left;
+      width: 100%;
+    }
+
+    .tool-selector:active { transform: scale(0.98); }
+
+    .tool-selector--selected {
+      border-color: var(--ember-border-strong);
+      background: var(--ember-bg);
+    }
+
+    .tool-selector__emoji {
+      font-size: 1.5rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .tool-selector__body { flex: 1; }
+
+    .tool-selector__name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.15rem;
+    }
+
+    .tool-selector--selected .tool-selector__name {
+      color: var(--text-ember);
+    }
+
+    .tool-selector__desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .tool-selector__check {
+      width: 1.375rem;
+      height: 1.375rem;
+      border-radius: 50%;
+      border: 2px solid var(--border-softer);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .tool-selector--selected .tool-selector__check {
+      background: var(--ember);
+      border-color: var(--ember);
+      color: white;
+    }
+
+    /* Personal menu display */
+    .menu-card {
+      background: var(--gradient-card);
+      border: 1px solid var(--ember-border-strong);
+      border-radius: 1.25rem;
+      padding: 1.375rem;
+      margin-bottom: 1rem;
+    }
+
+    .menu-card__title {
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .menu-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .menu-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .menu-row__num {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 0.375rem;
+      background: var(--gradient-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .menu-row__text {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    /* Flood threshold */
+    .threshold-slider {
+      width: 100%;
+      margin: 0.75rem 0;
+      accent-color: var(--ember);
+    }
+
+    .threshold-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="module-header">
+      <div class="module-header__row">
+        <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+        <p class="header-title" id="moduleTitle">Regulating Your Nervous System</p>
+        <span class="header-count" id="stepCounter"></span>
+      </div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="module-scroll" id="moduleScroll">
+      <div class="step-wrap" id="stepContent"></div>
+    </div>
+
+    <div class="cta-area">
+      <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+      <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/module-engine.js"></script>
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Tool selector for personal menu ───────────────────
+
+  const selectedTools = new Set();
+
+  function toggleTool(el, name) {
+    el.classList.toggle('tool-selector--selected');
+    if (selectedTools.has(name)) {
+      selectedTools.delete(name);
+    } else {
+      selectedTools.add(name);
+    }
+    const hidden = document.getElementById('toolsHidden');
+    if (hidden) hidden.value = Array.from(selectedTools).join(', ');
+
+    // Update the next button
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = selectedTools.size < 2;
+
+    // Update live preview
+    renderMenuPreview();
+  }
+
+  function renderMenuPreview() {
+    const preview = document.getElementById('menuPreview');
+    if (!preview) return;
+
+    const tools = Array.from(selectedTools);
+    if (tools.length === 0) {
+      preview.innerHTML = `<p style="font-size:0.875rem;color:var(--text-muted);text-align:center;padding:0.5rem 0">Select at least 2 tools above to preview your menu</p>`;
+      return;
+    }
+
+    preview.innerHTML = `
+      <div class="menu-card">
+        <p class="menu-card__title">My regulation menu</p>
+        ${tools.map((t, i) => `
+          <div class="menu-row">
+            <div class="menu-row__num">${i + 1}</div>
+            <p class="menu-row__text">${t}</p>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  // ── Flood threshold slider ────────────────────────────
+
+  function updateThresholdLabel(val) {
+    const label = document.getElementById('thresholdLabel');
+    const labels = [
+      'Very early — I start to feel something shift',
+      'Mild activation — I notice tension beginning',
+      'Moderate — I can feel it building clearly',
+      'Significant — I\'m already quite activated',
+      'Near flood — I\'m almost past the point of return'
+    ];
+    if (label) label.textContent = labels[parseInt(val) - 1] || labels[2];
+    const hidden = document.getElementById('thresholdHidden');
+    if (hidden) hidden.value = val;
+  }
+
+  // ================================================================
+  // ALL TOOLS AVAILABLE FOR MENU BUILDING
+  // ================================================================
+
+  const REGULATION_TOOLS = [
+    { emoji: '🌬', name: 'Physiological sigh', desc: 'Double inhale + long exhale. Fastest nervous system reset.' },
+    { emoji: '🧊', name: 'Cold water on face', desc: 'Activates the dive reflex. Interrupts flooding within seconds.' },
+    { emoji: '🏃', name: 'Physical movement', desc: 'Walk, shake, jump. Metabolises stress hormones.' },
+    { emoji: '⚓', name: '5-4-3-2-1 grounding', desc: 'Senses-based return to the present moment.' },
+    { emoji: '🦋', name: 'Butterfly hold', desc: 'Bilateral tapping. Calms the nervous system.' },
+    { emoji: '🛡', name: 'Safety scan', desc: 'Visual orienting + self-reassurance. Deactivates threat response.' },
+    { emoji: '〰️', name: 'Full body shake', desc: 'Discharges stored tension through deliberate trembling.' },
+    { emoji: '🏷', name: 'Name it to soften it', desc: 'Precise labelling reduces amygdala activity.' },
+    { emoji: '🧭', name: 'Body check', desc: 'Find the emotion in the body before reacting.' },
+    { emoji: '⏸', name: 'Catch, name, pause', desc: 'Name the pattern. Wait 5 seconds. Choose differently.' },
+    { emoji: '🤲', name: 'Self-compassion pause', desc: 'Hand on chest. Acknowledge. Connect. Ask what you need.' },
+    { emoji: '💬', name: 'Talk to someone safe', desc: 'Co-regulation. Sometimes another nervous system is the tool.' }
+  ];
+
+  // ================================================================
+  // MODULE STEPS
+  // ================================================================
+
+  const EM6_STEPS = [
+
+    // ── STEP 1: Intro ──────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('You\'ve built five tools. This module is about using them together — and knowing which one to reach for when.')}
+        ${B.para('There\'s a problem with learning regulation tools in calm moments: when you actually need them, your prefrontal cortex — where all this learning lives — is the first thing to go offline.')}
+        ${B.para('Flooding doesn\'t just make you feel bad. It literally reduces your cognitive capacity. The very knowledge you need becomes inaccessible precisely when you need it most.')}
+        ${B.callout('The solution is a regulation sequence — a personal, practiced order of operations you can run on autopilot even when flooded. This module helps you build yours.')}
+        ${B.para('This is the final module of Emotional Foundations. By the end you\'ll have a complete personal regulation system that synthesises everything from the previous five modules into something you can actually use under pressure.')}
+      `
+    },
+
+    // ── STEP 2: Concept — Window of tolerance ─────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The window of tolerance.')}
+        ${B.para('Dan Siegel\'s model of the window of tolerance is one of the most useful frameworks in all of psychology. Here\'s what it means in plain terms:')}
+
+        <div class="window-card window-card--amber" style="margin-top:0.25rem">
+          <p class="window-card__label">Hyperarousal</p>
+          <p class="window-card__title">Above the window</p>
+          <p class="window-card__desc">Flooded, overwhelmed, reactive, panicked, rageful. Fight-or-flight activated. Prefrontal cortex offline. Cannot think clearly, process information, or make good decisions.</p>
+        </div>
+
+        <div style="text-align:center;padding:0.25rem 0;font-size:1.5rem">↕</div>
+
+        <div class="window-card window-card--green">
+          <p class="window-card__label">Window of tolerance</p>
+          <p class="window-card__title">In the window — where everything works</p>
+          <p class="window-card__desc">Activated enough to engage, calm enough to think. Can access memories, make decisions, communicate, learn, connect. This is where all your best functioning lives.</p>
+        </div>
+
+        <div style="text-align:center;padding:0.25rem 0;font-size:1.5rem">↕</div>
+
+        <div class="window-card window-card--amber">
+          <p class="window-card__label">Hypoarousal</p>
+          <p class="window-card__title">Below the window</p>
+          <p class="window-card__desc">Shut down, numb, dissociated, collapsed. The freeze response. Equally impaired — just in the opposite direction. Also outside the window where good functioning lives.</p>
+        </div>
+
+        ${B.para('The goal of regulation is not to eliminate difficult emotions. It\'s to stay inside — or return quickly to — the window where you can actually work with them.', 'margin-top:1rem')}
+      `
+    },
+
+    // ── STEP 3: Concept — Flooding ────────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('What flooding actually does to you.')}
+        ${B.para('John Gottman\'s research on couples identified a specific physiological threshold that predicts communication breakdown almost perfectly:')}
+        ${B.insight('The flooding threshold', 'When heart rate exceeds approximately 100 BPM during conflict, the capacity for productive communication effectively ends. People in this state cannot take in new information, consider their partner\'s perspective, or access their most thoughtful responses.')}
+        ${B.para('This is not a character weakness. It is physiology. The threat response is genuinely shutting down the systems you need for connection and problem-solving.')}
+        ${B.steps([
+          '<strong>You cannot think your way out of flooding.</strong> The prefrontal cortex — where your best thinking lives — is offline. Trying harder to reason doesn\'t work.',
+          '<strong>You cannot talk your way out of flooding.</strong> Continuing a difficult conversation while flooded escalates it. The words you choose are the words of someone who is flooded.',
+          '<strong>You have to regulate the body first.</strong> Only after the nervous system returns to window does productive thinking and communication become possible again.',
+          '<strong>This takes time.</strong> After significant flooding, full return to baseline can take 20–30 minutes minimum. Rushing this is how conflicts become crises.'
+        ])}
+        ${B.callout('This applies to every difficult conversation, every triggered moment, every time someone says "just calm down." The biology doesn\'t respond to instructions.')}
+      `
+    },
+
+    // ── STEP 4: Concept — The sequence logic ──────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('Why a sequence beats a single tool.')}
+        ${B.para('You\'ve learned seven regulation tools across this pathway. Using any one of them is better than nothing. But a practiced sequence is significantly more effective than a single tool for one specific reason:')}
+        ${B.para('Different tools work at different stages of activation. Some work best early, before you\'re fully flooded. Some work at peak activation. Some work best during the return to baseline.')}
+
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem">
+          ${[
+            ['🟢', 'Early activation (you\'re still in the window)', 'Body check → Name it to soften it → Catch, name, pause'],
+            ['🟡', 'Rising activation (approaching the edge)', 'Physiological sigh × 2 → Safety scan → Self-compassion pause'],
+            ['🔴', 'At or near flooding', 'Cold water / movement / shake → Exit the situation if possible → Wait 20 minutes minimum'],
+            ['🔵', 'Returning to baseline', 'Body check → Event vs story → Re-engage when genuinely ready']
+          ].map(([dot, stage, tools]) => `
+            <div style="
+              padding:0.875rem 1rem;
+              background:var(--bg-card-light);
+              border:1px solid var(--border-soft);
+              border-radius:0.875rem;
+            ">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.375rem">
+                <span style="font-size:0.875rem">${dot}</span>
+                <p style="font-size:0.8125rem;font-weight:700;color:var(--text-primary)">${stage}</p>
+              </div>
+              <p style="font-size:0.8125rem;color:var(--text-secondary);line-height:1.5">${tools}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        ${B.para('Your personal sequence will be built around which tools work best for your nervous system, in what order. That\'s the worksheet.')}
+      `
+    },
+
+    // ── STEP 5: Worksheet — Know your threshold ────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Know your threshold.')}
+        ${B.para('Before building your sequence, you need to know your personal flooding threshold — how quickly you escalate, and where your early warning signs appear.')}
+
+        ${B.divider('How quickly do you flood?')}
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;margin-bottom:0.75rem">
+          Think about your most triggering situations. How fast does activation arrive?
+        </p>
+        ${B.keyedTextarea('speed', 'When I get triggered, activation arrives...', 'Instantly? Slowly? Only in certain situations? Describe how it typically moves for you.', '70px')}
+
+        ${B.divider('Your early warning signs')}
+        ${B.keyedTextarea('warnings', 'I know I\'m approaching my threshold when I notice...', 'Physical: jaw, shoulders, chest, breathing, heart rate. Mental: specific thoughts, tunnel vision, urge to escape or attack.', '80px')}
+
+        ${B.divider('Your flood signature')}
+        ${B.keyedTextarea('flooded', 'When I\'m fully flooded, what I do is...', 'What happens to your behaviour, your words, your body? What does fully flooded look like for you specifically?', '75px')}
+
+        ${B.divider('How long to return?')}
+        <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:0.5rem">
+          After significant flooding, how long before you genuinely feel back to baseline?
+        </p>
+        <input
+          type="range"
+          class="threshold-slider"
+          min="1" max="5" value="3"
+          data-key="returnTime"
+          oninput="updateThresholdLabel(this.value)"
+          id="returnSlider"
+        >
+        <p id="thresholdLabel" style="font-size:0.8125rem;color:var(--text-ember);text-align:center;margin-bottom:0.25rem">
+          Moderate — I can feel it building clearly
+        </p>
+        <div class="threshold-labels">
+          <span>5–10 min</span>
+          <span>30+ min</span>
+        </div>
+        <input type="hidden" id="thresholdHidden" data-key="threshold" value="3">
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = false;
+      }
+    },
+
+    // ── STEP 6: Worksheet — Build your menu ───────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Build your personal regulation menu.')}
+        ${B.para('From all the tools you\'ve learned across this pathway — and your own instincts about what works for your body — choose the ones that go in your regulation sequence.')}
+        ${B.para('Select at least 2. These will be the tools in your toolkit, always available from the app.')}
+
+        <div style="margin-bottom:1rem">
+          ${REGULATION_TOOLS.map(t => `
+            <button
+              class="tool-selector"
+              onclick="toggleTool(this, '${t.name}')"
+            >
+              <span class="tool-selector__emoji">${t.emoji}</span>
+              <div class="tool-selector__body">
+                <p class="tool-selector__name">${t.name}</p>
+                <p class="tool-selector__desc">${t.desc}</p>
+              </div>
+              <span class="tool-selector__check">✓</span>
+            </button>
+          `).join('')}
+        </div>
+
+        <input type="hidden" id="toolsHidden" data-key="tools" value="">
+
+        <div id="menuPreview">
+          <p style="font-size:0.875rem;color:var(--text-muted);text-align:center;padding:0.5rem 0">
+            Select at least 2 tools above to preview your menu
+          </p>
+        </div>
+      `,
+      afterRender: () => {
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.disabled = true;
+      }
+    },
+
+    // ── STEP 7: Worksheet — Your sequence ─────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Your personal regulation sequence.')}
+        ${B.para('Now put it in order. When activation rises, what do you reach for first? What next? What do you do while waiting to return to baseline?')}
+        ${B.para('This is yours. Write it in your own words — not the formal tool names, but what you\'d actually say to yourself in the moment.')}
+
+        ${B.divider('Early — I notice the first signals')}
+        ${B.keyedTextarea('seq-early', 'When I first notice activation, I will...', 'What\'s the first move? Usually something fast and mental — catch, name, body check.', '65px')}
+
+        ${B.divider('Rising — I\'m getting closer to the edge')}
+        ${B.keyedTextarea('seq-rising', 'When I feel it building, I will...', 'Usually something physical — sigh, cold water, movement. And possibly exit the situation.', '65px')}
+
+        ${B.divider('Flooded — I\'m past the threshold')}
+        ${B.keyedTextarea('seq-flooded', 'When I\'m fully flooded, I will...', 'Exit if possible. Physical reset. Wait. The goal is return to window — nothing else.', '65px')}
+
+        ${B.divider('Returning — coming back to baseline')}
+        ${B.keyedTextarea('seq-return', 'When I\'m coming back, before I re-engage I will...', 'A check-in with yourself. Body check, event vs story, check that you\'re genuinely ready.', '65px')}
+
+        ${B.callout('Write this sequence somewhere you can actually access it. You won\'t remember it when you need it most — that\'s the whole problem. Screenshot this page. Write it on a card. Put it somewhere obvious.')}
+      `
+    },
+
+    // ── STEP 8: Skill — The complete sequence ─────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your final tool — and the one that holds all the others.')}
+        ${B.para('Everything in this pathway has been building toward this. Not one technique but a complete personal operating system for your nervous system.')}
+        ${B.skill(
+          'Personal Regulation Sequence',
+          'Your custom pathway back to yourself — practiced until it runs on autopilot.',
+          [
+            '<strong>Catch it early.</strong> Your early warning signs are the signal. Don\'t wait for flooding. The earlier you intervene, the less work it takes.',
+            '<strong>Body first — always.</strong> Physiological sigh, cold water, movement, butterfly hold, safety scan — whatever works for your nervous system. Regulation runs through the body, not through thinking.',
+            '<strong>Name what\'s happening.</strong> "My nervous system is activated." Not a judgment. A physiological fact. This engages the observing self and prevents full fusion with the state.',
+            '<strong>Exit if possible.</strong> When approaching or at flooding, leaving the situation is not weakness. It\'s the smart move. You cannot repair connection while flooded.',
+            '<strong>Wait before re-engaging.</strong> At least five minutes for mild activation. Twenty to thirty minutes after significant flooding. Don\'t rush back — a premature return leads to a second flood.',
+            '<strong>Return with a check-in.</strong> Body check. Are you genuinely back in the window? Honest answer only. If yes, re-engage. If no, wait more.'
+          ]
+        )}
+        ${B.insight('The honest summary', 'When flooded, the prefrontal cortex goes offline. Trying to think or talk your way through flooding doesn\'t work. You must regulate the body first — then the thinking brain comes back online. Everything else follows from this.')}
+      `
+    },
+
+    // ── STEP 9: Commitment ─────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your final commitment in this pathway.')}
+        ${B.para('You\'ve built a complete regulation sequence. Now comes the only part that makes it real: using it under actual pressure, when your brain least wants to reach for it.')}
+        ${B.para('This week, the first time you feel significant activation — whatever that looks like for you — you\'re going to run the sequence. Not perfectly. Just run it.')}
+        ${B.commitment(
+          'Write your commitment, the specific situation you expect to need this in, and what running the sequence will actually look like for you in that moment.',
+          'This week when [specific triggering situation], instead of [my usual automatic response], I will run my sequence: first I\'ll [early step], then if needed [rising step], and if I flood I\'ll [flood step] and wait [time] before re-engaging. The hardest part will probably be...'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete — Pathway complete ──────────────
+    {
+      type: 'complete',
+      render: () => `
+        <div style="text-align:center;padding:0.5rem 0 1.5rem">
+          <div style="font-size:4rem;margin-bottom:1rem;animation:float 3s ease-in-out infinite">🌑</div>
+          <h2 style="
+            font-family:var(--font-display);
+            font-size:2rem;font-weight:600;
+            color:var(--text-primary);
+            letter-spacing:-0.02em;
+            margin-bottom:0.5rem;
+          ">Pathway complete.</h2>
+          <p style="
+            font-family:var(--font-display);
+            font-size:1.125rem;
+            font-style:italic;
+            color:var(--text-ember);
+            margin-bottom:1.25rem;
+          ">Emotional Foundations</p>
+          <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.75;max-width:22rem;margin:0 auto">
+            Six modules. Six tools. A complete foundation for working with your emotional life rather than being run by it.
+          </p>
+        </div>
+
+        <div style="
+          background:linear-gradient(135deg,rgba(13,148,136,0.14),rgba(217,119,6,0.10));
+          border:1px solid var(--ember-border);
+          border-radius:1.25rem;
+          padding:1.375rem;
+          margin-bottom:1.25rem;
+        ">
+          <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-ember);margin-bottom:0.875rem">
+            Final tool unlocked
+          </p>
+          <div style="display:flex;align-items:center;gap:0.875rem">
+            <span style="font-size:2.5rem">🎚</span>
+            <div>
+              <p style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:0.2rem">Personal Regulation Sequence</p>
+              <p style="font-size:0.875rem;color:var(--text-secondary)">Your custom pathway back to yourself</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="
+          background:var(--gradient-card);
+          border:1px solid var(--border-soft);
+          border-radius:1.25rem;
+          padding:1.25rem;
+          margin-bottom:1.25rem;
+        ">
+          <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.875rem">
+            Your toolkit — 6 tools earned
+          </p>
+          ${[
+            ['🏷', 'Name It to Soften It'],
+            ['🧭', 'The Body Check'],
+            ['📖', 'Event vs Story'],
+            ['🤲', 'Self-Compassion Pause'],
+            ['⏸', 'Catch, Name, Pause, Choose'],
+            ['🎚', 'Personal Regulation Sequence']
+          ].map(([emoji, name]) => `
+            <div style="
+              display:flex;align-items:center;gap:0.75rem;
+              padding:0.625rem 0;
+              border-bottom:1px solid var(--border-subtle);
+            ">
+              <span style="font-size:1.25rem">${emoji}</span>
+              <p style="font-size:0.9375rem;color:var(--text-primary);font-weight:500">${name}</p>
+              <span style="margin-left:auto;color:var(--text-ember);font-size:0.875rem">✓</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.75rem">
+          <button
+            class="btn btn--primary btn--lg"
+            onclick="Nav.go('/pathways/emotional/complete.html')"
+          >
+            See what\'s next →
+          </button>
+          <button
+            class="btn btn--ghost btn--sm"
+            onclick="Nav.go('/app.html')"
+          >
+            Back to home
+          </button>
+        </div>
+      `
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('em-6', EM6_STEPS);
+  });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

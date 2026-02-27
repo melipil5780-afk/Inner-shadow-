@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – Pathway</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 28rem;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    .inner {
+      padding: max(1.5rem, env(safe-area-inset-top)) 1.25rem
+               max(1.5rem, env(safe-area-inset-bottom));
+    }
+
+    /* Back row */
+    .back-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .back-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 0.875rem;
+      color: var(--text-primary);
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn:active { transform: scale(0.92); }
+
+    .back-label {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Hero */
+    .pathway-hero {
+      text-align: center;
+      padding: 1.5rem 0 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .pathway-emoji {
+      font-size: 4rem;
+      line-height: 1;
+      margin-bottom: 1rem;
+      display: block;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .pathway-name {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.625rem;
+    }
+
+    .pathway-name em {
+      font-style: italic;
+      color: var(--text-ember);
+    }
+
+    .pathway-for {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 20rem;
+      margin: 0 auto;
+    }
+
+    /* Progress summary */
+    .progress-summary {
+      background: var(--gradient-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 1.25rem;
+      padding: 1.125rem 1.25rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress-summary__ring {
+      width: 3.25rem;
+      height: 3.25rem;
+      flex-shrink: 0;
+    }
+
+    .progress-summary__body { flex: 1; }
+
+    .progress-summary__nums {
+      font-family: var(--font-display);
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .progress-summary__label {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .progress-summary__bar {
+      margin-top: 0.625rem;
+      height: 5px;
+      background: var(--border-soft);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-summary__fill {
+      height: 100%;
+      background: var(--gradient-main);
+      border-radius: 999px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* What you'll learn */
+    .outcomes-card {
+      background: var(--ember-bg);
+      border: 1px solid var(--ember-border);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .outcomes-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-ember);
+      margin-bottom: 0.875rem;
+    }
+
+    .outcome-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.625rem;
+      margin-bottom: 0.625rem;
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .outcome-item:last-child { margin-bottom: 0; }
+
+    .outcome-dot {
+      width: 0.375rem;
+      height: 0.375rem;
+      border-radius: 50%;
+      background: var(--ember);
+      flex-shrink: 0;
+      margin-top: 0.5rem;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    /* Module list items */
+    .mod-item {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.9375rem 1rem;
+      background: var(--bg-card-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 1rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: var(--transition-spring);
+      text-decoration: none;
+    }
+
+    .mod-item:hover {
+      border-color: var(--ember-border);
+      background: var(--ember-bg);
+      transform: translateX(3px);
+    }
+
+    .mod-item:active { transform: scale(0.98); }
+
+    .mod-item--locked {
+      opacity: 0.42;
+      cursor: default;
+    }
+
+    .mod-item--locked:hover {
+      transform: none;
+      border-color: var(--border-soft);
+      background: var(--bg-card-light);
+    }
+
+    .mod-item--completed {
+      border-color: var(--ember-border);
+    }
+
+    .mod-item--current {
+      border-color: var(--ember-border-strong);
+      background: var(--ember-bg);
+    }
+
+    .mod-num {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      background: var(--bg-card-medium);
+      color: var(--text-secondary);
+    }
+
+    .mod-item--completed .mod-num {
+      background: var(--ember-bg-strong);
+      color: var(--text-ember);
+    }
+
+    .mod-item--current .mod-num {
+      background: var(--gradient-main);
+      color: white;
+    }
+
+    .mod-body { flex: 1; min-width: 0; }
+
+    .mod-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 0.175rem;
+    }
+
+    .mod-sub {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .mod-item--completed .mod-sub { color: var(--text-ember); }
+
+    .mod-status { font-size: 1rem; flex-shrink: 0; }
+
+    /* Paywall card */
+    .paywall-card {
+      background: var(--gradient-main);
+      border-radius: 1.25rem;
+      padding: 1.375rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: var(--transition-spring);
+    }
+
+    .paywall-card:hover { transform: translateY(-2px); }
+    .paywall-card:active { transform: scale(0.98); }
+
+    .paywall-card__title {
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 0.375rem;
+    }
+
+    .paywall-card__sub {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.55;
+      margin-bottom: 0.875rem;
+    }
+
+    .paywall-card__cta {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    @media (min-width: 640px) {
+      .shell {
+        height: 844px;
+        max-height: 92vh;
+        border-radius: 2.5rem;
+        border: 1px solid var(--border-subtle);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="scroll-area">
+      <div class="inner">
+
+        <!-- Back -->
+        <div class="back-row animate-fade-in">
+          <button class="back-btn" onclick="Nav.back('/app.html?tab=learn')" aria-label="Back">←</button>
+          <span class="back-label">All pathways</span>
+        </div>
+
+        <!-- Hero -->
+        <div class="pathway-hero animate-fade-in" id="pathwayHero">
+          <span class="pathway-emoji" id="pathwayEmoji"></span>
+          <h1 class="pathway-name" id="pathwayName"></h1>
+          <p class="pathway-for" id="pathwayFor"></p>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-summary animate-fade-in">
+          <svg class="progress-summary__ring" viewBox="0 0 48 48">
+            <defs>
+              <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#0d9488"/>
+                <stop offset="100%" stop-color="#d97706"/>
+              </linearGradient>
+            </defs>
+            <circle cx="24" cy="24" r="20" fill="none"
+              stroke="rgba(255,255,255,0.08)" stroke-width="4"/>
+            <circle cx="24" cy="24" r="20" fill="none"
+              stroke="url(#pg)" stroke-width="4"
+              stroke-linecap="round"
+              stroke-dasharray="125.66"
+              stroke-dashoffset="125.66"
+              transform="rotate(-90 24 24)"
+              id="progressRing"/>
+          </svg>
+          <div class="progress-summary__body">
+            <p class="progress-summary__nums">
+              <span id="doneCount">0</span>
+              <span style="color:var(--text-muted);font-size:1rem"> / 6 modules</span>
+            </p>
+            <p class="progress-summary__label" id="progressLabel">Not started yet</p>
+            <div class="progress-summary__bar">
+              <div class="progress-summary__fill" id="progressFill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- What you'll learn -->
+        <div class="outcomes-card animate-fade-in" id="outcomesCard">
+          <p class="outcomes-label">What you'll learn</p>
+          <div id="outcomesList"></div>
+        </div>
+
+        <!-- Module list -->
+        <p class="section-label">Modules</p>
+        <div id="moduleList" class="stagger">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Paywall (shown when locked modules exist and user is not pro) -->
+        <div id="paywallCard" style="display:none">
+          <div class="paywall-card" onclick="Nav.go('/upgrade.html')">
+            <p class="paywall-card__title">Unlock the full pathway</p>
+            <p class="paywall-card__sub">
+              Modules 3–6 unlock with InnerShadow Pro. Everything you've started stays with you.
+            </p>
+            <p class="paywall-card__cta">Upgrade to Pro →</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script>
+
+    // ================================================================
+    // PATHWAY CONTENT DEFINITIONS
+    // ================================================================
+
+    const PATHWAY_CONTENT = {
+      emotional: {
+        nameHTML: 'Emotional <em>Foundations</em>',
+        for: 'For people at war with themselves. You\'ll learn to understand, feel, and work with your emotions — instead of being managed by them.',
+        outcomes: [
+          'Understand what emotions actually are and why they happen in your body first',
+          'Recognise the automatic stories that amplify your suffering',
+          'Respond to yourself with the basic decency you\'d give a friend',
+          'Identify your patterns — where they came from and how to interrupt them',
+          'Regulate your nervous system when it floods, before you react'
+        ]
+      },
+      identity: {
+        nameHTML: 'Knowing <em>Yourself</em>',
+        for: 'For people who feel like strangers to themselves. You\'ll separate who you actually are from who you were told to be.',
+        outcomes: [
+          'Examine the identity you inherited versus the one you\'d choose',
+          'Clarify what you actually value — not what you think you should',
+          'Understand the narrative you\'ve built and become its author',
+          'Discover what genuinely makes you happy, not what you predict will',
+          'Integrate the parts of yourself you\'ve been hiding or fighting'
+        ]
+      },
+      connection: {
+        nameHTML: '<em>Connection</em>',
+        for: 'For people whose relationships don\'t feel real. You\'ll learn the specific skills for genuine closeness that nobody teaches.',
+        outcomes: [
+          'Understand the early lessons that shaped how you connect now',
+          'Recognise your attachment style and how it runs your relationships',
+          'Learn to truly listen — not to respond, but to understand',
+          'Share yourself honestly without oversharing or shutting down',
+          'Navigate conflict as information rather than threat'
+        ]
+      },
+      living: {
+        nameHTML: 'Living <em>Well</em>',
+        for: 'For people who want a life that feels inhabited. You\'ll design days that actually reflect what matters to you.',
+        outcomes: [
+          'Distinguish a good life from a full calendar',
+          'Find and build genuine meaning — not borrowed purpose',
+          'Design the architecture of a day that works for you',
+          'Release the pursuit that never arrives, and find what\'s already enough',
+          'Build a personal philosophy you can actually live by'
+        ]
+      }
+    };
+
+    const MODULE_SUBTITLES = {
+      'em-1': 'Concept · Worksheet · Skill',
+      'em-2': 'Concept · Body scan · Skill',
+      'em-3': 'Concept · Worksheet · Skill',
+      'em-4': 'Concept · Worksheet · Skill',
+      'em-5': 'Concept · Pattern mapping · Skill',
+      'em-6': 'Concept · Regulation menu · Skill',
+      'id-1': 'Concept · Inheritance audit · Skill',
+      'id-2': 'Concept · Values excavation · Skill',
+      'id-3': 'Concept · Life story · Skill',
+      'id-4': 'Concept · Happiness audit · Skill',
+      'id-5': 'Concept · Shadow work · Skill',
+      'id-6': 'Concept · Life design · Skill',
+      'cn-1': 'Concept · Origin mapping · Skill',
+      'cn-2': 'Concept · Attachment style · Skill',
+      'cn-3': 'Concept · Listening practice · Skill',
+      'cn-4': 'Concept · Vulnerability mapping · Skill',
+      'cn-5': 'Concept · Conflict audit · Skill',
+      'cn-6': 'Concept · Relationship inventory · Skill',
+      'lw-1': 'Concept · Aliveness audit · Skill',
+      'lw-2': 'Concept · Meaning mapping · Skill',
+      'lw-3': 'Concept · Day design · Skill',
+      'lw-4': 'Concept · Gratitude practice · Skill',
+      'lw-5': 'Concept · Relationship audit · Skill',
+      'lw-6': 'Concept · Personal philosophy · Skill'
+    };
+
+    // ================================================================
+    // INIT
+    // ================================================================
+
+    let currentUser  = null;
+    let pathwayKey   = null;
+    let moduleStates = {};
+    let isPro        = false;
+
+    async function init() {
+      const session = await Auth.requireAuth('/index.html');
+      if (!session) return;
+
+      currentUser = session.user;
+
+      // Get pathway from URL
+      // URL format: /pathways/emotional/overview.html
+      const parts = window.location.pathname.split('/');
+      pathwayKey  = parts[parts.length - 2]; // e.g. 'emotional'
+
+      if (!PATHWAY_CONTENT[pathwayKey]) {
+        Nav.go('/app.html?tab=learn');
+        return;
+      }
+
+      // Load state
+      try {
+        const [
+          { data: modProgress },
+          { data: userState }
+        ] = await Promise.all([
+          DB.getModuleProgress(currentUser.id),
+          DB.getUserState(currentUser.id)
+        ]);
+
+        moduleStates = modProgress || {};
+        isPro = userState?.is_pro || false;
+
+      } catch (err) {
+        console.error('[Overview] Load failed:', err);
+      }
+
+      render();
+      UI.markLoaded();
+    }
+
+    function render() {
+      const content = PATHWAY_CONTENT[pathwayKey];
+      const mods    = PATHWAY_MODULES[pathwayKey];
+
+      // Hero
+      document.getElementById('pathwayEmoji').textContent = PATHWAY_ICONS[pathwayKey];
+      document.getElementById('pathwayName').innerHTML    = content.nameHTML;
+      document.getElementById('pathwayFor').textContent   = content.for;
+
+      // Progress
+      const done  = mods.filter(id => moduleStates[id]?.completed).length;
+      const total = mods.length;
+      const pct   = Math.round((done / total) * 100);
+
+      document.getElementById('doneCount').textContent = done;
+      document.getElementById('progressFill').style.width = pct + '%';
+
+      // Animate ring
+      const circumference = 125.66;
+      const offset = circumference - (circumference * pct / 100);
+      setTimeout(() => {
+        document.getElementById('progressRing').style.strokeDashoffset = offset;
+        document.getElementById('progressRing').style.transition =
+          'stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1)';
+      }, 100);
+
+      // Progress label
+      const labelEl = document.getElementById('progressLabel');
+      if (done === 0)      labelEl.textContent = 'Ready to begin';
+      else if (done < 3)   labelEl.textContent = 'Getting started';
+      else if (done < 6)   labelEl.textContent = 'Making real progress';
+      else                 labelEl.textContent = 'Pathway complete ✓';
+
+      // Outcomes
+      document.getElementById('outcomesList').innerHTML =
+        content.outcomes.map(o => `
+          <div class="outcome-item">
+            <div class="outcome-dot"></div>
+            <span>${o}</span>
+          </div>
+        `).join('');
+
+      // Modules
+      let hasLockedPro = false;
+      document.getElementById('moduleList').innerHTML = mods.map((modId, idx) => {
+        const state     = moduleStates[modId] || {};
+        const isFree    = FREE_MODULES.has(modId);
+        const isLocked  = !isPro && !isFree && !state.unlocked;
+        const isDone    = state.completed;
+        const isCurrent = state.unlocked && !state.completed;
+
+        if (isLocked) hasLockedPro = true;
+
+        const statusIcon = isDone    ? '✅'
+                         : isCurrent ? '→'
+                         : isLocked  ? '🔒'
+                         : '○';
+
+        const subText = isDone
+          ? 'Completed'
+          : MODULE_SUBTITLES[modId] || 'Concept · Worksheet · Skill';
+
+        return `
+          <div class="mod-item
+            ${isDone    ? 'mod-item--completed' : ''}
+            ${isCurrent ? 'mod-item--current'   : ''}
+            ${isLocked  ? 'mod-item--locked'    : ''}"
+            onclick="${isLocked ? '' : `goToModule('${modId}','${pathwayKey}')`}"
+          >
+            <div class="mod-num">${idx + 1}</div>
+            <div class="mod-body">
+              <p class="mod-title">${MODULE_LABELS[modId]}</p>
+              <p class="mod-sub">${subText}</p>
+            </div>
+            <span class="mod-status">${statusIcon}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Show paywall if needed
+      if (hasLockedPro) {
+        document.getElementById('paywallCard').style.display = 'block';
+      }
+    }
+
+    function goToModule(moduleId, pathway) {
+      Nav.go(`/pathways/${pathway}/${moduleId}.html`);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
