@@ -133,15 +133,20 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // App shell (HTML, CSS, JS) — cache first
-  // These only change on new deploys which bump APP_VERSION
+  // Styles, scripts, images — cache first (static assets only)
   if (
-    request.destination === 'document' ||
     request.destination === 'style' ||
     request.destination === 'script' ||
-    request.destination === 'image'
+    request.destination === 'image' ||
+    request.url.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff2?)$/)
   ) {
     event.respondWith(cacheFirst(request, CACHE_NAME));
+    return;
+  }
+
+  // HTML documents - network first with redirect handling
+  if (request.destination === 'document') {
+    event.respondWith(handleDocumentRequest(request));
     return;
   }
 
@@ -154,29 +159,71 @@ self.addEventListener('fetch', event => {
 // CACHING STRATEGIES
 // ================================================================
 
-// Cache First — serve from cache, fall back to network
-// Best for: app shell, fonts, static assets
-async function cacheFirst(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-
-  if (cached) {
-    return cached;
-  }
-
+// Special handler for HTML documents that properly manages redirects
+async function handleDocumentRequest(request) {
+  const cache = await caches.open(CACHE_NAME);
+  
   try {
+    // Try network first for HTML
     const response = await fetch(request);
-    if (response.ok) {
-      cache.put(request, response.clone());
+    
+    // If it's a redirect, don't cache it
+    if (response.redirected) {
+      console.log('[SW] Document redirect detected to:', response.url);
+      return response; // Return the redirect response as-is
     }
+    
+    // Cache successful, non-redirected HTML responses
+    if (response.ok) {
+      const responseToCache = response.clone();
+      cache.put(request, responseToCache);
+    }
+    
     return response;
   } catch (err) {
-    // Return offline page if we have one
+    // If offline, return cached version
+    const cached = await cache.match(request);
+    if (cached && !cached.redirected) {
+      return cached;
+    }
+    
+    // Return offline page
     const offlinePage = await cache.match('/offline.html');
     return offlinePage || new Response(
       offlineHTML(),
       { headers: { 'Content-Type': 'text/html' } }
     );
+  }
+}
+
+// Cache First — serve from cache, fall back to network
+// Best for: static assets (CSS, JS, images)
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+
+  if (cached) {
+    // CRITICAL: Never return redirected responses from cache
+    if (cached.redirected) {
+      console.log('[SW] Ignoring cached redirect for:', request.url);
+      // Fall through to network
+    } else {
+      return cached;
+    }
+  }
+
+  try {
+    const response = await fetch(request);
+    
+    // Only cache successful, non-redirected responses
+    if (response.ok && !response.redirected) {
+      cache.put(request, response.clone());
+    }
+    
+    return response;
+  } catch (err) {
+    // Return a simple error response
+    return new Response('Network error', { status: 503 });
   }
 }
 
@@ -187,13 +234,16 @@ async function networkFirst(request, cacheName) {
 
   try {
     const response = await fetch(request);
-    if (response.ok) {
+    if (response.ok && !response.redirected) {
       cache.put(request, response.clone());
     }
     return response;
   } catch (err) {
     const cached = await cache.match(request);
-    return cached || new Response(
+    if (cached && !cached.redirected) {
+      return cached;
+    }
+    return new Response(
       'Network error. Please check your connection.',
       { status: 503 }
     );
@@ -208,14 +258,18 @@ async function staleWhileRevalidate(request, cacheName) {
 
   // Fetch in background regardless
   const fetchPromise = fetch(request).then(response => {
-    if (response.ok) {
+    if (response.ok && !response.redirected) {
       cache.put(request, response.clone());
     }
     return response;
   }).catch(() => null);
 
-  // Return cache immediately if we have it
-  return cached || fetchPromise;
+  // Return cache immediately if we have it and it's not a redirect
+  if (cached && !cached.redirected) {
+    return cached;
+  }
+  
+  return fetchPromise;
 }
 
 
