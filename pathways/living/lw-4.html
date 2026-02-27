@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d0906">
+  <title>InnerShadow – The People You Become Through</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { position: fixed; width: 100%; height: 100%; overflow: hidden; }
+    body { display: flex; align-items: center; justify-content: center; background: var(--bg-dark); }
+
+    .shell {
+      width: 100%; max-width: 28rem; height: 100vh; height: -webkit-fill-available;
+      background: var(--bg-card); display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+      border-left: 1px solid var(--border-subtle); border-right: 1px solid var(--border-subtle);
+    }
+
+    .module-header {
+      padding: max(1rem, env(safe-area-inset-top)) 1.25rem 0.875rem;
+      background: rgba(10,15,30,0.95); border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0; z-index: 10; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+    .module-header__row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .header-back {
+      width: 2.25rem; height: 2.25rem; display: flex; align-items: center; justify-content: center;
+      background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.625rem;
+      color: var(--text-primary); font-size: 1rem; cursor: pointer; transition: var(--transition-fast); flex-shrink: 0;
+    }
+    .header-back:active { transform: scale(0.92); }
+    .header-title { flex: 1; font-size: 0.875rem; font-weight: 600; color: var(--text-primary); line-height: 1.3; text-align: center; }
+    .header-count { font-size: 0.8125rem; color: var(--text-muted); font-weight: 500; min-width: 2.25rem; text-align: right; }
+    .progress-dots { display: flex; gap: 0.3rem; }
+    .progress-dot { flex: 1; height: 3px; background: rgba(148,163,184,0.15); border-radius: 999px; transition: background 0.4s ease; }
+    .progress-dot--active { background: var(--gradient-main); }
+    .module-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .module-scroll::-webkit-scrollbar { display: none; }
+    .step-wrap { padding: 1.375rem 1.25rem 2rem; }
+    .cta-area {
+      padding: 1rem 1.25rem max(1rem, env(safe-area-inset-bottom));
+      background: rgba(10,15,30,0.95); border-top: 1px solid var(--border-subtle);
+      display: flex; gap: 0.75rem; align-items: center; flex-shrink: 0;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+    .back-btn-sm {
+      width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center;
+      background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.875rem;
+      color: var(--text-secondary); font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast); flex-shrink: 0;
+    }
+    .back-btn-sm:active { transform: scale(0.92); }
+    .back-btn-sm:disabled { opacity: 0.3; cursor: default; }
+
+    /* Shaping cards — the people who made you */
+    .shaping-card {
+      background: var(--bg-card-light); border: 1px solid var(--border-soft);
+      border-radius: 1.125rem; padding: 1.125rem; margin-bottom: 0.625rem;
+    }
+    .shaping-card__person {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.375rem;
+    }
+    .shaping-card__what {
+      font-size: 0.9375rem; color: var(--text-primary); line-height: 1.65;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* Becoming chip selector */
+    .becoming-chip {
+      display: inline-block; padding: 0.4375rem 0.9375rem;
+      background: var(--bg-card-light); border: 1.5px solid var(--border-soft);
+      border-radius: 999px; font-size: 0.8125rem; color: var(--text-secondary);
+      cursor: pointer; transition: all 0.18s ease; font-family: var(--font-body);
+      margin: 0 0.375rem 0.375rem 0;
+    }
+    .becoming-chip:active { transform: scale(0.92); }
+    .becoming-chip--selected {
+      border-color: rgba(217,95,53,0.5);
+      background: rgba(217,95,53,0.08);
+      color: var(--text-ember); font-weight: 600;
+    }
+
+    /* Current five visual */
+    .five-card {
+      background: linear-gradient(135deg, rgba(217,119,6,0.09), rgba(217,119,6,0.04));
+      border: 1px solid rgba(217,119,6,0.22); border-radius: 1.125rem;
+      padding: 1.25rem; margin-bottom: 1.25rem;
+    }
+    .five-card__label {
+      font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-gold); margin-bottom: 0.625rem;
+    }
+    .five-card__text {
+      font-size: 0.875rem; color: var(--text-secondary); line-height: 1.7;
+    }
+
+    /* Impact selector */
+    .impact-chip {
+      display: inline-block; padding: 0.4375rem 0.9375rem;
+      background: var(--bg-card-light); border: 1.5px solid var(--border-soft);
+      border-radius: 999px; font-size: 0.8125rem; color: var(--text-secondary);
+      cursor: pointer; transition: all 0.18s ease; font-family: var(--font-body);
+      margin: 0 0.375rem 0.375rem 0;
+    }
+    .impact-chip:active { transform: scale(0.92); }
+    .impact-chip--pos {
+      border-color: rgba(217,95,53,0.4);
+      background: rgba(217,95,53,0.06);
+      color: var(--text-ember);
+    }
+    .impact-chip--neg {
+      border-color: rgba(239,68,68,0.35);
+      background: rgba(239,68,68,0.06);
+      color: #f87171;
+    }
+
+    /* Conversation prompt */
+    .convo-prompt {
+      background: linear-gradient(135deg, rgba(232,160,48,0.09), rgba(217,95,53,0.05));
+      border: 1px solid rgba(232,160,48,0.2); border-radius: 1.125rem;
+      padding: 1.25rem; margin-bottom: 1.25rem;
+    }
+    .convo-prompt__label {
+      font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #f5c865; margin-bottom: 0.5rem;
+    }
+    .convo-prompt__text {
+      font-size: 0.9375rem; color: var(--text-primary); line-height: 1.7;
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+    }
+
+    @media (min-width: 640px) {
+      .shell { height: 844px; max-height: 92vh; border-radius: 2.5rem; border: 1px solid var(--border-subtle); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="bg-orb bg-orb--ember"></div>
+    <div class="bg-orb bg-orb--amber"></div>
+
+    <div class="module-header">
+      <div class="module-header__row">
+        <button class="header-back" onclick="ModuleEngine.goBackToPathway()">←</button>
+        <p class="header-title" id="moduleTitle">The People You Become Through</p>
+        <span class="header-count" id="stepCounter"></span>
+      </div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="module-scroll" id="moduleScroll">
+      <div class="step-wrap" id="stepContent"></div>
+    </div>
+
+    <div class="cta-area">
+      <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()" disabled>←</button>
+      <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/module-engine.js"></script>
+  <script>
+
+  const B = ModuleEngine.Blocks;
+
+  // ── Becoming chip selector ────────────────────────────────────
+  const selectedBecoming = new Set();
+  function toggleBecoming(el, name) {
+    el.classList.toggle('becoming-chip--selected');
+    if (selectedBecoming.has(name)) { selectedBecoming.delete(name); } else { selectedBecoming.add(name); }
+    const h = document.getElementById('becomingHidden');
+    if (h) h.value = Array.from(selectedBecoming).join(', ');
+    const nb = document.getElementById('nextBtn');
+    if (nb) nb.disabled = selectedBecoming.size === 0;
+  }
+
+  // ================================================================
+  // MODULE LW-4: THE PEOPLE YOU BECOME THROUGH
+  // ================================================================
+
+  const LW4_STEPS = [
+
+    // ── STEP 1: Opening ───────────────────────────────────────────
+    {
+      type: 'intro',
+      render: () => `
+        ${B.heading('You are not who you are alone. You are who you are through other people.')}
+        ${B.para('The people who raised you shaped the architecture of how you see yourself. The people who loved you — or failed to — taught you what love feels like, what you can expect from it, whether you deserve it. The people who challenged you called things out of you that might have stayed dormant. The people who hurt you left marks you\'re still finding.')}
+        ${B.para('This is not a passive process. It\'s happening right now, continuously. The five people you spend the most time with are shaping who you\'re becoming — your habits of thought, your emotional range, your ambitions, your sense of what\'s possible. You are, in a very literal sense, the ongoing product of your relationships.')}
+        ${B.callout('The question this module asks is not just who shaped you — but who are you currently becoming through the people in your life right now? And if the answer doesn\'t match who you want to be, what does that require of you?')}
+        ${B.para('This is one of the quieter modules in this pathway. It doesn\'t have loud revelations. It asks you to look carefully at something most people never examine directly.')}
+      `
+    },
+
+    // ── STEP 2: Identity as relational ───────────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('Identity is not something you have. It\'s something that happens between you and other people.')}
+        ${B.para('Western culture has a deeply individualistic model of the self. Who you are is inside you — your personality, your traits, your authentic core. Other people are external. You go out into the world from your self.')}
+        ${B.para('The research tells a more complicated story. Who you are is substantially constructed in and through relationships. The words people used about you became the words you use about yourself. The emotional climate of your early home became your baseline for what feeling safe feels like. The people who believed in you expanded what you believed was possible. The ones who diminished you contracted it.')}
+
+        ${B.steps([
+          '<strong>You have different selves in different relationships.</strong> You are not the same person with your parents, your closest friend, your boss, a stranger. These aren\'t performances — they\'re real aspects of you, called forth by different contexts and people.',
+          '<strong>Relationships reveal you to yourself.</strong> You often only know what you feel, believe, or value when a conversation or relationship makes it visible. Some of the most important things you know about yourself you learned through someone else\'s response to you.',
+          '<strong>You become what your relationships call you to be.</strong> Relationships that expect more of you tend to produce more. Relationships that diminish you tend to diminish you. This is not about blame — it\'s about understanding the bidirectional nature of how people shape each other.',
+          '<strong>The people closest to you are your mirrors.</strong> Not perfect mirrors — distorting ones. But the image of yourself you\'re currently carrying is substantially shaped by how the people around you see and treat you.'
+        ])}
+      `
+    },
+
+    // ── STEP 3: Who shaped you ────────────────────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The people who made you who you are.')}
+        ${B.para('Every person carries a small number of relationships that fundamentally shaped them. Not necessarily the most comfortable ones — sometimes the most shaping relationships were the most difficult. What matters is which ones left the deepest mark on who you became.')}
+
+        <div style="margin-bottom:1.25rem">
+          ${[
+            ['The person who gave you your first map of the world', 'Usually a parent or primary caregiver. They taught you, before you had language for it, whether the world is safe or dangerous, whether you are loveable or conditional, whether people can be trusted or have to be managed.'],
+            ['The person who first made you feel genuinely seen', 'A teacher, a friend, a mentor — someone who reflected back to you something you couldn\'t see in yourself. These people often matter more than their apparent role would suggest.'],
+            ['The person whose disappointment or loss shaped you', 'Grief and loss are among the most powerful shapers of identity. Sometimes the person who influenced you most is the one who left, failed you, or whose approval you never quite got.'],
+            ['The person who called something out of you', 'The relationship where you became more than you thought you were. Where you grew, took a risk, discovered a capacity you didn\'t know you had. These relationships are often the ones we\'re most grateful for in retrospect.']
+          ].map(([title, desc]) => `
+            <div class="shaping-card">
+              <p class="shaping-card__person">${title}</p>
+              <p class="shaping-card__what">${desc}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        ${B.insight('What you inherited', 'The patterns you\'re most trying to change — in how you relate to people, how you handle difficulty, what you believe you deserve — almost certainly came from one of these early shaping relationships. Understanding where a pattern came from doesn\'t erase it. But it can change your relationship to it.')}
+      `
+    },
+
+    // ── STEP 4: Who you\'re becoming now ──────────────────────────
+    {
+      type: 'concept',
+      render: () => `
+        ${B.heading('The people around you right now are shaping who you\'re becoming next.')}
+        ${B.para('Jim Rohn\'s observation — that you become the average of the five people you spend the most time with — is often quoted as productivity advice. It\'s actually something deeper: a description of how identity formation works throughout a life, not just in childhood.')}
+
+        <div class="five-card">
+          <p class="five-card__label">The five people question</p>
+          <p class="five-card__text">Who are the five people you spend the most time with right now — in person, on the phone, in the conversations that take up most of your mental space? What are they like? What do they care about? What do they expect from you? What does being around them regularly make you more of — and what does it make you less of?</p>
+        </div>
+
+        ${B.steps([
+          '<strong>People raise or lower your ceiling.</strong> The people around you transmit an implicit message about what\'s possible, normal, and expected. Spend enough time with people who don\'t believe in your capacity and that belief starts to seem reasonable. Spend time with people who embody more and your own ceiling rises.',
+          '<strong>Emotional contagion is real.</strong> You absorb the emotional climate of the people you\'re around. Chronically anxious relationships make you more anxious. Relationships where people are genuinely engaged with their lives make you more engaged with yours.',
+          '<strong>The conversations you have repeatedly are shaping your mind.</strong> What do your closest relationships actually talk about? The topics that recur in your most frequent conversations become the default channels of your thinking.',
+          '<strong>You can\'t fully outgrow an environment that keeps calling you back to an older version of yourself.</strong> Some relationships hold us to who we were rather than supporting who we\'re becoming. This doesn\'t make them bad — but it makes them worth examining.'
+        ])}
+      `
+    },
+
+    // ── STEP 5: Worksheet — Who shaped you ───────────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('The people who made you who you are.')}
+        ${B.para('Think of the three to five relationships that most fundamentally shaped you — for better or worse. Not necessarily the most recent ones, or the most comfortable ones. The ones that left the deepest mark.')}
+
+        ${B.keyedTextarea(
+          'shaped-1',
+          'The person who shaped me most, and what they gave me or left in me...',
+          'Be specific. What did this relationship teach you about yourself, about the world, about what to expect from people? What did you become through it?',
+          '90px'
+        )}
+
+        ${B.keyedTextarea(
+          'shaped-2',
+          'A relationship that changed what I thought was possible for me...',
+          'Someone who raised your ceiling — who saw something in you or called something out of you. What did you become through them?',
+          '80px'
+        )}
+
+        ${B.keyedTextarea(
+          'shaped-difficult',
+          'A difficult relationship that shaped me in ways I\'m still finding...',
+          'The loss, the disappointment, the person whose approval you never quite got, the relationship that hurt. What did it leave in you — and is what it left serving you or costing you?',
+          '85px'
+        )}
+      `
+    },
+
+    // ── STEP 6: Worksheet — Who you\'re becoming now ──────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('Who are you currently becoming through the people around you?')}
+        ${B.para('Name the five people you spend the most time with right now. Then honestly: what are you becoming through them? What does regular time with each of these people make you more of — or less of?')}
+
+        ${B.divider('Your current five')}
+
+        ${B.keyedTextarea(
+          'current-five',
+          'The people I spend the most time with right now are...',
+          'Names, or just roles (my partner, my manager, my closest friend). List them.',
+          '65px'
+        )}
+
+        ${B.divider('What you\'re becoming')}
+
+        <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:0.75rem;line-height:1.6">When you spend time with these people, what qualities are you developing more of? Select all that honestly apply:</p>
+
+        <div style="margin-bottom:0.875rem">
+          ${[
+            ['More ambitious', 'pos'],
+            ['More anxious', 'neg'],
+            ['More generous', 'pos'],
+            ['More small', 'neg'],
+            ['More curious', 'pos'],
+            ['More cynical', 'neg'],
+            ['More myself', 'pos'],
+            ['Less myself', 'neg'],
+            ['More courageous', 'pos'],
+            ['More cautious than I want to be', 'neg'],
+            ['More present', 'pos'],
+            ['More distracted', 'neg'],
+            ['More alive', 'pos'],
+            ['More depleted', 'neg']
+          ].map(([label, type]) => `
+            <button class="becoming-chip impact-chip impact-chip--${type}" onclick="toggleBecoming(this, '${label}')">${label}</button>
+          `).join('')}
+        </div>
+        <input type="hidden" id="becomingHidden" data-key="becomingQualities" value="">
+
+        ${B.keyedTextarea(
+          'becoming-honest',
+          'The most honest thing I can say about who I\'m becoming through my current relationships is...',
+          'Is the person you\'re becoming the person you want to be? If there\'s a gap — what\'s causing it?',
+          '85px'
+        )}
+      `,
+      afterRender: () => {
+        const nb = document.getElementById('nextBtn');
+        if (nb) nb.disabled = true;
+      }
+    },
+
+    // ── STEP 7: Worksheet — The unsaid gratitude ─────────────────
+    {
+      type: 'worksheet',
+      render: () => `
+        ${B.heading('The gratitude that hasn\'t been expressed.')}
+        ${B.para('Most people never tell the people who shaped them what they actually did. The teacher who changed the trajectory. The friend who showed up when it mattered. The person who believed in you before you believed in yourself. These things often go unsaid — sometimes until it\'s too late.')}
+
+        <div class="convo-prompt">
+          <p class="convo-prompt__label">The question worth sitting with</p>
+          <p class="convo-prompt__text">Is there someone in your life who shaped you significantly — and who doesn\'t know the full extent of it? What would you say to them if you let yourself say it fully?</p>
+        </div>
+
+        ${B.keyedTextarea(
+          'gratitude-person',
+          'The person I haven\'t fully told what they did for me is...',
+          'Name them. What did they give you? What are you today because of them?',
+          '75px'
+        )}
+
+        ${B.keyedTextarea(
+          'gratitude-say',
+          'What I would say to them, if I said it fully, is...',
+          'Write it as if they\'ll read it. You don\'t have to send it. But write it as if you mean to.',
+          '100px'
+        )}
+
+        ${B.divider('The relationship that needs attention')}
+
+        ${B.keyedTextarea(
+          'relationship-needs',
+          'A current relationship that is shaping me in ways I want to change is...',
+          'Not blame — honest assessment. Which relationship is pulling you toward a version of yourself you don\'t want to be? What would changing it require?',
+          '80px'
+        )}
+      `
+    },
+
+    // ── STEP 8: The skill ─────────────────────────────────────────
+    {
+      type: 'skill',
+      render: () => `
+        ${B.heading('Your fourth tool in this pathway.')}
+        ${B.para('This tool is about making deliberate choices about the relational environment you\'re in — the ongoing, largely unconscious process of becoming, brought into conscious awareness.')}
+
+        ${B.skill(
+          'The Relational Inventory',
+          'Choose deliberately who you are becoming through.',
+          [
+            '<strong>Audit your current five annually.</strong> Who are the people taking up most of your time and mental space? What are they calling out of you? What are they calling you back to? This is not a cull — it\'s an awareness.',
+            '<strong>Seek the people who make you more yourself.</strong> There are relationships where you leave feeling more alive, more clear, more like the version of yourself you\'re trying to become. Notice them. Protect them. Invest in them deliberately.',
+            '<strong>Name the inheritance, then choose what to keep.</strong> From your most shaping early relationships, what did you inherit that serves you? What did you inherit that costs you? You didn\'t choose the inheritance — but you can choose what to do with it.',
+            '<strong>Express the unsaid gratitude.</strong> The people who shaped you well deserve to know it. Not performance — genuine acknowledgment of what they gave you. These conversations change both people.',
+            '<strong>Ask who you are becoming — not just what you are achieving.</strong> In any significant relationship, the question worth asking occasionally: through this relationship, who am I becoming? Is that the person I want to be?'
+          ]
+        )}
+
+        ${B.compare(
+          'Living unconsciously through relationships: absorbing environments without examining them, becoming who others expect, carrying inherited patterns without questioning them, never saying the important things to the people who made you.',
+          'The relational inventory: deliberate awareness of who you\'re becoming through the people around you. Choosing environments that call out the better version. Expressing the gratitude. Making conscious what otherwise happens by default.'
+        )}
+      `
+    },
+
+    // ── STEP 9: Commitment ────────────────────────────────────────
+    {
+      type: 'commitment',
+      render: () => `
+        ${B.heading('Your commitment.')}
+        ${B.para('Identity is not fixed. You are still becoming — through the people around you, through the conversations you have, through the relationships you choose to invest in and the ones you choose to step back from.')}
+        ${B.para('The commitment here is two-part: one act of gratitude toward someone who shaped you, and one honest look at a relationship that is currently shaping you in a direction you don\'t want.')}
+        ${B.commitment(
+          'Name the person you\'re going to express unsaid gratitude to — and the relationship you\'re going to examine more honestly. What specifically will you do this week?',
+          'I\'m going to [tell / write to / acknowledge] [specific person] what they actually gave me — because I\'ve never said it fully and the cost of leaving it unsaid is [honest cost]. I\'m also going to honestly examine my relationship with [person or relationship pattern] because it\'s making me more [quality you named] and I want to [specific thing you\'d do differently].'
+        )}
+      `
+    },
+
+    // ── STEP 10: Complete ─────────────────────────────────────────
+    {
+      type: 'complete',
+      render: () => B.complete(
+        'The People You Become Through',
+        'living',
+        'lw-5',
+        '🪞',
+        'The Relational Inventory',
+        'Choose deliberately who you are becoming through'
+      )
+    }
+
+  ];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ModuleEngine.init('lw-4', LW4_STEPS);
+  });
+
+  </script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+</body>
+</html>
