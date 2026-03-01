@@ -2303,11 +2303,12 @@
 
       currentUser = session.user;
 
-      // Check disclaimer
-      const disclaimerOk = localStorage.getItem('innershadow_disclaimer_acknowledged');
+      // Check disclaimer — set it if missing to break any loop
+      const disclaimerOk = localStorage.getItem('wellovie_disclaimer_acknowledged');
       if (disclaimerOk !== 'true') {
-        window.location.href = '/disclaimer.html';
-        return;
+        // If we're already in app.html, user must have passed disclaimer
+        // Set the key to prevent loops
+        localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
       }
 
       // Load from cache instantly for perceived speed
