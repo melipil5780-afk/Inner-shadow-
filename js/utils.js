@@ -1,19 +1,19 @@
 // ================================================================
-// INNERSHADOW — SHARED UTILITIES
+// INNERSHADOW  SHARED UTILITIES
 // js/utils.js
 //
 // Import after supabase-client.js on every page.
-// Pure functions — no side effects, no dependencies.
+// Pure functions  no side effects, no dependencies.
 // ================================================================
 
 
 // ================================================================
-// SECTION 1 — UI UTILITIES
+// SECTION 1  UI UTILITIES
 // ================================================================
 
 const UI = {
 
-  // ── Loading overlay ────────────────────────────────────
+  //  Loading overlay 
 
   _loadTimer: null,
 
@@ -23,7 +23,7 @@ const UI = {
     if (!overlay) return;
     if (text) text.textContent = message;
     overlay.classList.add('loading-overlay--show');
-    // Safety timeout — never block the UI forever
+    // Safety timeout  never block the UI forever
     if (this._loadTimer) clearTimeout(this._loadTimer);
     this._loadTimer = setTimeout(() => this.hideLoading(), 15000);
   },
@@ -38,7 +38,7 @@ const UI = {
     }
   },
 
-  // ── Toast notifications ────────────────────────────────
+  //  Toast notifications 
 
   _toastTimer: null,
 
@@ -78,7 +78,7 @@ const UI = {
     this.showToast(message, 'error', duration);
   },
 
-  // ── Inline error/success messages ─────────────────────
+  //  Inline error/success messages 
 
   showInlineError(elementId, message) {
     const el = document.getElementById(elementId);
@@ -94,7 +94,7 @@ const UI = {
     el.classList.remove('error-message--show');
   },
 
-  // ── Scroll to top ──────────────────────────────────────
+  //  Scroll to top 
 
   scrollToTop(smooth = false) {
     const main = document.querySelector('.app-main');
@@ -104,7 +104,7 @@ const UI = {
     window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'instant' });
   },
 
-  // ── Prevent iOS keyboard layout shift ─────────────────
+  //  Prevent iOS keyboard layout shift 
 
   fixIOSKeyboard() {
     const inputs = document.querySelectorAll('input, textarea');
@@ -118,7 +118,7 @@ const UI = {
     });
   },
 
-  // ── Set dynamic viewport height on iOS ────────────────
+  //  Set dynamic viewport height on iOS 
 
   setIOSViewportHeight() {
     const setVH = () => {
@@ -129,13 +129,13 @@ const UI = {
     window.addEventListener('resize', setVH);
   },
 
-  // ── Body loaded state ──────────────────────────────────
+  //  Body loaded state 
 
   markLoaded(delay = 80) {
     setTimeout(() => document.body.classList.add('loaded'), delay);
   },
 
-  // ── Character counter ──────────────────────────────────
+  //  Character counter 
 
   bindCharCounter(inputId, counterId, minChars = 0) {
     const input   = document.getElementById(inputId);
@@ -159,7 +159,7 @@ const UI = {
     update(); // Run immediately
   },
 
-  // ── Checkbox toggle ────────────────────────────────────
+  //  Checkbox toggle 
 
   bindCheckboxLabels(containerSelector = '.checkbox-grid') {
     const containers = document.querySelectorAll(containerSelector);
@@ -178,7 +178,7 @@ const UI = {
     });
   },
 
-  // ── Button loading state ───────────────────────────────
+  //  Button loading state 
 
   setButtonLoading(btnId, loading, originalText = null) {
     const btn = document.getElementById(btnId);
@@ -193,7 +193,7 @@ const UI = {
     }
   },
 
-  // ── Confetti celebration ───────────────────────────────
+  //  Confetti celebration 
 
   celebrate(options = {}) {
     if (typeof confetti !== 'function') return;
@@ -209,7 +209,7 @@ const UI = {
 
 
 // ================================================================
-// SECTION 2 — NAVIGATION
+// SECTION 2  NAVIGATION
 // ================================================================
 
 const Nav = {
@@ -243,7 +243,7 @@ const Nav = {
     return params;
   },
 
-  // Set tab in app shell — used by bottom nav
+  // Set tab in app shell  used by bottom nav
   setTab(tabName) {
     // Update URL without reload
     const url = new URL(window.location);
@@ -259,7 +259,7 @@ const Nav = {
 
 
 // ================================================================
-// SECTION 3 — DATE AND TIME
+// SECTION 3  DATE AND TIME
 // ================================================================
 
 const DateTime = {
@@ -328,13 +328,13 @@ const DateTime = {
 
 
 // ================================================================
-// SECTION 4 — LOCAL STATE CACHE
+// SECTION 4  LOCAL STATE CACHE
 // Syncs with Supabase but serves from cache for instant load
 // ================================================================
 
 const Cache = {
 
-  KEY: 'innershadow_state_cache',
+  KEY: 'wellovie_state_cache',
   TTL: 5 * 60 * 1000, // 5 minutes
 
   save(data) {
@@ -381,7 +381,7 @@ const Cache = {
 
 
 // ================================================================
-// SECTION 5 — VALIDATION
+// SECTION 5  VALIDATION
 // ================================================================
 
 const Validate = {
@@ -411,7 +411,7 @@ const Validate = {
 
 
 // ================================================================
-// SECTION 6 — DEVICE DETECTION
+// SECTION 6  DEVICE DETECTION
 // ================================================================
 
 const Device = {
@@ -455,7 +455,7 @@ const Device = {
 
 
 // ================================================================
-// SECTION 7 — ASSESSMENT ROUTING
+// SECTION 7  ASSESSMENT ROUTING
 // ================================================================
 
 const Assessment = {
@@ -472,7 +472,7 @@ const Assessment = {
     return map[q1Answer] || 'emotional';
   },
 
-  // Override routing for high intensity — always start with emotional
+  // Override routing for high intensity  always start with emotional
   getRoutedPathway(q1Answer, q3Answer) {
     if (q3Answer === 'very-difficult') return 'emotional';
     return this.getPathway(q1Answer);
@@ -499,68 +499,68 @@ const Assessment = {
   },
 
   // Generate the personalized reflection paragraph
-  // Shown at end of assessment — the "you've been seen" moment
+  // Shown at end of assessment  the "you've been seen" moment
   generateReflection(answers) {
     const { q1, q2, q3, q5 } = answers;
 
-    // High distress — always acknowledge first
+    // High distress  always acknowledge first
     if (q3 === 'very-difficult') {
-      return `You came here in a hard moment. That takes something. What you're going through is real — and the fact that you're looking for tools to work with it, rather than just waiting for it to pass, matters. InnerShadow isn't therapy and it isn't a crisis line. But it is a place to learn specific, evidence-based skills for exactly what you're describing. Start small. One module. One skill. That's enough for today.`;
+      return `You came here in a hard moment. That takes something. What you're going through is real  and the fact that you're looking for tools to work with it, rather than just waiting for it to pass, matters. Wellovie isn't therapy and it isn't a crisis line. But it is a place to learn specific, evidence-based skills for exactly what you're describing. Start small. One module. One skill. That's enough for today.`;
     }
 
     // Emotion-based entry
     if (q1 === 'emotions') {
       if (q2 === 'self-critical') {
-        return `You've been carrying a weight that most people don't see. Not a dramatic crisis — something quieter and more persistent. A voice inside that holds you to a standard nobody else would be held to. You've probably tried to figure this out on your own. You haven't stopped looking. That matters. What you're describing has a name and it has a path forward. You're not broken. You're someone who never learned the specific skills for this — and that's exactly what we're here for.`;
+        return `You've been carrying a weight that most people don't see. Not a dramatic crisis  something quieter and more persistent. A voice inside that holds you to a standard nobody else would be held to. You've probably tried to figure this out on your own. You haven't stopped looking. That matters. What you're describing has a name and it has a path forward. You're not broken. You're someone who never learned the specific skills for this  and that's exactly what we're here for.`;
       }
       if (q2 === 'anxious') {
-        return `There's a part of your mind that never quite switches off. Always scanning — for what might go wrong, for what you might have done wrong, for what might be about to change. That kind of vigilance is exhausting. And the cruelest part is it doesn't feel like a choice. It feels like just how you are. It isn't. It's a learned response — and learned responses can be worked with, once you understand what's driving them.`;
+        return `There's a part of your mind that never quite switches off. Always scanning  for what might go wrong, for what you might have done wrong, for what might be about to change. That kind of vigilance is exhausting. And the cruelest part is it doesn't feel like a choice. It feels like just how you are. It isn't. It's a learned response  and learned responses can be worked with, once you understand what's driving them.`;
       }
       if (q2 === 'numb') {
-        return `Going numb is one of the least-talked-about ways of struggling. It doesn't look dramatic. It doesn't ask for help. It just quietly removes you from your own life until you're watching yourself from a distance. You noticed it. That's not nothing — most people just wait for it to pass. You're here because you want something different. That's exactly where this starts.`;
+        return `Going numb is one of the least-talked-about ways of struggling. It doesn't look dramatic. It doesn't ask for help. It just quietly removes you from your own life until you're watching yourself from a distance. You noticed it. That's not nothing  most people just wait for it to pass. You're here because you want something different. That's exactly where this starts.`;
       }
       if (q2 === 'reactions') {
-        return `You know the pattern. You react in a way you didn't intend, and then you spend time afterward wondering why you can't seem to stop it. The reactions feel involuntary — because they are. They're not character flaws. They're responses your nervous system learned, and they can be unlearned once you understand the mechanism behind them. That's what this is designed to teach you.`;
+        return `You know the pattern. You react in a way you didn't intend, and then you spend time afterward wondering why you can't seem to stop it. The reactions feel involuntary  because they are. They're not character flaws. They're responses your nervous system learned, and they can be unlearned once you understand the mechanism behind them. That's what this is designed to teach you.`;
       }
     }
 
     // Identity-based entry
     if (q1 === 'identity' || q1 === 'growth') {
-      return `Most people spend their entire lives inside inherited stories, unchosen values, and unexamined assumptions about what they're supposed to want. The fact that you're here — asking the harder question of who you actually are and what you actually want — is rarer than it sounds. InnerShadow is designed for exactly this. Not abstract self-help, but specific, honest tools for understanding yourself more clearly. That clarity changes everything downstream.`;
+      return `Most people spend their entire lives inside inherited stories, unchosen values, and unexamined assumptions about what they're supposed to want. The fact that you're here  asking the harder question of who you actually are and what you actually want  is rarer than it sounds. Wellovie is designed for exactly this. Not abstract self-help, but specific, honest tools for understanding yourself more clearly. That clarity changes everything downstream.`;
     }
 
     // Connection-based entry
     if (q1 === 'connection') {
-      return `You can be surrounded by people and still feel completely alone. You can love someone and still feel unseen by them. What you're describing isn't a social failure — it's a skills gap. The specific skills for genuine closeness, honest communication, and navigating the vulnerability that connection requires are learnable. Nobody is born knowing them. Most people never get taught. That's what this pathway is for.`;
+      return `You can be surrounded by people and still feel completely alone. You can love someone and still feel unseen by them. What you're describing isn't a social failure  it's a skills gap. The specific skills for genuine closeness, honest communication, and navigating the vulnerability that connection requires are learnable. Nobody is born knowing them. Most people never get taught. That's what this pathway is for.`;
     }
 
     // Heavy/can't explain entry
     if (q1 === 'heavy') {
-      return `There's a particular kind of difficulty that doesn't have a dramatic name. Life is working, technically — but something essential feels absent. Like you're going through the motions of a life that doesn't quite feel like yours. That feeling is real, it's more common than people admit, and it has a path forward. It starts with understanding what a good life actually means for you specifically — not in the abstract, but in the particular texture of your days. That's what we're going to explore.`;
+      return `There's a particular kind of difficulty that doesn't have a dramatic name. Life is working, technically  but something essential feels absent. Like you're going through the motions of a life that doesn't quite feel like yours. That feeling is real, it's more common than people admit, and it has a path forward. It starts with understanding what a good life actually means for you specifically  not in the abstract, but in the particular texture of your days. That's what we're going to explore.`;
     }
 
     // Default
-    return `You came here because something isn't quite right — maybe you can't name it exactly, maybe you just know that the way things are isn't the way you want them to be. That honest recognition is rarer than it sounds. Most people spend years avoiding it. You didn't. What you're describing isn't permanent and it isn't a character flaw. It's a gap — between where you are and where you could be — and that gap is exactly what InnerShadow is designed to close.`;
+    return `You came here because something isn't quite right  maybe you can't name it exactly, maybe you just know that the way things are isn't the way you want them to be. That honest recognition is rarer than it sounds. Most people spend years avoiding it. You didn't. What you're describing isn't permanent and it isn't a character flaw. It's a gap  between where you are and where you could be  and that gap is exactly what Wellovie is designed to close.`;
   }
 };
 
 
 // ================================================================
-// SECTION 8 — MOOD UTILITIES
+// SECTION 8  MOOD UTILITIES
 // ================================================================
 
 const Mood = {
 
   MOODS: [
-    { id: 'rough',   emoji: '😞', label: 'Rough'   },
-    { id: 'anxious', emoji: '😰', label: 'Anxious' },
-    { id: 'okay',    emoji: '😐', label: 'Okay'    },
-    { id: 'good',    emoji: '🙂', label: 'Good'    },
-    { id: 'great',   emoji: '😊', label: 'Great'   }
+    { id: 'rough',   emoji: '', label: 'Rough'   },
+    { id: 'anxious', emoji: '', label: 'Anxious' },
+    { id: 'okay',    emoji: '', label: 'Okay'    },
+    { id: 'good',    emoji: '', label: 'Good'    },
+    { id: 'great',   emoji: '', label: 'Great'   }
   ],
 
   getEmoji(moodId) {
-    return this.MOODS.find(m => m.id === moodId)?.emoji || '😐';
+    return this.MOODS.find(m => m.id === moodId)?.emoji || '';
   },
 
   getLabel(moodId) {
@@ -572,7 +572,7 @@ const Mood = {
     const messages = {
       rough: hasUnlockedTools
         ? 'Hard days happen. You have tools for this now.'
-        : 'Hard days are real. You showed up anyway — that counts.',
+        : 'Hard days are real. You showed up anyway  that counts.',
       anxious: hasUnlockedTools
         ? 'Anxiety is information. You\'ve learned how to work with it.'
         : 'You noticed it. That\'s the first step.',
@@ -580,13 +580,13 @@ const Mood = {
         ? `${streakCount} days in a row. That\'s not nothing.`
         : 'Okay is a valid place to be.',
       good:  'Good energy is worth investing. Keep that momentum.',
-      great: 'Something is working. Notice it — you can return to this.'
+      great: 'Something is working. Notice it  you can return to this.'
     };
     return messages[moodId] || 'You showed up. That matters.';
   },
 
   // Which tools to suggest based on mood
-  // Returns ordered list — first unlocked tool wins
+  // Returns ordered list  first unlocked tool wins
   getToolSuggestions(moodId) {
     const map = {
       rough:   ['tool-self-compassion-pause', 'tool-regulation-sequence', 'tool-name-it'],
@@ -601,7 +601,7 @@ const Mood = {
 
 
 // ================================================================
-// SECTION 9 — STREAK UTILITIES
+// SECTION 9  STREAK UTILITIES
 // ================================================================
 
 const Streak = {
@@ -619,17 +619,17 @@ const Streak = {
   },
 
   getIcon(count) {
-    if (count === 0)  return '○';
-    if (count < 3)    return '🔥';
-    if (count < 7)    return '🔥';
-    if (count < 30)   return '🔥';
-    return '⚡';
+    if (count === 0)  return '';
+    if (count < 3)    return '';
+    if (count < 7)    return '';
+    if (count < 30)   return '';
+    return '';
   }
 };
 
 
 // ================================================================
-// SECTION 10 — STRING UTILITIES
+// SECTION 10  STRING UTILITIES
 // ================================================================
 
 const Str = {
@@ -666,7 +666,7 @@ const Str = {
 
 
 // ================================================================
-// EXPORT — everything on window for page access
+// EXPORT  everything on window for page access
 // ================================================================
 
 window.UI         = UI;
@@ -686,4 +686,4 @@ Device.initInstallPrompt();
 // Fix iOS viewport height
 if (Device.isIOS) UI.setIOSViewportHeight();
 
-console.log('[InnerShadow] Utils ready');
+console.log('[Wellovie] Utils ready');
