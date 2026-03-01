@@ -6,7 +6,7 @@
 // Never initialize Supabase anywhere else.
 // ================================================================
 
-const SUPABASE_URL = 'https://ocdwpaefmslyidelkzde.supabase.co';
+const SUPABASE_URL     = 'https://ocdwpaefmslyidelkzde.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHdwYWVmbXNseWlkZWxremRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0NjQ1OTQsImV4cCI6MjA4NTA0MDU5NH0.OAYuCQhxrmZMLI_H8OuaJvs7dKVm82gUPgGzQDUYq-Q';
 
 // ================================================================
@@ -15,12 +15,13 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    autoRefreshToken: true,
-    persistSession: true,
+    autoRefreshToken:  true,
+    persistSession:    true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
+    flowType:          'pkce'
   }
 });
+
 
 // ================================================================
 // AUTH HELPERS
@@ -111,8 +112,8 @@ const Auth = {
       const { error } = await sb.auth.signOut();
       if (error) throw error;
       // Clear local cache
-      localStorage.removeItem('innershadow_state_cache');
-      localStorage.removeItem('innershadow_disclaimer_acknowledged');
+      localStorage.removeItem('wellovie_state_cache');
+      localStorage.removeItem('wellovie_disclaimer_acknowledged');
       return { error: null };
     } catch (err) {
       console.error('[Auth] Sign out failed:', err);
@@ -151,7 +152,7 @@ const Auth = {
     const session = await this.getSession();
     if (session) {
       const disclaimerAcknowledged = localStorage.getItem(
-        'innershadow_disclaimer_acknowledged'
+        'wellovie_disclaimer_acknowledged'
       );
       window.location.href = disclaimerAcknowledged === 'true'
         ? redirectTo
@@ -169,6 +170,7 @@ const Auth = {
   }
 };
 
+
 // ================================================================
 // DATABASE HELPERS
 // All DB operations go through here — never call sb.from() directly
@@ -177,7 +179,7 @@ const Auth = {
 
 const DB = {
 
-  // -- User State -------------------------------------------------
+  // ── User State ─────────────────────────────────────────
 
   async getUserState(userId) {
     try {
@@ -210,7 +212,7 @@ const DB = {
     }
   },
 
-  // -- Pathway Progress ---------------------------------------------
+  // ── Pathway Progress ───────────────────────────────────
 
   async getPathwayProgress(userId) {
     try {
@@ -246,7 +248,7 @@ const DB = {
     }
   },
 
-  // -- Module Progress ----------------------------------------------
+  // ── Module Progress ────────────────────────────────────
 
   async getModuleProgress(userId) {
     try {
@@ -306,10 +308,10 @@ const DB = {
     const { error: modErr } = await sb
       .from('module_progress')
       .update({
-        completed: true,
+        completed:    true,
         completed_at: now,
         current_step: 99, // sentinel — fully done
-        updated_at: now
+        updated_at:   now
       })
       .eq('user_id', userId)
       .eq('module_id', moduleId);
@@ -381,7 +383,7 @@ const DB = {
     return { error: null, pathwayComplete: allComplete };
   },
 
-  // -- Check-ins ----------------------------------------------------
+  // ── Check-ins ──────────────────────────────────────────
 
   async getTodayCheckin(userId) {
     const today = new Date().toISOString().slice(0, 10);
@@ -407,7 +409,7 @@ const DB = {
         .from('checkins')
         .upsert({
           user_id: userId,
-          date: today,
+          date:    today,
           mood,
           note
         }, { onConflict: 'user_id,date' })
@@ -474,10 +476,10 @@ const DB = {
       await sb
         .from('user_state')
         .update({
-          streak_current: current,
-          streak_longest: Math.max(longest, current),
+          streak_current:  current,
+          streak_longest:  Math.max(longest, current),
           streak_last_date: dates[0],
-          updated_at: new Date().toISOString()
+          updated_at:      new Date().toISOString()
         })
         .eq('user_id', userId);
 
@@ -486,15 +488,15 @@ const DB = {
     }
   },
 
-  // -- Worksheet Responses ------------------------------------------
+  // ── Worksheet Responses ────────────────────────────────
 
   async saveWorksheetResponse(userId, moduleId, questionNum, response) {
     try {
       const { data, error } = await sb
         .from('worksheet_responses')
         .upsert({
-          user_id: userId,
-          module_id: moduleId,
+          user_id:      userId,
+          module_id:    moduleId,
           question_num: questionNum,
           response
         }, { onConflict: 'user_id,module_id,question_num' })
@@ -524,7 +526,7 @@ const DB = {
     }
   },
 
-  // -- Commitments --------------------------------------------------
+  // ── Commitments ────────────────────────────────────────
 
   async saveCommitment(userId, moduleId, commitmentText) {
     const followUpDate = new Date();
@@ -534,10 +536,10 @@ const DB = {
       const { data, error } = await sb
         .from('commitments')
         .upsert({
-          user_id: userId,
-          module_id: moduleId,
+          user_id:         userId,
+          module_id:       moduleId,
           commitment_text: commitmentText,
-          follow_up_date: followUpDate.toISOString().slice(0, 10)
+          follow_up_date:  followUpDate.toISOString().slice(0, 10)
         }, { onConflict: 'user_id,module_id' })
         .select()
         .single();
@@ -571,7 +573,7 @@ const DB = {
       const { data, error } = await sb
         .from('commitments')
         .update({
-          reflected_at: new Date().toISOString(),
+          reflected_at:       new Date().toISOString(),
           reflection_response: reflectionResponse
         })
         .eq('user_id', userId)
@@ -585,7 +587,7 @@ const DB = {
         .from('module_progress')
         .update({
           reflection_completed: true,
-          updated_at: new Date().toISOString()
+          updated_at:           new Date().toISOString()
         })
         .eq('user_id', userId)
         .eq('module_id', moduleId);
@@ -597,22 +599,22 @@ const DB = {
     }
   },
 
-  // -- Feedback -----------------------------------------------------
+  // ── Feedback ───────────────────────────────────────────
 
   async saveFeedback({ userId, type, moduleId = null, pathwayKey = null, rating = null, text = null, chips = null, context = null }) {
     try {
       const { error } = await sb
         .from('feedback')
         .insert({
-          user_id: userId,
+          user_id:     userId,
           type,
-          module_id: moduleId,
+          module_id:   moduleId,
           pathway_key: pathwayKey,
           rating,
           text,
           chips,
           context,
-          created_at: new Date().toISOString()
+          created_at:  new Date().toISOString()
         });
       if (error) throw error;
       return { error: null };
@@ -622,13 +624,13 @@ const DB = {
     }
   },
 
-  // -- Tool Usage ---------------------------------------------------
+  // ── Tool Usage ─────────────────────────────────────────
 
   async recordToolUsage(userId, toolId, triggeredFrom = 'direct') {
     try {
       await sb.from('tool_usage').insert({
-        user_id: userId,
-        tool_id: toolId,
+        user_id:        userId,
+        tool_id:        toolId,
         triggered_from: triggeredFrom
       });
 
@@ -645,22 +647,22 @@ const DB = {
     }
   },
 
-  // -- Assessment ---------------------------------------------------
+  // ── Assessment ─────────────────────────────────────────
 
   async saveAssessment(userId, answers, primaryPathway,
-    intensityLevel, experienceLevel, reflectionBack) {
+                       intensityLevel, experienceLevel, reflectionBack) {
     try {
       const { data, error } = await sb
         .from('user_state')
         .update({
-          assessment_completed: true,
+          assessment_completed:    true,
           assessment_completed_at: new Date().toISOString(),
-          assessment_answers: answers,
-          primary_pathway: primaryPathway,
-          intensity_level: intensityLevel,
-          experience_level: experienceLevel,
-          reflection_back: reflectionBack,
-          updated_at: new Date().toISOString()
+          assessment_answers:      answers,
+          primary_pathway:         primaryPathway,
+          intensity_level:         intensityLevel,
+          experience_level:        experienceLevel,
+          reflection_back:         reflectionBack,
+          updated_at:              new Date().toISOString()
         })
         .eq('user_id', userId)
         .select()
@@ -681,7 +683,7 @@ const DB = {
     }
   },
 
-  // -- Full State Load ----------------------------------------------
+  // ── Full State Load ────────────────────────────────────
   // Load everything needed to render the app in one go
   // Returns a unified state object used by State manager
 
@@ -702,12 +704,12 @@ const DB = {
       ]);
 
       return {
-        userState: userState || {},
-        pathways: pathways || {},
-        modules: modules || {},
-        todayCheckin: todayCheckin || null,
+        userState:          userState || {},
+        pathways:           pathways  || {},
+        modules:            modules   || {},
+        todayCheckin:       todayCheckin || null,
         pendingReflections: pendingReflections || [],
-        loadedAt: Date.now()
+        loadedAt:           Date.now()
       };
     } catch (err) {
       console.error('[DB] loadFullState failed:', err);
@@ -715,6 +717,7 @@ const DB = {
     }
   }
 };
+
 
 // ================================================================
 // CONSTANTS — Module and pathway relationships
@@ -727,7 +730,7 @@ const MODULE_SEQUENCE = {
   'em-3': 'em-4',
   'em-4': 'em-5',
   'em-5': 'em-6',
-  'em-6': null,
+  'em-6': null,       // pathway complete — next pathway unlocked separately
   'id-1': 'id-2',
   'id-2': 'id-3',
   'id-3': 'id-4',
@@ -752,28 +755,28 @@ const MODULE_SEQUENCE = {
 const MODULE_PATHWAY_MAP = {
   'em-1': 'emotional', 'em-2': 'emotional', 'em-3': 'emotional',
   'em-4': 'emotional', 'em-5': 'emotional', 'em-6': 'emotional',
-  'id-1': 'identity', 'id-2': 'identity', 'id-3': 'identity',
-  'id-4': 'identity', 'id-5': 'identity', 'id-6': 'identity',
-  'cn-1': 'connection', 'cn-2': 'connection', 'cn-3': 'connection',
-  'cn-4': 'connection', 'cn-5': 'connection', 'cn-6': 'connection',
-  'lw-1': 'living', 'lw-2': 'living', 'lw-3': 'living',
-  'lw-4': 'living', 'lw-5': 'living', 'lw-6': 'living'
+  'id-1': 'identity',  'id-2': 'identity',  'id-3': 'identity',
+  'id-4': 'identity',  'id-5': 'identity',  'id-6': 'identity',
+  'cn-1': 'connection','cn-2': 'connection','cn-3': 'connection',
+  'cn-4': 'connection','cn-5': 'connection','cn-6': 'connection',
+  'lw-1': 'living',   'lw-2': 'living',   'lw-3': 'living',
+  'lw-4': 'living',   'lw-5': 'living',   'lw-6': 'living'
 };
 
 // All modules in each pathway — in order
 const PATHWAY_MODULES = {
-  emotional: ['em-1', 'em-2', 'em-3', 'em-4', 'em-5', 'em-6'],
-  identity: ['id-1', 'id-2', 'id-3', 'id-4', 'id-5', 'id-6'],
-  connection: ['cn-1', 'cn-2', 'cn-3', 'cn-4', 'cn-5', 'cn-6'],
-  living: ['lw-1', 'lw-2', 'lw-3', 'lw-4', 'lw-5', 'lw-6']
+  emotional:  ['em-1','em-2','em-3','em-4','em-5','em-6'],
+  identity:   ['id-1','id-2','id-3','id-4','id-5','id-6'],
+  connection: ['cn-1','cn-2','cn-3','cn-4','cn-5','cn-6'],
+  living:     ['lw-1','lw-2','lw-3','lw-4','lw-5','lw-6']
 };
 
 // Which pathway unlocks after completing each pathway
 const PATHWAY_SEQUENCE = {
-  emotional: 'identity',
-  identity: 'connection',
+  emotional:  'identity',
+  identity:   'connection',
   connection: 'living',
-  living: null
+  living:     null
 };
 
 // Which tool is unlocked by completing each module
@@ -813,7 +816,8 @@ const FREE_MODULES = new Set(['em-1', 'em-2', 'id-1', 'cn-1', 'lw-1']);
 // These users bypass the paywall entirely.
 // ================================================================
 const DEVELOPER_EMAILS = new Set([
-  'melipil5780@gmail.com',
+  // Add your email here, e.g.:
+  // 'you@example.com',
 ]);
 
 // Free tools — always accessible
@@ -825,22 +829,22 @@ const FREE_TOOLS = new Set([
   'tool-butterfly-hold',
   'tool-safety-scan',
   'tool-full-body-shake',
-  'tool-name-it'
+  'tool-name-it'  // First earned tool is always free
 ]);
 
 // Human-readable labels
 const PATHWAY_LABELS = {
-  emotional: 'Emotional Foundations',
-  identity: 'Knowing Yourself',
+  emotional:  'Emotional Foundations',
+  identity:   'Knowing Yourself',
   connection: 'Connection',
-  living: 'Living Well'
+  living:     'Living Well'
 };
 
 const PATHWAY_ICONS = {
-  emotional: '🌊',
-  identity: '🪞',
+  emotional:  '🌊',
+  identity:   '🪞',
   connection: '💔',
-  living: '🌱'
+  living:     '🌱'
 };
 
 const MODULE_LABELS = {
@@ -858,7 +862,7 @@ const MODULE_LABELS = {
   'id-6': 'Living as Yourself',
   'cn-1': 'How Connection Actually Works',
   'cn-2': 'The Art of Actually Listening',
-  'cn-3': "Saying What's Actually True",
+  'cn-3': 'Saying What\'s Actually True',
   'cn-4': 'Conflict as a Path to Closeness',
   'cn-5': 'Setting Limits Without Losing the Relationship',
   'cn-6': 'Building a Relational Life',
@@ -870,6 +874,7 @@ const MODULE_LABELS = {
   'lw-6': 'A Life That Is Yours'
 };
 
+
 // ================================================================
 // SUPABASE RPC FUNCTIONS
 // Run these in your Supabase SQL editor to enable tool tracking
@@ -877,92 +882,93 @@ const MODULE_LABELS = {
 
 /*
 
-- ================================================================
-- FEEDBACK TABLE
-- Run this in your Supabase SQL editor
-- ================================================================
+-- ================================================================
+-- FEEDBACK TABLE
+-- Run this in your Supabase SQL editor
+-- ================================================================
 
 create table if not exists feedback (
-id           uuid primary key default gen_random_uuid(),
-user_id      uuid references auth.users(id) on delete cascade,
-type         text not null,        - 'module_rating' | 'module_comment' | 'pathway_suggestions' | 'app_complete_feedback' | 'suggestion'
-module_id    text,
-pathway_key  text,
-rating       text,                 - 'up' | 'down'
-text         text,
-chips        text,                 - comma-separated chip selections
-context      text,
-created_at   timestamptz default now()
+  id           uuid primary key default gen_random_uuid(),
+  user_id      uuid references auth.users(id) on delete cascade,
+  type         text not null,        -- 'module_rating' | 'module_comment' | 'pathway_suggestions' | 'app_complete_feedback' | 'suggestion'
+  module_id    text,
+  pathway_key  text,
+  rating       text,                 -- 'up' | 'down'
+  text         text,
+  chips        text,                 -- comma-separated chip selections
+  context      text,
+  created_at   timestamptz default now()
 );
 
-- Users can only read their own feedback, but insert freely
+-- Users can only read their own feedback, but insert freely
 alter table feedback enable row level security;
 
 create policy "Users can insert feedback"
-on feedback for insert
-with check (auth.uid() = user_id);
+  on feedback for insert
+  with check (auth.uid() = user_id);
 
 create policy "Users can read own feedback"
-on feedback for select
-using (auth.uid() = user_id);
+  on feedback for select
+  using (auth.uid() = user_id);
 
-- ================================================================
-- EXISTING RPC FUNCTIONS
-- ================================================================
+-- ================================================================
+-- EXISTING RPC FUNCTIONS
+-- ================================================================
 
-- Append a tool ID to user's unlocked tools array (no duplicates)
+-- Append a tool ID to user's unlocked tools array (no duplicates)
 create or replace function append_tool_unlocked(
-p_user_id uuid,
-p_tool_id text
+  p_user_id uuid,
+  p_tool_id text
 ) returns void as $$
 begin
-update user_state
-set tools_unlocked = array_append(
-array_remove(tools_unlocked, p_tool_id),
-p_tool_id
-)
-where user_id = p_user_id;
+  update user_state
+  set tools_unlocked = array_append(
+    array_remove(tools_unlocked, p_tool_id),
+    p_tool_id
+  )
+  where user_id = p_user_id;
 end;
 $$ language plpgsql security definer;
 
-- Prepend a tool to recently used (keep max 5)
+-- Prepend a tool to recently used (keep max 5)
 create or replace function prepend_recently_used_tool(
-p_user_id uuid,
-p_tool_id text
+  p_user_id uuid,
+  p_tool_id text
 ) returns void as $$
 begin
-update user_state
-set tools_recently_used = (
-array_prepend(
-p_tool_id,
-array_remove(tools_recently_used, p_tool_id)
-)
-)[1:5]
-where user_id = p_user_id;
+  update user_state
+  set tools_recently_used = (
+    array_prepend(
+      p_tool_id,
+      array_remove(tools_recently_used, p_tool_id)
+    )
+  )[1:5]
+  where user_id = p_user_id;
 end;
 $$ language plpgsql security definer;
 
 */
+
 
 // ================================================================
 // EXPORT
 // Everything pages need is on window for easy access
 // ================================================================
 
-window.sb = sb;
+window.sb   = sb;
 window.Auth = Auth;
-window.DB = DB;
+window.DB   = DB;
 
-window.MODULE_SEQUENCE = MODULE_SEQUENCE;
+window.MODULE_SEQUENCE    = MODULE_SEQUENCE;
 window.MODULE_PATHWAY_MAP = MODULE_PATHWAY_MAP;
-window.MODULE_TOOL_MAP = MODULE_TOOL_MAP;
-window.MODULE_LABELS = MODULE_LABELS;
-window.PATHWAY_MODULES = PATHWAY_MODULES;
-window.PATHWAY_SEQUENCE = PATHWAY_SEQUENCE;
-window.PATHWAY_LABELS = PATHWAY_LABELS;
-window.PATHWAY_ICONS = PATHWAY_ICONS;
-window.FREE_MODULES = FREE_MODULES;
-window.FREE_TOOLS = FREE_TOOLS;
-window.DEVELOPER_EMAILS = DEVELOPER_EMAILS;
+window.MODULE_TOOL_MAP    = MODULE_TOOL_MAP;
+window.MODULE_LABELS      = MODULE_LABELS;
+window.PATHWAY_MODULES    = PATHWAY_MODULES;
+window.PATHWAY_SEQUENCE   = PATHWAY_SEQUENCE;
+window.PATHWAY_LABELS     = PATHWAY_LABELS;
+window.PATHWAY_ICONS      = PATHWAY_ICONS;
+window.FREE_MODULES       = FREE_MODULES;
+window.FREE_TOOLS         = FREE_TOOLS;
+window.DEVELOPER_EMAILS   = DEVELOPER_EMAILS;
 
-console.log('[InnerShadow] Supabase client ready');
+console.log('[Wellovie] Supabase client ready');
