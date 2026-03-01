@@ -6,9 +6,8 @@
 // Never initialize Supabase anywhere else.
 // ================================================================
 
-const SUPABASE_URL     = ‘https://ocdwpaefmslyidelkzde.supabase.co’;
-const SUPABASE_ANON_KEY = ‘eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHdwYWVmbXNseWlkZWxremRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0NjQ1OTQsImV4cCI6MjA4NTA0MDU5NH0.OAYuCQhxrmZMLI_H8OuaJvs7dKVm82gUPgGzQDUYq-Q’;
-
+const SUPABASE_URL = 'https://ocdwpaefmslyidelkzde.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHdwYWVmbXNseWlkZWxremRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0NjQ1OTQsImV4cCI6MjA4NTA0MDU5NH0.OAYuCQhxrmZMLI_H8OuaJvs7dKVm82gUPgGzQDUYq-Q';
 // ================================================================
 // INITIALIZE CLIENT
 // ================================================================
