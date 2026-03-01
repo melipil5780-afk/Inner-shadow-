@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0d0906">
-  <title>InnerShadow – Before We Begin</title>
+  <title>Wellovie – Before We Begin</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -98,7 +98,7 @@
       line-height: 1.6;
     }
 
-    /* What InnerShadow is */
+    /* What Wellovie is */
     .is-section {
       margin-bottom: 1rem;
     }
@@ -260,12 +260,12 @@
       gap: 0.875rem;
       align-items: flex-start;
       padding: 1rem;
-      background: var(--bg-card-light);
-      border: 2px solid var(--border-soft);
+      background: var(--bg-card-medium);
+      border: 2px solid var(--border-medium);
       border-radius: 1rem;
-      margin-bottom: 1.25rem;
+      margin: 1.5rem 0;
       cursor: pointer;
-      transition: var(--transition-base);
+      transition: var(--transition-spring);
     }
 
     .agreement:hover {
@@ -279,18 +279,20 @@
     }
 
     .agreement__checkbox {
-      width: 1.375rem;
-      height: 1.375rem;
+      width: 1.5rem;
+      height: 1.5rem;
       flex-shrink: 0;
       accent-color: var(--ember);
       cursor: pointer;
-      margin-top: 0.0625rem;
+      margin-top: 0.125rem;
+      transform: scale(1.2);
     }
 
     .agreement__text {
       font-size: 0.875rem;
       color: var(--text-secondary);
       line-height: 1.6;
+      flex: 1;
     }
 
     .agreement__text strong {
@@ -341,12 +343,12 @@
             </svg>
           </div>
           <h1 class="hero-title">Before we <em>begin</em></h1>
-          <p class="hero-sub">A few honest things you should know about InnerShadow and what it is — and isn't.</p>
+          <p class="hero-sub">A few honest things you should know about Wellovie and what it is — and isn't.</p>
         </div>
 
-        <!-- What InnerShadow IS -->
+        <!-- What Wellovie IS -->
         <div class="card card--gradient mb-lg">
-          <p class="section-label">What InnerShadow is</p>
+          <p class="section-label">What Wellovie is</p>
 
           <div class="is-section">
             <div class="is-item is-item--yes">
@@ -370,22 +372,22 @@
             </div>
           </div>
 
-          <p class="section-label" style="margin-top:1rem">What InnerShadow is not</p>
+          <p class="section-label" style="margin-top:1rem">What Wellovie is not</p>
 
           <div class="is-section">
             <div class="is-item is-item--no">
               <div class="is-dot is-dot--no">✗</div>
-              <p class="is-text"><strong>Not therapy.</strong> InnerShadow does not provide clinical treatment, diagnosis, or therapeutic care. There is no licensed therapist on the other end of this app.</p>
+              <p class="is-text"><strong>Not therapy.</strong> Wellovie does not provide clinical treatment, diagnosis, or therapeutic care. There is no licensed therapist on the other end of this app.</p>
             </div>
 
             <div class="is-item is-item--no">
               <div class="is-dot is-dot--no">✗</div>
-              <p class="is-text"><strong>Not a crisis service.</strong> If you are in immediate danger or experiencing a mental health crisis, InnerShadow is not the right resource. Please use the services below.</p>
+              <p class="is-text"><strong>Not a crisis service.</strong> If you are in immediate danger or experiencing a mental health crisis, Wellovie is not the right resource. Please use the services below.</p>
             </div>
 
             <div class="is-item is-item--no">
               <div class="is-dot is-dot--no">✗</div>
-              <p class="is-text"><strong>Not a replacement for professional support.</strong> If you are managing a serious mental health condition, please work with a qualified clinician. InnerShadow can complement that work — it cannot replace it.</p>
+              <p class="is-text"><strong>Not a replacement for professional support.</strong> If you are managing a serious mental health condition, please work with a qualified clinician. Wellovie can complement that work — it cannot replace it.</p>
             </div>
           </div>
         </div>
@@ -415,11 +417,11 @@
           </div>
         </div>
 
-        <!-- Who InnerShadow is for -->
+        <!-- Who Wellovie is for -->
         <div class="card mb-lg">
           <p class="section-label">Who this is for</p>
           <p class="text-secondary text-sm" style="line-height:1.75">
-            InnerShadow is designed for people in the gap — between struggling alone and sitting in a therapist's office. People who want to understand their emotions, break old patterns, build more genuine connections, and live a life that actually feels like theirs.
+            Wellovie is designed for people in the gap — between struggling alone and sitting in a therapist's office. People who want to understand their emotions, break old patterns, build more genuine connections, and live a life that actually feels like theirs.
           </p>
           <div style="margin-top:1rem;padding:1rem;background:var(--ember-bg);border-radius:0.875rem;border:1px solid var(--ember-border)">
             <p class="text-secondary text-sm" style="line-height:1.75">
@@ -437,14 +439,14 @@
         </div>
 
         <!-- Agreement -->
-        <label class="agreement" id="agreementLabel" for="agreementCheckbox">
+        <label class="agreement" id="agreementLabel">
           <input
             type="checkbox"
             id="agreementCheckbox"
             class="agreement__checkbox"
           >
           <p class="agreement__text">
-            I understand that <strong>InnerShadow is an educational app</strong>, not a clinical service or substitute for professional mental health treatment. I will seek appropriate professional support if I am in crisis or managing a serious condition.
+            I understand that <strong>Wellovie is an educational app</strong>, not a clinical service or substitute for professional mental health treatment. I will seek appropriate professional support if I am in crisis or managing a serious condition.
           </p>
         </label>
 
@@ -478,16 +480,12 @@
     <div class="loading-text" id="loadingText">Loading...</div>
   </div>
 
-  <!-- Scripts in correct order -->
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/utils.js"></script>
   
   <script>
-    // ================================================================
-    // DISCLAIMER PAGE - FIXED VERSION
-    // ================================================================
-
     (function() {
       // State
       let currentUser = null;
@@ -501,30 +499,21 @@
       const loadingOverlay = document.getElementById('loadingOverlay');
       const loadingText = document.getElementById('loadingText');
 
-      // ── UI Helpers ─────────────────────────────────────────────
-
+      // UI Helpers
       const UI = {
         showLoading: (message = 'Loading...') => {
           if (loadingText) loadingText.textContent = message;
-          if (loadingOverlay) loadingOverlay.classList.add('visible');
+          if (loadingOverlay) loadingOverlay.classList.add('show');
         },
-        
         hideLoading: () => {
-          if (loadingOverlay) loadingOverlay.classList.remove('visible');
+          if (loadingOverlay) loadingOverlay.classList.remove('show');
         },
-        
         markLoaded: () => {
-          document.body.classList.add('content-visible');
-        },
-        
-        showError: (message) => {
-          console.error(message);
-          // Could add toast notification here
+          document.body.classList.add('loaded');
         }
       };
 
-      // ── Navigation ─────────────────────────────────────────────
-
+      // Navigation
       const Nav = {
         go: (url, loadingMessage = 'Loading...') => {
           UI.showLoading(loadingMessage);
@@ -534,98 +523,76 @@
         }
       };
 
-      // ── Agreement handlers ─────────────────────────────────────
-
+      // Agreement handler
       function handleAgreementChange() {
         agreed = agreementCheckbox.checked;
         agreementLabel.classList.toggle('agreement--checked', agreed);
         continueBtn.disabled = !agreed;
       }
 
-      // ── Continue handler ────────────────────────────────────────
-
+      // Continue handler
       async function handleContinue() {
-        if (!agreed || !currentUser) {
-          console.log('Cannot continue: agreed=', agreed, 'user=', currentUser);
-          return;
-        }
+        if (!agreed || !currentUser) return;
 
         UI.showLoading('Setting things up...');
 
         try {
-          // Save disclaimer acceptance
           await DB.updateUserState(currentUser.id, {
             disclaimer_accepted: true,
             disclaimer_accepted_at: new Date().toISOString()
           });
 
-          // Save locally so we don't check Supabase every time
-          localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
-
+          localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
           await routeAfterDisclaimer();
 
         } catch (err) {
           console.error('Disclaimer acceptance failed:', err);
           UI.hideLoading();
-          
-          // Still let them through — don't block on DB error
-          localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+          localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
           await routeAfterDisclaimer();
         }
       }
 
-      // ── Route to right next step ───────────────────────────────
-
+      // Route after disclaimer
       async function routeAfterDisclaimer() {
         try {
-          // Check if assessment is done
           const { data: userState } = await DB.getUserState(currentUser.id);
-
+          
           if (userState?.assessment_completed) {
-            // Go to main app
             Nav.go('/app.html', 'Welcome back...');
           } else {
-            // Go to assessment — first time user
             Nav.go('/assessment.html', 'Getting started...');
           }
         } catch (err) {
-          console.error('Routing error:', err);
-          // Default to assessment on error
           Nav.go('/assessment.html', 'Getting started...');
         }
       }
 
-      // ── Initialize page ─────────────────────────────────────────
-
+      // Initialize page
       async function initializePage() {
         if (isInitialized) return;
         
         try {
           UI.showLoading('Checking authentication...');
 
-          // Check if Auth is available
           if (typeof Auth === 'undefined' || typeof DB === 'undefined') {
             throw new Error('Auth or DB not loaded');
           }
 
-          // Require auth — bounce to index if not logged in
           const session = await Auth.requireAuth('/index.html');
           if (!session) return;
 
           currentUser = session.user;
 
-          // If already accepted, go straight to next step
-          const alreadyAccepted = localStorage.getItem('innershadow_disclaimer_acknowledged');
+          const alreadyAccepted = localStorage.getItem('wellovie_disclaimer_acknowledged');
           if (alreadyAccepted === 'true') {
             await routeAfterDisclaimer();
             return;
           }
 
-          // Set up event listeners
           agreementCheckbox.addEventListener('change', handleAgreementChange);
           continueBtn.addEventListener('click', handleContinue);
 
-          // Mark as initialized
           isInitialized = true;
           UI.hideLoading();
           UI.markLoaded();
@@ -634,7 +601,6 @@
           console.error('Initialization error:', err);
           UI.hideLoading();
           
-          // If Auth fails completely, redirect to login
           if (!currentUser) {
             setTimeout(() => {
               window.location.href = '/index.html';
@@ -643,36 +609,27 @@
         }
       }
 
-      // ── Start initialization when ready ─────────────────────────
-
+      // Start when ready
       function startWhenReady() {
-        // Check if Auth and DB are available
         if (typeof Auth !== 'undefined' && typeof DB !== 'undefined') {
-          // Wait for DOM to be ready
           if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializePage);
           } else {
             initializePage();
           }
         } else {
-          console.log('Waiting for Auth/DB to load...');
-          // Check again in 100ms
           setTimeout(startWhenReady, 100);
         }
       }
 
-      // Start the process
       startWhenReady();
-
     })();
   </script>
 
   <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(err => 
-        console.log('SW registration failed:', err)
-      );
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
   </script>
 </body>
