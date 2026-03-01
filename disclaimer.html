@@ -490,20 +490,26 @@
       }
 
       async function handleContinue() {
+        // Double-check directly from DOM — don't trust variable state
+        if (!agreementCheckbox.checked) {
+          agreementCheckbox.focus();
+          return;
+        }
         if (!agreed || !currentUser) return;
         UI.showLoading('Setting things up...');
+        // Always set localStorage first — navigation must never be blocked
+        localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
+        // Try to save to DB but don't block on it
         try {
           await DB.updateUserState(currentUser.id, {
             disclaimer_accepted: true,
             disclaimer_accepted_at: new Date().toISOString()
           });
-          localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
-          await routeAfterDisclaimer();
         } catch (err) {
-          console.error('Disclaimer acceptance failed:', err);
-          localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
-          await routeAfterDisclaimer();
+          // Column may not exist yet — that's fine, localStorage is the source of truth
+          console.warn('Could not save disclaimer to DB (non-blocking):', err);
         }
+        await routeAfterDisclaimer();
       }
 
       async function routeAfterDisclaimer() {
@@ -546,10 +552,14 @@
           isInitialized = true;
           UI.hideLoading();
           UI.markLoaded();
+          // Make absolutely sure page is visible
+          document.body.classList.add('loaded');
 
         } catch (err) {
           console.error('Initialization error:', err);
           UI.hideLoading();
+          UI.markLoaded();
+          document.body.classList.add('loaded');
           if (!currentUser) {
             setTimeout(() => { window.location.href = '/index.html'; }, 2000);
           }
@@ -567,6 +577,12 @@
           setTimeout(startWhenReady, 100);
         }
       }
+
+      // Safety net — always show the page after 3s even if auth hangs
+      setTimeout(() => {
+        document.body.classList.add('loaded');
+        UI.hideLoading();
+      }, 3000);
 
       startWhenReady();
     })();
