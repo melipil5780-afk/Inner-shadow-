@@ -1789,7 +1789,11 @@
       }
 
       const pathwayKey = MODULE_PATHWAY_MAP[nextMod.id];
-      const modNum     = PATHWAY_MODULES[pathwayKey].indexOf(nextMod.id) + 1;
+      if (!pathwayKey || !PATHWAY_MODULES[pathwayKey]) {
+        document.getElementById('continueCard').style.display = 'none';
+        return;
+      }
+      const modNum = PATHWAY_MODULES[pathwayKey].indexOf(nextMod.id) + 1;
 
       document.getElementById('nextModuleNum').textContent    = modNum;
       document.getElementById('nextModuleTitle').textContent  = MODULE_LABELS[nextMod.id] || '';
@@ -2313,7 +2317,7 @@
 
       // Load from cache instantly for perceived speed
       const cached = Cache.load();
-      if (cached) {
+      if (cached && cached.modules && Object.keys(cached.modules).length > 0) {
         appState = cached;
         renderAll();
         UI.markLoaded(0);
@@ -2346,10 +2350,10 @@
     }
 
     function renderAll() {
-      renderToday();
-      renderLearn();
-      renderTools();
-      renderYou();
+      try { renderToday(); } catch(e) { console.error('[App] renderToday failed:', e); }
+      try { renderLearn(); } catch(e) { console.error('[App] renderLearn failed:', e); }
+      try { renderTools(); } catch(e) { console.error('[App] renderTools failed:', e); }
+      try { renderYou();   } catch(e) { console.error('[App] renderYou failed:', e); }
     }
 
     document.addEventListener('DOMContentLoaded', init);
