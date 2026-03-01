@@ -438,17 +438,18 @@
           </p>
         </div>
 
-        <!-- Agreement -->
-        <label class="agreement" id="agreementLabel">
-          <input
-            type="checkbox"
-            id="agreementCheckbox"
-            class="agreement__checkbox"
-          >
-          <p class="agreement__text">
-            I understand that <strong>Wellovie is an educational app</strong>, not a clinical service or substitute for professional mental health treatment. I will seek appropriate professional support if I am in crisis or managing a serious condition.
-          </p>
-        </label>
+       <!-- Agreement - FIXED WITH INLINE STYLES -->
+<label class="agreement" id="agreementLabel" style="display: flex; gap: 1rem; align-items: flex-start; padding: 1.25rem; background: rgba(255,210,160,0.12); border: 2px solid rgba(255,200,140,0.25); border-radius: 1rem; margin: 1.5rem 0; cursor: pointer; transition: all 0.28s ease;">
+  <input
+    type="checkbox"
+    id="agreementCheckbox"
+    class="agreement__checkbox"
+    style="width: 1.5rem; height: 1.5rem; flex-shrink: 0; accent-color: #d95f35; cursor: pointer; margin-top: 0.125rem; transform: scale(1.2);"
+  >
+  <p class="agreement__text" style="font-size: 0.875rem; color: #c4a882; line-height: 1.6; flex: 1; margin: 0;">
+    I understand that <strong style="color: #fdf0e6; font-weight: 600;">Wellovie is an educational app</strong>, not a clinical service or substitute for professional mental health treatment. I will seek appropriate professional support if I am in crisis or managing a serious condition.
+  </p>
+</label>
 
         <div style="height:0.5rem"></div>
 
