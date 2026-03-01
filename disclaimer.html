@@ -442,7 +442,6 @@
             type="checkbox"
             id="agreementCheckbox"
             class="agreement__checkbox"
-            onchange="handleAgreementChange(this)"
           >
           <p class="agreement__text">
             I understand that <strong>InnerShadow is an educational app</strong>, not a clinical service or substitute for professional mental health treatment. I will seek appropriate professional support if I am in crisis or managing a serious condition.
@@ -459,7 +458,6 @@
       <button
         class="btn btn--primary btn--lg"
         id="continueBtn"
-        onclick="handleContinue()"
         disabled
       >
         I understand — let's begin
@@ -480,103 +478,201 @@
     <div class="loading-text" id="loadingText">Loading...</div>
   </div>
 
+  <!-- Scripts in correct order -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/utils.js"></script>
+  
   <script>
     // ================================================================
-    // DISCLAIMER PAGE
+    // DISCLAIMER PAGE - FIXED VERSION
     // ================================================================
 
-    let currentUser  = null;
-    let agreed       = false;
+    (function() {
+      // State
+      let currentUser = null;
+      let agreed = false;
+      let isInitialized = false;
 
-    // ── Init ──────────────────────────────────────────────
+      // DOM Elements
+      const continueBtn = document.getElementById('continueBtn');
+      const agreementCheckbox = document.getElementById('agreementCheckbox');
+      const agreementLabel = document.getElementById('agreementLabel');
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      const loadingText = document.getElementById('loadingText');
 
-    async function init() {
-      // Require auth — bounce to index if not logged in
-      const session = await Auth.requireAuth('/index.html');
-      if (!session) return;
+      // ── UI Helpers ─────────────────────────────────────────────
 
-      currentUser = session.user;
+      const UI = {
+        showLoading: (message = 'Loading...') => {
+          if (loadingText) loadingText.textContent = message;
+          if (loadingOverlay) loadingOverlay.classList.add('visible');
+        },
+        
+        hideLoading: () => {
+          if (loadingOverlay) loadingOverlay.classList.remove('visible');
+        },
+        
+        markLoaded: () => {
+          document.body.classList.add('content-visible');
+        },
+        
+        showError: (message) => {
+          console.error(message);
+          // Could add toast notification here
+        }
+      };
 
-      // If already accepted, go straight to next step
-      const alreadyAccepted = localStorage.getItem('innershadow_disclaimer_acknowledged');
-      if (alreadyAccepted === 'true') {
-        await routeAfterDisclaimer();
-        return;
+      // ── Navigation ─────────────────────────────────────────────
+
+      const Nav = {
+        go: (url, loadingMessage = 'Loading...') => {
+          UI.showLoading(loadingMessage);
+          setTimeout(() => {
+            window.location.href = url;
+          }, 100);
+        }
+      };
+
+      // ── Agreement handlers ─────────────────────────────────────
+
+      function handleAgreementChange() {
+        agreed = agreementCheckbox.checked;
+        agreementLabel.classList.toggle('agreement--checked', agreed);
+        continueBtn.disabled = !agreed;
       }
 
-      UI.markLoaded();
-    }
+      // ── Continue handler ────────────────────────────────────────
 
-    // ── Agreement checkbox ─────────────────────────────────
+      async function handleContinue() {
+        if (!agreed || !currentUser) {
+          console.log('Cannot continue: agreed=', agreed, 'user=', currentUser);
+          return;
+        }
 
-    function handleAgreementChange(checkbox) {
-      agreed = checkbox.checked;
-      const label = document.getElementById('agreementLabel');
-      const btn   = document.getElementById('continueBtn');
+        UI.showLoading('Setting things up...');
 
-      label.classList.toggle('agreement--checked', agreed);
-      btn.disabled = !agreed;
-    }
+        try {
+          // Save disclaimer acceptance
+          await DB.updateUserState(currentUser.id, {
+            disclaimer_accepted: true,
+            disclaimer_accepted_at: new Date().toISOString()
+          });
 
-    // ── Continue button ────────────────────────────────────
+          // Save locally so we don't check Supabase every time
+          localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
 
-    async function handleContinue() {
-      if (!agreed || !currentUser) return;
+          await routeAfterDisclaimer();
 
-      UI.showLoading('Setting things up...');
-
-      try {
-        // Save disclaimer acceptance
-        await DB.updateUserState(currentUser.id, {
-          disclaimer_accepted:    true,
-          disclaimer_accepted_at: new Date().toISOString()
-        });
-
-        // Save locally so we don't check Supabase every time
-        localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
-
-        await routeAfterDisclaimer();
-
-      } catch (err) {
-        console.error('Disclaimer acceptance failed:', err);
-        UI.hideLoading();
-        // Still let them through — don't block on DB error
-        localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
-        await routeAfterDisclaimer();
+        } catch (err) {
+          console.error('Disclaimer acceptance failed:', err);
+          UI.hideLoading();
+          
+          // Still let them through — don't block on DB error
+          localStorage.setItem('innershadow_disclaimer_acknowledged', 'true');
+          await routeAfterDisclaimer();
+        }
       }
-    }
 
-    // ── Route to right next step ───────────────────────────
+      // ── Route to right next step ───────────────────────────────
 
-    async function routeAfterDisclaimer() {
-      try {
-        // Check if assessment is done
-        const { data: userState } = await DB.getUserState(currentUser.id);
+      async function routeAfterDisclaimer() {
+        try {
+          // Check if assessment is done
+          const { data: userState } = await DB.getUserState(currentUser.id);
 
-        if (userState?.assessment_completed) {
-          // Go to main app
-          Nav.go('/app.html', 'Welcome back...');
-        } else {
-          // Go to assessment — first time user
+          if (userState?.assessment_completed) {
+            // Go to main app
+            Nav.go('/app.html', 'Welcome back...');
+          } else {
+            // Go to assessment — first time user
+            Nav.go('/assessment.html', 'Getting started...');
+          }
+        } catch (err) {
+          console.error('Routing error:', err);
+          // Default to assessment on error
           Nav.go('/assessment.html', 'Getting started...');
         }
-      } catch (err) {
-        // Default to assessment on error
-        Nav.go('/assessment.html', 'Getting started...');
       }
-    }
 
-    // ── Run ────────────────────────────────────────────────
+      // ── Initialize page ─────────────────────────────────────────
 
-    document.addEventListener('DOMContentLoaded', init);
+      async function initializePage() {
+        if (isInitialized) return;
+        
+        try {
+          UI.showLoading('Checking authentication...');
+
+          // Check if Auth is available
+          if (typeof Auth === 'undefined' || typeof DB === 'undefined') {
+            throw new Error('Auth or DB not loaded');
+          }
+
+          // Require auth — bounce to index if not logged in
+          const session = await Auth.requireAuth('/index.html');
+          if (!session) return;
+
+          currentUser = session.user;
+
+          // If already accepted, go straight to next step
+          const alreadyAccepted = localStorage.getItem('innershadow_disclaimer_acknowledged');
+          if (alreadyAccepted === 'true') {
+            await routeAfterDisclaimer();
+            return;
+          }
+
+          // Set up event listeners
+          agreementCheckbox.addEventListener('change', handleAgreementChange);
+          continueBtn.addEventListener('click', handleContinue);
+
+          // Mark as initialized
+          isInitialized = true;
+          UI.hideLoading();
+          UI.markLoaded();
+
+        } catch (err) {
+          console.error('Initialization error:', err);
+          UI.hideLoading();
+          
+          // If Auth fails completely, redirect to login
+          if (!currentUser) {
+            setTimeout(() => {
+              window.location.href = '/index.html';
+            }, 2000);
+          }
+        }
+      }
+
+      // ── Start initialization when ready ─────────────────────────
+
+      function startWhenReady() {
+        // Check if Auth and DB are available
+        if (typeof Auth !== 'undefined' && typeof DB !== 'undefined') {
+          // Wait for DOM to be ready
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+          } else {
+            initializePage();
+          }
+        } else {
+          console.log('Waiting for Auth/DB to load...');
+          // Check again in 100ms
+          setTimeout(startWhenReady, 100);
+        }
+      }
+
+      // Start the process
+      startWhenReady();
+
+    })();
   </script>
 
+  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('/sw.js').catch(err => 
+        console.log('SW registration failed:', err)
+      );
     }
   </script>
 </body>
