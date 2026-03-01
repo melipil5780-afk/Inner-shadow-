@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0d0906">
-  <title>InnerShadow – Let's find your starting place</title>
+  <title>Wellovie – Let's find your starting place</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -550,7 +550,7 @@
     const QUESTIONS = {
 
       1: {
-        text:    'What brings you to <em>InnerShadow</em>?',
+        text:    'What brings you to <em>Wellovie</em>?',
         sub:     'Choose the one that resonates most right now. There is no wrong answer.',
         type:    'choice',
         options: [
@@ -811,7 +811,7 @@
       },
 
       5: {
-        text:    'If InnerShadow could give you one thing — what would it be?',
+        text:    'If Wellovie could give you one thing — what would it be?',
         sub:     'Write whatever comes first. There\'s no right answer. Nobody else will see this.',
         type:    'text',
         placeholder: 'A sense of calm. To stop reacting the way I do. To feel like myself again. To stop feeling so alone...'
@@ -1040,7 +1040,7 @@
               </h3>
             </div>
             <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1.25rem">
-              That took courage to admit. InnerShadow has tools that can help — but if you're in crisis right now, please reach out to someone who can be there for you immediately.
+              That took courage to admit. Wellovie has tools that can help — but if you're in crisis right now, please reach out to someone who can be there for you immediately.
             </p>
             <div style="display:flex;flex-direction:column;gap:0.5rem">
               <a href="tel:988" style="
@@ -1075,7 +1075,7 @@
             padding:1.125rem;
           ">
             <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7">
-              <strong style="color:var(--text-ember)">InnerShadow will start you on Emotional Foundations</strong> — the pathway most relevant to where you are. You can use the breathing and grounding tools in your toolkit at any time, no modules required.
+              <strong style="color:var(--text-ember)">Wellovie will start you on Emotional Foundations</strong> — the pathway most relevant to where you are. You can use the breathing and grounding tools in your toolkit at any time, no modules required.
             </p>
           </div>
         </div>
@@ -1170,16 +1170,8 @@
       const btn = document.getElementById('startBtn');
       btn.disabled    = true;
       btn.textContent = 'Starting...';
-
-      // Get their pathway from saved assessment
-      try {
-        const { data } = await DB.getUserState(currentUser.id);
-        const pathway  = data?.primary_pathway || 'emotional';
-        const firstModule = PATHWAY_MODULES[pathway][0];
-        Nav.go(`/pathways/${pathway.slice(0,2) === 'em' ? 'emotional' : pathway}/${firstModule}.html`, 'Loading your first module...');
-      } catch (err) {
-        Nav.go('/app.html', 'Loading...');
-      }
+      // Always go to app.html — let the app shell handle routing
+      Nav.go('/app.html', 'Setting up your journey...');
     }
 
 
