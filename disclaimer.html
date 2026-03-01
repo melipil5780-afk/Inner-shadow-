@@ -63,19 +63,10 @@
       width: 5rem;
       height: 5rem;
       margin: 0 auto 1.25rem;
-      background: var(--gradient-main);
-      border-radius: 1.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: var(--shadow-ember-lg);
       animation: float 3s ease-in-out infinite;
-    }
-
-    .hero-icon svg {
-      width: 2.5rem;
-      height: 2.5rem;
-      color: white;
     }
 
     .hero-title {
@@ -158,9 +149,7 @@
 
     /* Crisis box */
     .crisis-box {
-      background: linear-gradient(135deg,
-        rgba(220,38,38,0.12),
-        rgba(220,38,38,0.06));
+      background: linear-gradient(135deg, rgba(220,38,38,0.12), rgba(220,38,38,0.06));
       border: 1px solid var(--red-border-strong);
       border-radius: 1rem;
       padding: 1.25rem;
@@ -174,10 +163,7 @@
       margin-bottom: 0.875rem;
     }
 
-    .crisis-box__icon {
-      font-size: 1.375rem;
-      line-height: 1;
-    }
+    .crisis-box__icon { font-size: 1.375rem; line-height: 1; }
 
     .crisis-box__title {
       font-size: 0.9375rem;
@@ -192,11 +178,7 @@
       margin-bottom: 1rem;
     }
 
-    .crisis-links {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
+    .crisis-links { display: flex; flex-direction: column; gap: 0.5rem; }
 
     .crisis-link {
       display: flex;
@@ -210,10 +192,7 @@
       transition: var(--transition-base);
     }
 
-    .crisis-link:hover {
-      background: rgba(220,38,38,0.18);
-      text-decoration: none;
-    }
+    .crisis-link:hover { background: rgba(220,38,38,0.18); }
 
     .crisis-link__name {
       font-size: 0.875rem;
@@ -238,11 +217,7 @@
       align-items: flex-start;
     }
 
-    .privacy-note__icon {
-      font-size: 1.125rem;
-      flex-shrink: 0;
-      margin-top: 0.0625rem;
-    }
+    .privacy-note__icon { font-size: 1.125rem; flex-shrink: 0; margin-top: 0.0625rem; }
 
     .privacy-note__text {
       font-size: 0.875rem;
@@ -250,39 +225,27 @@
       line-height: 1.6;
     }
 
-    .privacy-note__text strong {
-      color: var(--text-ember);
-    }
+    .privacy-note__text strong { color: var(--text-ember); }
 
-    /* Checkbox agreement */
+    /* Agreement */
     .agreement {
       display: flex;
-      gap: 0.875rem;
+      gap: 1rem;
       align-items: flex-start;
-      padding: 1rem;
-      background: var(--bg-card-medium);
-      border: 2px solid var(--border-medium);
+      padding: 1.25rem;
+      background: rgba(255,210,160,0.12);
+      border: 2px solid rgba(255,200,140,0.25);
       border-radius: 1rem;
       margin: 1.5rem 0;
       cursor: pointer;
-      transition: var(--transition-spring);
-    }
-
-    .agreement:hover {
-      border-color: var(--ember-border);
-      background: var(--ember-bg);
-    }
-
-    .agreement--checked {
-      border-color: var(--ember-border-strong);
-      background: var(--ember-bg-strong);
+      transition: all 0.28s ease;
     }
 
     .agreement__checkbox {
       width: 1.5rem;
       height: 1.5rem;
       flex-shrink: 0;
-      accent-color: var(--ember);
+      accent-color: #d95f35;
       cursor: pointer;
       margin-top: 0.125rem;
       transform: scale(1.2);
@@ -293,11 +256,10 @@
       color: var(--text-secondary);
       line-height: 1.6;
       flex: 1;
+      margin: 0;
     }
 
-    .agreement__text strong {
-      color: var(--text-primary);
-    }
+    .agreement__text strong { color: var(--text-primary); font-weight: 600; }
 
     /* CTA footer */
     .cta-area {
@@ -337,28 +299,36 @@
         <!-- Hero -->
         <div class="hero animate-fade-in">
           <div class="hero-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            <svg width="80" height="80" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="dis-gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d95f35"/><stop offset="100%" stop-color="#e8a030"/></linearGradient>
+                <linearGradient id="dis-gm2" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#d95f35"/><stop offset="100%" stop-color="#f5c865"/></linearGradient>
+                <linearGradient id="dis-gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5c865" stop-opacity="0.9"/><stop offset="100%" stop-color="#e8a030" stop-opacity="0.6"/></linearGradient>
+              </defs>
+              <path d="M 9 34 A 18 18 0 1 1 39 34" stroke="url(#dis-gm)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path d="M 15 36 A 12 12 0 1 1 33 36" stroke="url(#dis-gm2)" stroke-width="1.75" stroke-linecap="round" fill="none" opacity="0.6"/>
+              <circle cx="24" cy="24" r="3.5" fill="url(#dis-gg)"/>
+              <circle cx="24" cy="24" r="6" fill="#e8a030" opacity="0.1"/>
+              <path d="M 12 38 Q 24 35 36 38" stroke="url(#dis-gm)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5"/>
             </svg>
           </div>
           <h1 class="hero-title">Before we <em>begin</em></h1>
-          <p class="hero-sub">A few honest things you should know about Wellovie and what it is — and isn't.</p>
+          <p class="hero-sub">A few honest things you should know about Wellovie — what it is, and what it isn't.</p>
         </div>
 
-        <!-- What Wellovie IS -->
+        <!-- What Wellovie IS / ISN'T -->
         <div class="card card--gradient mb-lg">
           <p class="section-label">What Wellovie is</p>
 
           <div class="is-section">
             <div class="is-item is-item--yes">
               <div class="is-dot is-dot--yes">✓</div>
-              <p class="is-text"><strong>Evidence-based education.</strong> Every module is grounded in real psychology — CBT, attachment theory, ACT, somatic work, self-compassion research. This is the curriculum a therapist might teach, made accessible.</p>
+              <p class="is-text"><strong>Real psychology — explained clearly.</strong> Every module teaches you how you actually work emotionally — not inspiration, not trends. The science behind why you are the way you are, made accessible.</p>
             </div>
 
             <div class="is-item is-item--yes">
               <div class="is-dot is-dot--yes">✓</div>
-              <p class="is-text"><strong>Skill-building.</strong> You will learn specific, practisable tools — not inspiration, not affirmations. Real skills that change how you relate to your emotions, your patterns, and the people in your life.</p>
+              <p class="is-text"><strong>Skill-building.</strong> You will learn specific, practisable tools — not affirmations. Real skills that change how you relate to your emotions, your patterns, and the people in your life.</p>
             </div>
 
             <div class="is-item is-item--yes">
@@ -368,7 +338,7 @@
 
             <div class="is-item is-item--yes">
               <div class="is-dot is-dot--yes">✓</div>
-              <p class="is-text"><strong>Self-paced and non-judgmental.</strong> There is no right speed. No performance required. You can stop, restart, skip, and return as many times as you need.</p>
+              <p class="is-text"><strong>Self-paced and non-judgmental.</strong> No right speed. No performance required. Stop, restart, skip, and return as many times as you need.</p>
             </div>
           </div>
 
@@ -399,7 +369,7 @@
             <span class="crisis-box__title">If you're in crisis right now</span>
           </div>
           <p class="crisis-box__body">
-            If you're having thoughts of suicide, self-harm, or are in immediate danger — please reach out to one of these services. They are free, confidential, and available right now.
+            If you're having thoughts of suicide, self-harm, or are in immediate danger — please reach out. These services are free, confidential, and available right now.
           </p>
           <div class="crisis-links">
             <a href="tel:988" class="crisis-link">
@@ -417,15 +387,15 @@
           </div>
         </div>
 
-        <!-- Who Wellovie is for -->
+        <!-- Who it's for -->
         <div class="card mb-lg">
           <p class="section-label">Who this is for</p>
           <p class="text-secondary text-sm" style="line-height:1.75">
-            Wellovie is designed for people in the gap — between struggling alone and sitting in a therapist's office. People who want to understand their emotions, break old patterns, build more genuine connections, and live a life that actually feels like theirs.
+            Wellovie is for people in the gap — between struggling alone and sitting in a therapist's office. People who want to understand their emotions, break old patterns, build more genuine connections, and live a life that actually feels like theirs.
           </p>
           <div style="margin-top:1rem;padding:1rem;background:var(--ember-bg);border-radius:0.875rem;border:1px solid var(--ember-border)">
             <p class="text-secondary text-sm" style="line-height:1.75">
-              <span style="color:var(--text-ember);font-weight:600">The four pathways</span> cover emotional regulation, self-knowledge, connection, and meaningful living. Each one is grounded in real psychology and written to feel human — not clinical.
+              <span style="color:var(--text-ember);font-weight:600">The four pathways</span> cover emotional regulation, self-knowledge, connection, and meaningful living. Each one is written to feel human — not clinical.
             </p>
           </div>
         </div>
@@ -438,18 +408,17 @@
           </p>
         </div>
 
-       <!-- Agreement - FIXED WITH INLINE STYLES -->
-<label class="agreement" id="agreementLabel" style="display: flex; gap: 1rem; align-items: flex-start; padding: 1.25rem; background: rgba(255,210,160,0.12); border: 2px solid rgba(255,200,140,0.25); border-radius: 1rem; margin: 1.5rem 0; cursor: pointer; transition: all 0.28s ease;">
-  <input
-    type="checkbox"
-    id="agreementCheckbox"
-    class="agreement__checkbox"
-    style="width: 1.5rem; height: 1.5rem; flex-shrink: 0; accent-color: #d95f35; cursor: pointer; margin-top: 0.125rem; transform: scale(1.2);"
-  >
-  <p class="agreement__text" style="font-size: 0.875rem; color: #c4a882; line-height: 1.6; flex: 1; margin: 0;">
-    I understand that <strong style="color: #fdf0e6; font-weight: 600;">Wellovie is an educational app</strong>, not a clinical service or substitute for professional mental health treatment. I will seek appropriate professional support if I am in crisis or managing a serious condition.
-  </p>
-</label>
+        <!-- Agreement -->
+        <label class="agreement" id="agreementLabel" for="agreementCheckbox">
+          <input
+            type="checkbox"
+            id="agreementCheckbox"
+            class="agreement__checkbox"
+          >
+          <p class="agreement__text">
+            I understand that <strong>Wellovie is an educational app</strong>, not a clinical service or substitute for professional mental health treatment. I will seek appropriate professional support if I am in crisis or managing a serious condition.
+          </p>
+        </label>
 
         <div style="height:0.5rem"></div>
 
@@ -458,11 +427,7 @@
 
     <!-- CTA -->
     <div class="cta-area">
-      <button
-        class="btn btn--primary btn--lg"
-        id="continueBtn"
-        disabled
-      >
+      <button class="btn btn--primary btn--lg" id="continueBtn" disabled>
         I understand — let's begin
       </button>
       <p style="text-align:center;font-size:0.75rem;color:var(--text-dim);margin-top:0.75rem;line-height:1.5">
@@ -481,29 +446,25 @@
     <div class="loading-text" id="loadingText">Loading...</div>
   </div>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/utils.js"></script>
-  
+
   <script>
     (function() {
-      // State
       let currentUser = null;
       let agreed = false;
       let isInitialized = false;
 
-      // DOM Elements
-      const continueBtn = document.getElementById('continueBtn');
+      const continueBtn       = document.getElementById('continueBtn');
       const agreementCheckbox = document.getElementById('agreementCheckbox');
-      const agreementLabel = document.getElementById('agreementLabel');
-      const loadingOverlay = document.getElementById('loadingOverlay');
-      const loadingText = document.getElementById('loadingText');
+      const agreementLabel    = document.getElementById('agreementLabel');
+      const loadingOverlay    = document.getElementById('loadingOverlay');
+      const loadingText       = document.getElementById('loadingText');
 
-      // UI Helpers
       const UI = {
-        showLoading: (message = 'Loading...') => {
-          if (loadingText) loadingText.textContent = message;
+        showLoading: (msg = 'Loading...') => {
+          if (loadingText) loadingText.textContent = msg;
           if (loadingOverlay) loadingOverlay.classList.add('show');
         },
         hideLoading: () => {
@@ -514,51 +475,40 @@
         }
       };
 
-      // Navigation
       const Nav = {
-        go: (url, loadingMessage = 'Loading...') => {
-          UI.showLoading(loadingMessage);
-          setTimeout(() => {
-            window.location.href = url;
-          }, 100);
+        go: (url, msg = 'Loading...') => {
+          UI.showLoading(msg);
+          setTimeout(() => { window.location.href = url; }, 100);
         }
       };
 
-      // Agreement handler
       function handleAgreementChange() {
         agreed = agreementCheckbox.checked;
-        agreementLabel.classList.toggle('agreement--checked', agreed);
+        agreementLabel.style.borderColor = agreed ? 'rgba(217,95,53,0.5)' : 'rgba(255,200,140,0.25)';
+        agreementLabel.style.background  = agreed ? 'rgba(217,95,53,0.12)' : 'rgba(255,210,160,0.12)';
         continueBtn.disabled = !agreed;
       }
 
-      // Continue handler
       async function handleContinue() {
         if (!agreed || !currentUser) return;
-
         UI.showLoading('Setting things up...');
-
         try {
           await DB.updateUserState(currentUser.id, {
             disclaimer_accepted: true,
             disclaimer_accepted_at: new Date().toISOString()
           });
-
           localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
           await routeAfterDisclaimer();
-
         } catch (err) {
           console.error('Disclaimer acceptance failed:', err);
-          UI.hideLoading();
           localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
           await routeAfterDisclaimer();
         }
       }
 
-      // Route after disclaimer
       async function routeAfterDisclaimer() {
         try {
           const { data: userState } = await DB.getUserState(currentUser.id);
-          
           if (userState?.assessment_completed) {
             Nav.go('/app.html', 'Welcome back...');
           } else {
@@ -569,10 +519,8 @@
         }
       }
 
-      // Initialize page
       async function initializePage() {
         if (isInitialized) return;
-        
         try {
           UI.showLoading('Checking authentication...');
 
@@ -585,6 +533,7 @@
 
           currentUser = session.user;
 
+          // ── KEY FIX: consistent localStorage key ──
           const alreadyAccepted = localStorage.getItem('wellovie_disclaimer_acknowledged');
           if (alreadyAccepted === 'true') {
             await routeAfterDisclaimer();
@@ -601,16 +550,12 @@
         } catch (err) {
           console.error('Initialization error:', err);
           UI.hideLoading();
-          
           if (!currentUser) {
-            setTimeout(() => {
-              window.location.href = '/index.html';
-            }, 2000);
+            setTimeout(() => { window.location.href = '/index.html'; }, 2000);
           }
         }
       }
 
-      // Start when ready
       function startWhenReady() {
         if (typeof Auth !== 'undefined' && typeof DB !== 'undefined') {
           if (document.readyState === 'loading') {
@@ -627,7 +572,6 @@
     })();
   </script>
 
-  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
