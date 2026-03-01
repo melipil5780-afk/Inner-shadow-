@@ -813,8 +813,7 @@ const FREE_MODULES = new Set(['em-1', 'em-2', 'id-1', 'cn-1', 'lw-1']);
 // These users bypass the paywall entirely.
 // ================================================================
 const DEVELOPER_EMAILS = new Set([
-// Add your email here, e.g.:
-// 'you@example.com',
+'melipil5780@gmail.com',
 ]);
 
 // Free tools — always accessible
