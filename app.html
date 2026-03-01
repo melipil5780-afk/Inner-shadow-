@@ -2334,11 +2334,14 @@
         if (fresh) {
           appState = fresh;
           Cache.save(fresh);
-          renderAll();
+          renderAll(); // Re-render with fresh data + currentUser set = dev bypass works
         }
       } catch (err) {
         console.error('[App] State load failed:', err);
       }
+
+      // Always re-render learn tab after load so dev bypass applies
+      try { renderLearn(); } catch(e) {}
 
       if (!cached) UI.markLoaded();
 
