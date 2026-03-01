@@ -1907,6 +1907,9 @@
       const { pathways, modules } = appState;
       const list = document.getElementById('pathwaysList');
 
+      // Developer accounts get all pathways unlocked
+      const isDev = currentUser && DEVELOPER_EMAILS.has(currentUser.email);
+
       // Free pathways are always accessible regardless of DB state
       const FREE_PATHWAYS = new Set(['emotional']);
 
@@ -1918,7 +1921,7 @@
         const done    = mods.filter(id => modules[id]?.completed).length;
         const total   = mods.length;
         const pct     = Math.round((done / total) * 100);
-        const locked  = !pw.unlocked && !FREE_PATHWAYS.has(key);
+        const locked  = !isDev && !pw.unlocked && !FREE_PATHWAYS.has(key);
         const active  = pw.started && !pw.completed;
 
         return `
@@ -1954,6 +1957,8 @@
     function renderTools() {
       if (!appState) return;
 
+      // Developer gets all tools
+      const isDev = currentUser && DEVELOPER_EMAILS.has(currentUser.email);
       const unlocked = new Set(appState?.userState?.tools_unlocked || []);
 
       // Crisis tools
@@ -1962,9 +1967,9 @@
 
       // Earned tools
       const earned = Object.entries(EARNED_TOOL_DEFS)
-        .filter(([id]) => unlocked.has(id));
+        .filter(([id]) => isDev || unlocked.has(id));
 
-      const locked = Object.entries(EARNED_TOOL_DEFS)
+      const locked = isDev ? [] : Object.entries(EARNED_TOOL_DEFS)
         .filter(([id]) => !unlocked.has(id));
 
       if (earned.length > 0) {
@@ -2336,6 +2341,12 @@
       }
 
       if (!cached) UI.markLoaded();
+
+      // Hide pro banner for developer accounts
+      if (currentUser && DEVELOPER_EMAILS.has(currentUser.email)) {
+        const banner = document.getElementById('proBanner');
+        if (banner) banner.style.display = 'none';
+      }
 
       // Handle tab from URL param
       const tab = Nav.getCurrentTab('today');
