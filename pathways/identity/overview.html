@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0d0906">
-  <title>InnerShadow – Pathway</title>
+  <title>Wellovie – Pathway</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -423,7 +423,7 @@
           <div class="paywall-card" onclick="Nav.go('/upgrade.html')">
             <p class="paywall-card__title">Unlock the full pathway</p>
             <p class="paywall-card__sub">
-              Modules 3–6 unlock with InnerShadow Pro. Everything you've started stays with you.
+              Modules 3–6 unlock with Wellovie Pro. Everything you've started stays with you.
             </p>
             <p class="paywall-card__cta">Upgrade to Pro →</p>
           </div>
@@ -557,7 +557,7 @@
         ]);
 
         moduleStates = modProgress || {};
-        isPro = userState?.is_pro || false;
+        isPro = userState?.is_pro || DEVELOPER_EMAILS.has(currentUser.email);
 
       } catch (err) {
         console.error('[Overview] Load failed:', err);
