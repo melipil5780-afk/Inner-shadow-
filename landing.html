@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d0906">
+  <meta name="description" content="Wellovie — The psychology of how you actually work. For people who've tried everything else. Free to start.">
+  <title>Wellovie — For people who are done with surface-level self-help.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg:       #0d0906;
+  --bg-alt:   #110b07;
+  --card:     #1a0f08;
+  --card2:    #201309;
+
+  --ember:    #d95f35;
+  --ember-g:  rgba(217,95,53,0.28);
+  --ember-s:  rgba(217,95,53,0.09);
+  --ember-b:  rgba(217,95,53,0.22);
+
+  --gold:     #e8a030;
+  --gold-s:   rgba(232,160,48,0.09);
+  --gold-b:   rgba(232,160,48,0.22);
+
+  --rose:     #c4607a;
+  --rose-s:   rgba(196,96,122,0.09);
+  --rose-b:   rgba(196,96,122,0.22);
+
+  --sage:     #7aaa88;
+  --sage-s:   rgba(122,170,136,0.09);
+
+  --t1: #fdf0e6;
+  --t2: #c4a882;
+  --t3: #7a6050;
+  --t4: #3a2818;
+  --te: #f4a07a;
+  --tg: #f5c865;
+
+  --bd:    rgba(255,190,120,0.07);
+  --bd2:   rgba(255,190,120,0.12);
+
+  --gm:  linear-gradient(135deg,#d95f35,#e8a030);
+  --gt:  linear-gradient(135deg,#f4a07a,#f5c865);
+  --gc:  linear-gradient(160deg,#1e1208,#120c06);
+
+  --sh:  0 16px 40px rgba(217,95,53,0.22);
+
+  --fd: 'Cormorant Garamond', Georgia, serif;
+  --fb: 'Outfit', -apple-system, sans-serif;
+  --sp: cubic-bezier(0.34,1.56,0.64,1);
+  --sm: cubic-bezier(0.4,0,0.2,1);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{
+  font-family:var(--fb);
+  background:var(--bg);
+  color:var(--t1);
+  overflow-x:hidden;
+  line-height:1.6;
+  position:relative;
+}
+body::before{
+  content:'';
+  position:absolute;top:0;left:0;width:100%;height:180vh;
+  background:
+    radial-gradient(ellipse 65% 55% at 25% 10%, rgba(217,95,53,0.07), transparent),
+    radial-gradient(ellipse 50% 45% at 80% 55%, rgba(232,160,48,0.05), transparent);
+  pointer-events:none;z-index:0;
+}
+a{color:var(--te);text-decoration:none}
+svg{display:block;flex-shrink:0}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:var(--bg);
+  border-bottom:1px solid var(--bd);
+  padding:1rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1.5rem;
+}
+
+/* ─── NAV LINKS ─── */
+.nav-links{
+  display:flex;align-items:center;gap:0.25rem;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.4s ease;
+  flex:1;justify-content:center;
+}
+.nav-links.visible{opacity:1;pointer-events:auto}
+
+.nav-link{
+  font-size:0.875rem;font-weight:500;color:var(--t3);
+  padding:0.375rem 0.75rem;border-radius:999px;
+  transition:color 0.2s ease,background 0.2s ease;
+  white-space:nowrap;
+}
+.nav-link:hover{color:var(--t1);background:rgba(255,200,140,0.06)}
+.nav-link.active{color:var(--te);background:var(--ember-s)}
+
+.nav-right{display:flex;align-items:center;gap:0.75rem;flex-shrink:0}
+
+/* ─── HAMBURGER ─── */
+.nav-ham{
+  display:none;
+  width:2.25rem;height:2.25rem;
+  background:none;border:none;cursor:pointer;
+  flex-direction:column;align-items:center;justify-content:center;gap:0.3125rem;
+  padding:0.375rem;border-radius:0.5rem;
+  transition:background 0.2s;
+}
+.nav-ham:hover{background:rgba(255,200,140,0.07)}
+.nav-ham span{
+  display:block;width:1.25rem;height:1.5px;
+  background:var(--t2);border-radius:999px;
+  transition:all 0.3s ease;transform-origin:center;
+}
+.nav-ham.open span:nth-child(1){transform:translateY(0.4375rem) rotate(45deg)}
+.nav-ham.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.nav-ham.open span:nth-child(3){transform:translateY(-0.4375rem) rotate(-45deg)}
+
+/* ─── MOBILE DRAWER ─── */
+.nav-drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(18rem, 80vw);
+  background:var(--bg-alt);
+  border-left:1px solid var(--bd);
+  z-index:200;
+  padding:5rem 1.75rem 2rem;
+  display:flex;flex-direction:column;gap:0.25rem;
+  transform:translateX(100%);
+  transition:transform 0.35s var(--sm);
+  box-shadow:-20px 0 60px rgba(0,0,0,0.4);
+}
+.nav-drawer.open{transform:translateX(0)}
+
+.drawer-link{
+  font-size:1rem;font-weight:500;color:var(--t2);
+  padding:0.75rem 1rem;border-radius:0.875rem;
+  transition:all 0.2s ease;
+}
+.drawer-link:hover{color:var(--t1);background:rgba(255,200,140,0.06)}
+
+.drawer-cta{
+  margin-top:auto;
+  background:var(--gm);color:var(--t1);
+  padding:0.9375rem 1.5rem;border-radius:999px;
+  font-size:0.9375rem;font-weight:600;
+  text-align:center;
+  box-shadow:var(--sh);
+  transition:all 0.3s var(--sp);
+}
+.drawer-cta:hover{filter:brightness(1.08);color:var(--t1)}
+
+.nav-overlay{
+  position:fixed;inset:0;z-index:199;
+  background:rgba(0,0,0,0.5);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.3s ease;
+}
+.nav-overlay.open{opacity:1;pointer-events:auto}
+
+/* Progress bar */
+.nav-progress{
+  position:absolute;bottom:-1px;left:0;height:1px;width:0%;
+  background:var(--gm);transition:width 0.1s linear;
+}
+.logo{
+  display:flex;align-items:center;gap:0.625rem;
+  font-family:var(--fd);font-size:1.375rem;font-weight:600;
+  color:var(--t1);letter-spacing:-0.01em;
+}
+.logo em{font-style:italic;color:var(--te)}
+
+.btn-nav{
+  background:var(--gm);color:var(--t1);
+  padding:0.5625rem 1.375rem;border-radius:999px;
+  font-size:0.875rem;font-weight:600;border:none;cursor:pointer;
+  font-family:var(--fb);box-shadow:0 4px 14px var(--ember-g);
+  transition:all 0.3s var(--sp);display:inline-block;
+}
+.btn-nav:hover{transform:translateY(-2px);filter:brightness(1.08);color:var(--t1)}
+
+/* ─── LAYOUT ─── */
+.w{max-width:72rem;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
+.w--sm{max-width:46rem}
+.w--md{max-width:58rem}
+section{position:relative;z-index:1;background:var(--bg)}
+section.alt{background:var(--bg-alt)}
+
+/* ─── TYPE ─── */
+.eyebrow{
+  font-size:0.75rem;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--te);margin-bottom:0.875rem;
+}
+.h2{
+  font-family:var(--fd);
+  font-size:clamp(2.125rem,3.8vw,3.25rem);
+  font-weight:600;line-height:1.1;letter-spacing:-0.025em;
+  color:var(--t1);margin-bottom:1rem;
+}
+.h2 em{
+  font-style:italic;
+  background:var(--gt);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+}
+.lead{font-size:1.0625rem;color:var(--t2);line-height:1.78}
+
+/* ─── BUTTONS ─── */
+.btn{
+  background:var(--gm);color:var(--t1);
+  padding:1rem 2rem;border-radius:999px;
+  font-size:1rem;font-weight:600;border:none;cursor:pointer;
+  font-family:var(--fb);box-shadow:var(--sh);
+  transition:all 0.35s var(--sp);
+  display:inline-flex;align-items:center;gap:0.5rem;white-space:nowrap;
+}
+.btn:hover{transform:translateY(-3px);filter:brightness(1.08);box-shadow:0 20px 44px rgba(217,95,53,0.32);color:var(--t1)}
+.btn:active{transform:scale(0.97)}
+
+.btn-ghost{
+  background:transparent;color:var(--t2);
+  padding:1rem 1.75rem;border-radius:999px;
+  font-size:1rem;font-weight:500;
+  border:1px solid var(--bd2);cursor:pointer;font-family:var(--fb);
+  transition:all 0.3s ease;display:inline-flex;align-items:center;gap:0.5rem;
+}
+.btn-ghost:hover{border-color:var(--ember-b);color:var(--te)}
+
+/* ─── HERO ─── */
+.hero{
+  background:var(--bg);
+  min-height:100vh;
+  padding:7rem 0 5rem;
+  display:flex;align-items:center;
+}
+.hero-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:4.5rem;align-items:center;
+}
+
+/* Disqualifier line */
+.hero-disq{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-size:0.8125rem;color:var(--t3);
+  margin-bottom:1.75rem;
+  padding-bottom:1.75rem;
+  border-bottom:1px solid var(--bd);
+  width:100%;
+}
+.hero-disq span{color:var(--te);font-weight:500}
+
+.hero-h1{
+  font-family:var(--fd);
+  font-size:clamp(2.875rem,5.2vw,5rem);
+  font-weight:600;line-height:1.04;letter-spacing:-0.03em;
+  color:var(--t1);margin-bottom:1.625rem;
+}
+.hero-h1 em{
+  font-style:italic;
+  background:var(--gt);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.hero-p{
+  font-size:1.125rem;color:var(--t2);line-height:1.82;
+  max-width:40ch;margin-bottom:2.25rem;
+}
+
+.hero-btns{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}
+
+/* Trust bar under CTA */
+.hero-trust{
+  display:flex;align-items:center;gap:1.5rem;
+  padding-top:1.5rem;border-top:1px solid var(--bd);
+  flex-wrap:wrap;
+}
+.trust-i{display:flex;align-items:center;gap:0.375rem;font-size:0.8125rem;color:var(--t3)}
+.trust-i svg{width:0.875rem;height:0.875rem;color:var(--sage);flex-shrink:0}
+.hero-note{
+  margin-top:1rem;
+  font-size:0.8rem;color:var(--t4);line-height:1.6;
+  max-width:44ch;
+}
+.hero-note a{color:var(--t3);text-decoration:underline;text-decoration-color:var(--bd2)}
+.hero-note a:hover{color:var(--te)}
+
+/* ─── PHONE ─── */
+.hero-phone{
+  display:flex;justify-content:center;align-items:center;
+  position:relative;
+}
+.phone-wrap{
+  position:relative;
+  animation:pfloat 5s ease-in-out infinite;
+}
+@keyframes pfloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-16px) rotate(1deg)}}
+
+.phone-glow{
+  position:absolute;inset:-18%;
+  background:radial-gradient(ellipse,rgba(217,95,53,0.12),transparent 65%);
+  border-radius:50%;z-index:0;
+}
+.phone{
+  position:relative;z-index:1;
+  width:260px;height:530px;
+  background:#0f0804;
+  border-radius:2.75rem;
+  border:1.5px solid rgba(255,185,110,0.11);
+  box-shadow:0 40px 80px -15px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,200,140,0.06);
+  overflow:hidden;display:flex;flex-direction:column;
+}
+.p-pill{width:68px;height:4px;background:rgba(255,185,110,0.13);border-radius:999px;margin:0.875rem auto 0;flex-shrink:0}
+.p-body{flex:1;padding:1rem 0.875rem;display:flex;flex-direction:column;gap:0.7rem;overflow:hidden}
+.p-nav{
+  height:50px;background:#0a0603;
+  border-top:1px solid rgba(255,190,120,0.07);
+  display:flex;align-items:center;justify-content:space-around;flex-shrink:0;
+}
+
+.p-greet{font-family:var(--fd);font-style:italic;font-size:1.1875rem;color:var(--t1);line-height:1.25}
+.p-greet-em{background:var(--gt);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.p-card{
+  background:var(--gc);border:1px solid rgba(255,190,120,0.08);
+  border-radius:0.9375rem;padding:0.875rem;
+}
+.p-lbl{font-size:0.58rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--t3);margin-bottom:0.3rem}
+.p-title{font-size:0.875rem;font-weight:600;color:var(--t1);margin-bottom:0.2rem}
+.p-sub{font-size:0.695rem;color:var(--t2)}
+.p-prog{height:3px;background:rgba(200,140,80,0.12);border-radius:999px;margin-top:0.6rem}
+.p-prog-f{height:100%;background:var(--gm);border-radius:999px;width:55%}
+
+.p-row{
+  display:flex;align-items:center;gap:0.575rem;
+  padding:0.55rem 0.75rem;
+  background:rgba(255,200,140,0.025);
+  border:1px solid rgba(255,190,120,0.07);border-radius:0.75rem;
+}
+.p-em{font-size:0.9375rem;flex-shrink:0}
+.p-rn{font-size:0.73rem;font-weight:600;color:var(--t1)}
+.p-rs{font-size:0.6375rem;color:var(--t3)}
+
+.pni{display:flex;flex-direction:column;align-items:center;gap:0.2rem}
+.pnd{width:1.0625rem;height:1.0625rem;border-radius:0.3rem;background:rgba(255,190,120,0.1)}
+.pnd--on{background:var(--ember)}
+.pnl{font-size:0.5rem;color:var(--t3);font-weight:500}
+.pnl--on{color:var(--te)}
+
+.badge{
+  position:absolute;z-index:2;
+  background:#140d08;
+  border:1px solid rgba(255,190,120,0.12);
+  border-radius:0.875rem;padding:0.6rem 0.875rem;
+  box-shadow:0 10px 28px rgba(0,0,0,0.5);
+}
+.badge--a{top:6%;right:-16%;animation:bf1 5s ease-in-out infinite}
+.badge--b{bottom:20%;left:-16%;animation:bf2 6s ease-in-out infinite}
+@keyframes bf1{0%,100%{transform:translateY(0) rotate(1.5deg)}50%{transform:translateY(-8px) rotate(-0.5deg)}}
+@keyframes bf2{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(0.5deg)}}
+.badge-t{font-size:0.8125rem;font-weight:600;color:var(--t1);white-space:nowrap}
+.badge-s{font-size:0.6875rem;color:var(--t3);margin-top:0.1rem}
+
+/* ─── CREDIBILITY STRIP ─── */
+.cred{
+  background:var(--bg-alt);
+  border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);
+  padding:2.5rem 0;
+  position:relative;z-index:1;
+}
+.cred-inner{
+  display:flex;align-items:center;justify-content:center;
+  gap:3.5rem;flex-wrap:wrap;
+}
+.cred-item{
+  display:flex;align-items:center;gap:0.625rem;
+  font-size:0.875rem;color:var(--t3);
+}
+.cred-item-icon{
+  width:2rem;height:2rem;border-radius:0.5rem;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.9375rem;
+  background:var(--ember-s);border:1px solid var(--ember-b);
+}
+.cred-item-label{color:var(--t2);font-weight:500}
+
+/* ─── PAIN SECTION ─── */
+.pain{background:var(--bg);padding:7rem 0}
+.pain-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:5rem;align-items:center;
+}
+.pain-quote{
+  font-family:var(--fd);
+  font-size:clamp(1.75rem,2.8vw,2.5rem);
+  font-weight:500;font-style:italic;
+  line-height:1.35;color:var(--t2);
+  border-left:2px solid var(--ember-b);
+  padding-left:2rem;
+}
+.pain-quote strong{color:var(--t1);font-style:normal;font-weight:600}
+
+.pain-list{display:flex;flex-direction:column;gap:1.5rem}
+.pain-item{
+  display:flex;gap:1rem;align-items:flex-start;
+  padding:1.25rem 1.5rem;
+  background:var(--gc);border:1px solid var(--bd);border-radius:1.125rem;
+  position:relative;overflow:hidden;
+}
+.pain-item::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;width:2px;
+  background:var(--ember-b);
+}
+.pain-icon{
+  font-size:1.25rem;flex-shrink:0;
+  width:2.25rem;height:2.25rem;
+  display:flex;align-items:center;justify-content:center;
+}
+.pain-title{font-size:0.9375rem;font-weight:600;color:var(--t1);margin-bottom:0.25rem}
+.pain-body{font-size:0.9rem;color:var(--t2);line-height:1.65}
+
+/* ─── DIFFERENTIATOR ─── */
+.diff{background:var(--bg-alt);padding:7rem 0}
+.diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.125rem;margin-top:3.5rem}
+
+.diff-card{
+  background:var(--gc);border:1px solid var(--bd);
+  border-radius:1.375rem;padding:2rem;
+  position:relative;overflow:hidden;
+  transition:transform 0.35s var(--sp),border-color 0.3s ease;
+}
+.diff-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,200,140,0.1),transparent);
+}
+.diff-card:hover{transform:translateY(-5px);border-color:var(--ember-b)}
+
+.diff-icon{font-size:1.875rem;margin-bottom:1.125rem}
+.diff-title{font-size:1rem;font-weight:600;color:var(--t1);margin-bottom:0.5rem}
+.diff-body{font-size:0.9rem;color:var(--t2);line-height:1.72}
+
+/* NOT like other apps comparison */
+.not-like{
+  margin-top:3.5rem;
+  background:var(--gc);border:1px solid var(--bd);
+  border-radius:1.375rem;overflow:hidden;
+}
+.not-like-head{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  padding:1.125rem 1.5rem;
+  background:rgba(255,200,140,0.03);
+  border-bottom:1px solid var(--bd);
+}
+.nl-h{font-size:0.75rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--t3)}
+.nl-h--us{color:var(--te)}
+.not-like-row{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  padding:0.875rem 1.5rem;border-bottom:1px solid var(--bd);
+  align-items:center;
+}
+.not-like-row:last-child{border-bottom:none}
+.nl-feat{font-size:0.9rem;color:var(--t2)}
+.nl-check{text-align:center;font-size:0.9375rem}
+.nl-no{color:var(--t4)}
+.nl-yes{color:var(--sage)}
+.nl-us{color:var(--te);font-weight:600}
+
+/* ─── PROOF ─── */
+.proof{background:var(--bg);padding:7rem 0}
+
+/* Pull quote — large format */
+.proof-featured{
+  background:var(--gc);border:1px solid var(--bd);
+  border-radius:1.5rem;padding:3rem;
+  margin-bottom:1.5rem;
+  position:relative;overflow:hidden;
+}
+.proof-featured::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--gm);
+}
+.pf-quote{
+  font-family:var(--fd);font-style:italic;
+  font-size:clamp(1.375rem,2.2vw,1.875rem);
+  color:var(--t1);line-height:1.55;
+  margin-bottom:1.75rem;
+}
+.pf-quote::before{
+  content:'"';
+  display:block;font-size:5rem;color:var(--ember-b);
+  line-height:0.65;margin-bottom:1rem;font-family:var(--fd);
+}
+.pf-attr{display:flex;align-items:center;gap:0.875rem}
+.pf-av{
+  width:3rem;height:3rem;border-radius:50%;
+  background:var(--ember-s);border:1px solid var(--ember-b);
+  display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;
+}
+.pf-name{font-size:1rem;font-weight:600;color:var(--t1)}
+.pf-role{font-size:0.8125rem;color:var(--t3)}
+.pf-stars{color:var(--gold);font-size:0.875rem;margin-bottom:0.25rem;letter-spacing:0.04em}
+
+.proof-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.125rem}
+.proof-card{
+  background:var(--gc);border:1px solid var(--bd);
+  border-radius:1.25rem;padding:1.75rem;
+}
+.pc-quote{
+  font-family:var(--fd);font-style:italic;
+  font-size:1rem;color:var(--t2);line-height:1.75;
+  margin-bottom:1.125rem;padding-left:0.875rem;position:relative;
+}
+.pc-quote::before{
+  content:'"';position:absolute;left:-0.125rem;top:-0.5rem;
+  font-size:2.875rem;color:var(--ember-b);line-height:1;font-family:var(--fd);
+}
+.pc-author{display:flex;align-items:center;gap:0.625rem}
+.pc-av{
+  width:2.25rem;height:2.25rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:0.875rem;flex-shrink:0;
+}
+.pc-name{font-size:0.9rem;font-weight:600;color:var(--t1)}
+.pc-role{font-size:0.775rem;color:var(--t3)}
+.pc-stars{color:var(--gold);font-size:0.8rem;margin-bottom:0.75rem;letter-spacing:0.04em}
+
+/* ─── PATHWAYS ─── */
+.pathways{background:var(--bg-alt);padding:7rem 0}
+.pw-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.125rem;margin-top:3.5rem}
+.pw-card{
+  background:var(--gc);border:1px solid var(--bd);
+  border-radius:1.375rem;padding:1.875rem;
+  display:flex;gap:1.125rem;align-items:flex-start;
+  transition:all 0.35s var(--sp);
+}
+.pw-card:hover{transform:translateY(-4px);border-color:var(--ember-b);box-shadow:0 20px 40px rgba(0,0,0,0.35)}
+.pw-em{font-size:2rem;line-height:1;flex-shrink:0;padding-top:0.15rem}
+.pw-name{font-size:1rem;font-weight:600;color:var(--t1);margin-bottom:0.375rem}
+.pw-desc{font-size:0.9rem;color:var(--t2);line-height:1.7;margin-bottom:0.875rem}
+.pw-chips{display:flex;flex-wrap:wrap;gap:0.3rem}
+.pw-chip{
+  font-size:0.7rem;color:var(--t3);
+  background:rgba(255,200,140,0.04);border:1px solid var(--bd);
+  border-radius:999px;padding:0.175rem 0.575rem;
+}
+
+/* ─── PRICING ─── */
+.pricing{background:var(--bg);padding:7rem 0}
+.price-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:1.25rem;max-width:48rem;margin:3.5rem auto 0;
+}
+.price-card{
+  background:var(--gc);border:1px solid var(--bd);
+  border-radius:1.5rem;padding:2.25rem;position:relative;overflow:hidden;
+}
+.price-card--pro{
+  border-color:var(--ember-b);
+  background:linear-gradient(160deg,rgba(40,22,11,0.95),rgba(18,11,6,0.95));
+}
+.price-card--pro::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gm);
+}
+.price-badge{
+  display:inline-block;background:var(--gm);color:var(--t1);
+  font-size:0.6875rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+  padding:0.225rem 0.75rem;border-radius:999px;margin-bottom:1rem;
+}
+.price-name{font-size:1.25rem;font-weight:600;color:var(--t1);margin-bottom:0.375rem}
+.price-desc{font-size:0.9rem;color:var(--t2);line-height:1.65;margin-bottom:1.5rem}
+.price-num{
+  font-family:var(--fd);font-size:3rem;font-weight:600;
+  color:var(--t1);line-height:1;margin-bottom:0.25rem;
+}
+.price-num--g{background:var(--gt);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.price-period{font-size:0.875rem;color:var(--t3);margin-bottom:1.5rem}
+.price-feats{list-style:none;margin-bottom:1.5rem;display:flex;flex-direction:column;gap:0.5rem}
+.price-feats li{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.9rem;color:var(--t2);line-height:1.5}
+.price-feats li::before{content:'✓';color:var(--sage);font-weight:700;flex-shrink:0;margin-top:0.075rem}
+
+.btn-price{
+  width:100%;padding:0.9375rem;border-radius:999px;
+  font-size:1rem;font-weight:600;border:none;cursor:pointer;
+  font-family:var(--fb);transition:all 0.35s var(--sp);display:block;text-align:center;
+}
+.btn-price--fill{background:var(--gm);color:var(--t1);box-shadow:var(--sh)}
+.btn-price--fill:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 18px 38px rgba(217,95,53,0.32);color:var(--t1)}
+.btn-price--line{background:rgba(255,200,140,0.05);color:var(--t1);border:1px solid var(--bd2)}
+.btn-price--line:hover{background:rgba(255,200,140,0.08);border-color:var(--ember-b);transform:translateY(-2px);color:var(--t1)}
+
+/* ─── FAQ ─── */
+.faq{background:var(--bg-alt);padding:7rem 0}
+.faq-list{max-width:44rem;margin:3.5rem auto 0;display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid var(--bd)}
+.faq-item:first-child{border-top:1px solid var(--bd)}
+.faq-q{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;
+  padding:1.375rem 0;
+  background:none;border:none;cursor:pointer;font-family:var(--fb);
+  font-size:1rem;font-weight:600;color:var(--t1);text-align:left;
+}
+.faq-q:hover{color:var(--te)}
+.faq-q svg{width:1.125rem;height:1.125rem;color:var(--t3);flex-shrink:0;transition:transform 0.3s ease}
+.faq-item.open .faq-q svg{transform:rotate(45deg)}
+.faq-item.open .faq-q{color:var(--te)}
+.faq-a{
+  font-size:0.9375rem;color:var(--t2);line-height:1.75;
+  max-height:0;overflow:hidden;transition:max-height 0.4s var(--sm),padding 0.3s ease;
+}
+.faq-item.open .faq-a{max-height:20rem;padding-bottom:1.375rem}
+
+/* ─── FINAL CTA ─── */
+.final{
+  background:var(--bg);
+  padding:9rem 0 8rem;text-align:center;
+}
+.final-h2{
+  font-family:var(--fd);
+  font-size:clamp(2.75rem,5.2vw,4.875rem);
+  font-weight:600;line-height:1.04;letter-spacing:-0.03em;
+  color:var(--t1);margin-bottom:1.375rem;
+}
+.final-h2 em{
+  font-style:italic;
+  background:var(--gt);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+}
+.final-p{
+  font-size:1.0625rem;color:var(--t2);line-height:1.78;
+  max-width:38ch;margin:0 auto 2.5rem;
+}
+.final-trust{
+  display:flex;justify-content:center;align-items:center;
+  gap:1.5rem;flex-wrap:wrap;margin-top:1.5rem;
+}
+
+/* ─── FOOTER ─── */
+footer{background:var(--bg);border-top:1px solid var(--bd);padding:2.25rem 0}
+.footer-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.25rem}
+.footer-logo{font-family:var(--fd);font-size:1.25rem;font-weight:600;color:var(--t1)}
+.footer-logo em{font-style:italic;color:var(--te)}
+.footer-links{display:flex;gap:1.75rem}
+.footer-links a{font-size:0.875rem;color:var(--t3);transition:color 0.2s}
+.footer-links a:hover{color:var(--te)}
+.footer-note{font-size:0.8rem;color:var(--t4)}
+
+
+/* ─── HONEST / DISCLAIMER ─── */
+.honest{padding:7rem 0}
+.honest-grid{display:flex;flex-direction:column;gap:3rem}
+.honest-cols{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.honest-col{
+  background:var(--gc);border:1px solid var(--bd);
+  border-radius:1.25rem;padding:1.75rem;
+}
+.honest-col--is{border-color:var(--sage-s)}
+.honest-col--not{border-color:rgba(255,100,80,0.12)}
+.honest-col-head{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem}
+.honest-col-icon{
+  width:1.875rem;height:1.875rem;border-radius:50%;
+  background:var(--sage-s);border:1px solid var(--sage-b);
+  color:var(--sage);font-size:0.8125rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.honest-col-icon--no{
+  background:rgba(255,100,80,0.08);border-color:rgba(255,100,80,0.18);
+  color:rgba(255,130,110,0.8);
+}
+.honest-col-title{font-size:0.9375rem;font-weight:700;color:var(--t1)}
+.honest-list{list-style:none;display:flex;flex-direction:column;gap:0.625rem}
+.honest-list li{
+  font-size:0.9rem;color:var(--t2);line-height:1.6;
+  padding-left:1rem;position:relative;
+}
+.honest-list li::before{
+  content:'·';position:absolute;left:0;color:var(--t3);font-weight:700;
+}
+
+.crisis-bar{
+  margin-top:2rem;
+  background:rgba(255,100,80,0.06);
+  border:1px solid rgba(255,100,80,0.15);
+  border-radius:1.125rem;padding:1.5rem 1.75rem;
+  display:flex;gap:1.125rem;align-items:flex-start;
+}
+.crisis-bar-icon{font-size:1.5rem;flex-shrink:0;line-height:1;margin-top:0.1rem}
+.crisis-bar-title{font-size:0.9375rem;font-weight:600;color:var(--t1);margin-bottom:0.375rem}
+.crisis-bar-text{font-size:0.9rem;color:var(--t2);line-height:1.7}
+.crisis-bar-text a{color:var(--te);text-decoration:underline;text-decoration-color:var(--ember-b)}
+.crisis-bar-text a:hover{color:#ff9060}
+
+/* ─── SCROLL REVEAL ─── */
+.r{opacity:0;transform:translateY(22px);transition:opacity 0.65s ease,transform 0.65s var(--sm)}
+.r.in{opacity:1;transform:none}
+.r.d1{transition-delay:0.1s}.r.d2{transition-delay:0.2s}.r.d3{transition-delay:0.3s}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  nav{padding:0.875rem 1.25rem}
+  .w{padding:0 1.25rem}
+  .honest-cols{grid-template-columns:1fr}
+  /* Hide desktop nav links, show hamburger */
+  .nav-links{display:none}
+  .nav-ham{display:flex}
+
+  /* Hero */
+  .hero{padding:6rem 0 4rem}
+  .hero-inner{grid-template-columns:1fr;text-align:center;gap:3rem}
+  .hero-p{margin:0 auto 2rem;max-width:none}
+  .hero-btns{justify-content:center}
+  .hero-trust{justify-content:center}
+  .hero-disq{justify-content:center}
+  .hero-phone{order:2}
+  .badge{display:none}
+
+  /* Pain */
+  .pain-grid{grid-template-columns:1fr;gap:3rem}
+  .pain-quote{border-left:none;padding-left:0;border-top:2px solid var(--ember-b);padding-top:1.5rem}
+
+  /* Diff */
+  .diff-grid{grid-template-columns:1fr;max-width:28rem;margin-left:auto;margin-right:auto}
+  .not-like{display:none} /* hide table on mobile */
+
+  /* Proof */
+  .proof-grid{grid-template-columns:1fr}
+
+  /* Pathways */
+  .pw-grid{grid-template-columns:1fr}
+
+  /* Pricing */
+  .price-grid{grid-template-columns:1fr;max-width:28rem;margin-left:auto;margin-right:auto}
+  .price-card--pro{order:-1}
+
+  /* Cred strip */
+  .cred-inner{gap:2rem}
+}
+
+@media(max-width:540px){
+  .hero-phone{display:none}
+  .hero{min-height:auto;padding:5.5rem 0 3.5rem}
+  .hero-h1{font-size:2.75rem}
+  .proof-featured{padding:2rem}
+  .pf-quote{font-size:1.25rem}
+  .final{padding:6rem 0 5rem}
+  .footer-row{flex-direction:column;text-align:center}
+  .footer-links{justify-content:center}
+}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainnav">
+  <div class="logo">
+    <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nav-gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d95f35"/><stop offset="100%" stop-color="#e8a030"/></linearGradient>
+    <linearGradient id="nav-gm2" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#d95f35"/><stop offset="100%" stop-color="#f5c865"/></linearGradient>
+    <linearGradient id="nav-gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5c865" stop-opacity="0.9"/><stop offset="100%" stop-color="#e8a030" stop-opacity="0.6"/></linearGradient>
+  </defs>
+  <path d="M 9 34 A 18 18 0 1 1 39 34" stroke="url(#nav-gm)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M 15 36 A 12 12 0 1 1 33 36" stroke="url(#nav-gm2)" stroke-width="1.75" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <circle cx="24" cy="24" r="3.5" fill="url(#nav-gg)"/>
+  <circle cx="24" cy="24" r="6" fill="#e8a030" opacity="0.1"/>
+  <path d="M 12 38 Q 24 35 36 38" stroke="url(#nav-gm)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+</svg>
+    Wello<em>vie</em>
+  </div>
+
+  <!-- Desktop anchor links — hidden until scrolled past hero -->
+  <div class="nav-links" id="navLinks">
+    <a href="#how-it-works" class="nav-link" data-section="how-it-works">How it works</a>
+    <a href="#pathways"     class="nav-link" data-section="pathways">Pathways</a>
+    <a href="#proof"        class="nav-link" data-section="proof">Reviews</a>
+    <a href="#pricing"      class="nav-link" data-section="pricing">Pricing</a>
+    <a href="#faq"          class="nav-link" data-section="faq">FAQ</a>
+  </div>
+
+  <div class="nav-right">
+    <a href="index.html" class="btn-nav">Start free →</a>
+    <!-- Mobile hamburger -->
+    <button class="nav-ham" id="navHam" aria-label="Menu" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-progress" id="navProgress"></div>
+</nav>
+
+<!-- Mobile menu drawer -->
+<div class="nav-drawer" id="navDrawer">
+  <a href="#how-it-works" class="drawer-link" onclick="closeMenu()">How it works</a>
+  <a href="#pathways"     class="drawer-link" onclick="closeMenu()">Pathways</a>
+  <a href="#proof"        class="drawer-link" onclick="closeMenu()">Reviews</a>
+  <a href="#pricing"      class="drawer-link" onclick="closeMenu()">Pricing</a>
+  <a href="#faq"          class="drawer-link" onclick="closeMenu()">FAQ</a>
+  <a href="index.html"    class="drawer-cta">Start free — no card needed →</a>
+</div>
+<div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
+
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="w">
+    <div class="hero-inner">
+
+      <div>
+        <div class="hero-disq">
+          <span>Not for everyone.</span> &nbsp;If you're looking for affirmations and 5-minute habits, this isn't it.
+        </div>
+
+        <h1 class="hero-h1">
+          You understand<br>
+          yourself less than<br>
+          you think you <em>do.</em>
+        </h1>
+
+        <p class="hero-p">
+          Wellovie is built for the person who has read the books,
+          maybe done the therapy, and still finds themselves
+          reacting in the same patterns. Again.
+          It teaches the emotional mechanics nobody ever explained to you — properly, with the science behind it.
+        </p>
+
+        <div class="hero-btns">
+          <a href="index.html" class="btn">
+            Start free — no card needed
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <button class="btn-ghost" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+            See how it works
+          </button>
+        </div>
+
+        <div class="hero-trust">
+          <div class="trust-i">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            No credit card
+          </div>
+          <div class="trust-i">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Real psychology — not wellness fluff
+          </div>
+          <div class="trust-i">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Private. No ads. Ever.
+          </div>
+        </div>
+        <p class="hero-note">
+          Wellovie is psychoeducation — not therapy, not a clinical service, not a crisis line.
+          If you're in crisis, please <a href="https://www.crisistextline.org" target="_blank" rel="noopener">reach out to a professional</a>.
+        </p>
+      </div>
+
+      <!-- Phone mockup -->
+      <div class="hero-phone">
+        <div class="phone-wrap">
+          <div class="phone-glow"></div>
+          <div class="badge badge--a">
+            <div class="badge-t">🔥 4-day streak</div>
+            <div class="badge-s">Keep going</div>
+          </div>
+          <div class="badge badge--b">
+            <div class="badge-t">✓ Tool unlocked</div>
+            <div class="badge-s">Name It to Soften It</div>
+          </div>
+          <div class="phone">
+            <div class="p-pill"></div>
+            <div class="p-body">
+              <div class="p-greet">Good evening,<br><span class="p-greet-em">how are you?</span></div>
+              <div class="p-card">
+                <div class="p-lbl">Continue</div>
+                <div class="p-title">Your Body Knows First</div>
+                <div class="p-sub">Emotional Foundations · Module 2</div>
+                <div class="p-prog"><div class="p-prog-f"></div></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.45rem">
+                <div class="p-row"><div class="p-em">🌊</div><div><div class="p-rn">Emotional Foundations</div><div class="p-rs">2 of 6 complete</div></div></div>
+                <div class="p-row"><div class="p-em">🪞</div><div><div class="p-rn">Knowing Yourself</div><div class="p-rs">Unlocks next</div></div></div>
+                <div class="p-row"><div class="p-em">🤝</div><div><div class="p-rn">Authentic Connection</div><div class="p-rs">Coming soon</div></div></div>
+              </div>
+            </div>
+            <div class="p-nav">
+              <div class="pni"><div class="pnd pnd--on"></div><div class="pnl pnl--on">Today</div></div>
+              <div class="pni"><div class="pnd"></div><div class="pnl">Learn</div></div>
+              <div class="pni"><div class="pnd"></div><div class="pnl">Tools</div></div>
+              <div class="pni"><div class="pnd"></div><div class="pnl">You</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ CREDIBILITY STRIP ═══ -->
+<div class="cred">
+  <div class="w">
+    <div class="cred-inner">
+      <div class="cred-item r">
+        <div class="cred-item-icon">🧠</div>
+        <div class="cred-item-label">The science behind why you are the way you are</div>
+      </div>
+      <div class="cred-item r d1">
+        <div class="cred-item-icon">🔒</div>
+        <div class="cred-item-label">Your data never leaves your account</div>
+      </div>
+      <div class="cred-item r d2">
+        <div class="cred-item-icon">📵</div>
+        <div class="cred-item-label">No ads. No tracking. No BS.</div>
+      </div>
+      <div class="cred-item r d3">
+        <div class="cred-item-icon">⚡</div>
+        <div class="cred-item-label">Works offline — installs like an app</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ PAIN / AGITATION ═══ -->
+<section class="pain">
+  <div class="w w--md">
+    <div class="pain-grid">
+      <div class="pain-quote r">
+        "Most wellness apps help you feel better about <strong>not changing.</strong>
+        <br><br>
+        Wellovie is for the ones who are done with that."
+      </div>
+      <div class="pain-list">
+        <div class="pain-item r">
+          <div class="pain-icon">🔁</div>
+          <div>
+            <div class="pain-title">You keep reacting the same way</div>
+            <div class="pain-body">You know the pattern. You've named it. You've journalled about it. You still do it. Because naming a pattern doesn't change it — understanding its mechanism does.</div>
+          </div>
+        </div>
+        <div class="pain-item r d1">
+          <div class="pain-icon">📚</div>
+          <div>
+            <div class="pain-title">You've read the books but nothing stuck</div>
+            <div class="pain-body">Self-help books give you frameworks. They don't give you practice. The gap between knowing something and being able to do it is where most people stay stuck.</div>
+          </div>
+        </div>
+        <div class="pain-item r d2">
+          <div class="pain-icon">🤝</div>
+          <div>
+            <div class="pain-title">Your relationships cost you yourself</div>
+            <div class="pain-body">You lose yourself in them, or keep people at arm's length. Either way you're running attachment patterns you've never actually examined — because nobody showed you how.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ DIFFERENTIATORS ═══ -->
+<section class="diff" id="how-it-works">
+  <div class="w">
+    <div class="r">
+      <div class="eyebrow">Why it's different</div>
+      <h2 class="h2">The science. Not the <em>sentiment.</em></h2>
+      <p class="lead">Every module explains not just what to do, but why you are the way you are — and how that actually changes.</p>
+    </div>
+
+    <div class="diff-grid">
+      <div class="diff-card r">
+        <div class="diff-icon">🧠</div>
+        <div class="diff-title">Mechanisms, not mantras</div>
+        <div class="diff-body">We explain why you react the way you do at a neurological and psychological level. Understanding the machine helps you change it. Affirmations don't.</div>
+      </div>
+      <div class="diff-card r d1">
+        <div class="diff-icon">🌑</div>
+        <div class="diff-title">Goes into the shadow</div>
+        <div class="diff-body">The parts of you nobody talks about. The childhood patterns. The self-sabotage. The ways you keep yourself small. That's where the real work is.</div>
+      </div>
+      <div class="diff-card r d2">
+        <div class="diff-icon">⚒️</div>
+        <div class="diff-title">Practice, not just reading</div>
+        <div class="diff-body">Worksheets, reflections, exercises. Tools you can use in real moments — not just content to consume and forget. Progress saves. You can return anytime.</div>
+      </div>
+    </div>
+
+    <!-- Comparison table — desktop only -->
+    <div class="not-like r" style="margin-top:3.5rem">
+      <div class="not-like-head">
+        <div class="nl-h">What you need</div>
+        <div class="nl-h">Other apps</div>
+        <div class="nl-h nl-h--us">🌑 Wellovie</div>
+      </div>
+      <div class="not-like-row">
+        <div class="nl-feat">Explains the psychology behind it</div>
+        <div class="nl-check nl-no">✕</div>
+        <div class="nl-check nl-us">✓</div>
+      </div>
+      <div class="not-like-row">
+        <div class="nl-feat">Explains the psychology behind it</div>
+        <div class="nl-check nl-no">✕</div>
+        <div class="nl-check nl-us">✓</div>
+      </div>
+      <div class="not-like-row">
+        <div class="nl-feat">Addresses childhood patterns</div>
+        <div class="nl-check nl-no">✕</div>
+        <div class="nl-check nl-us">✓</div>
+      </div>
+      <div class="not-like-row">
+        <div class="nl-feat">Crisis tools always free</div>
+        <div class="nl-check nl-no">✕</div>
+        <div class="nl-check nl-us">✓</div>
+      </div>
+      <div class="not-like-row">
+        <div class="nl-feat">No ads. No streak pressure.</div>
+        <div class="nl-check nl-no">✕</div>
+        <div class="nl-check nl-us">✓</div>
+      </div>
+      <div class="not-like-row">
+        <div class="nl-feat">Gamification &amp; engagement loops</div>
+        <div class="nl-check nl-yes">✓</div>
+        <div class="nl-check nl-no">✕</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ SOCIAL PROOF ═══ -->
+<section class="proof" id="proof">
+  <div class="w">
+    <div class="r" style="text-align:center;margin-bottom:3rem">
+      <div class="eyebrow">What people say</div>
+      <h2 class="h2">From people who've <em>tried everything else.</em></h2>
+    </div>
+
+    <!-- Featured testimonial — large -->
+    <div class="proof-featured r">
+      <div class="pf-quote">
+        I've done two years of therapy. I've read every Bessel van der Kolk book.
+        This is the first thing that made me understand <em>why</em> I react the way I do —
+        not just that I do. The module on the nervous system alone was worth it.
+      </div>
+      <div class="pf-attr">
+        <div class="pf-av">🧡</div>
+        <div>
+          <div class="pf-stars">★★★★★</div>
+          <div class="pf-name">Maya R., 31</div>
+          <div class="pf-role">Completed Emotional Foundations · Ex-therapy client</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Supporting testimonials -->
+    <div class="proof-grid">
+      <div class="proof-card r">
+        <div class="pc-stars">★★★★★</div>
+        <div class="pc-quote">
+          I kept waiting for it to go generic. It never did. The parts you keep hidden module actually made me uncomfortable — which meant it was working.
+        </div>
+        <div class="pc-author">
+          <div class="pc-av" style="background:var(--gold-s);border:1px solid var(--gold-b)">💛</div>
+          <div>
+            <div class="pc-name">James K., 27</div>
+            <div class="pc-role">Completed Knowing Yourself</div>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card r d1">
+        <div class="pc-stars">★★★★★</div>
+        <div class="pc-quote">
+          The box breathing at 2am when I was spiralling actually worked. I physically felt my nervous system shift. Because I understood the mechanism — it wasn't just "breathe slowly."
+        </div>
+        <div class="pc-author">
+          <div class="pc-av" style="background:var(--rose-s);border:1px solid var(--rose-b)">🌸</div>
+          <div>
+            <div class="pc-name">Sofia T., 29</div>
+            <div class="pc-role">On Authentic Connection</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ PATHWAYS ═══ -->
+<section class="pathways" id="pathways">
+  <div class="w">
+    <div class="r">
+      <div class="eyebrow">The curriculum</div>
+      <h2 class="h2">24 modules. Four pathways.<br><em>One complete picture.</em></h2>
+      <p class="lead">Not articles. Not 2-minute reads. 15–20 minute modules with real exercises, reflections, and tools you keep forever.</p>
+    </div>
+    <div class="pw-grid">
+      <div class="pw-card r">
+        <div class="pw-em">🌊</div>
+        <div>
+          <div class="pw-name">Emotional Foundations</div>
+          <div class="pw-desc">What emotions actually are, how your body holds them, and why you react the way you do. The bedrock everything else is built on. <em>Free to start.</em></div>
+          <div class="pw-chips"><span class="pw-chip">What emotions actually are</span><span class="pw-chip">Your body knows first</span><span class="pw-chip">Self-compassion</span><span class="pw-chip">+ 3 more</span></div>
+        </div>
+      </div>
+      <div class="pw-card r d1">
+        <div class="pw-em">🪞</div>
+        <div>
+          <div class="pw-name">Knowing Yourself</div>
+          <div class="pw-desc">Who told you that was you? Values, identity, the parts you keep hidden. Distinguishing who you are from who you were taught to be.</div>
+          <div class="pw-chips"><span class="pw-chip">Who told you that was you?</span><span class="pw-chip">What you actually value</span><span class="pw-chip">The parts you keep hidden</span><span class="pw-chip">+ 3 more</span></div>
+        </div>
+      </div>
+      <div class="pw-card r d2">
+        <div class="pw-em">🤝</div>
+        <div>
+          <div class="pw-name">Authentic Connection</div>
+          <div class="pw-desc">How attachment actually works. The art of real listening. Conflict as a path to closeness. Relationships that don't cost you yourself.</div>
+          <div class="pw-chips"><span class="pw-chip">How connection works</span><span class="pw-chip">Saying what's actually true</span><span class="pw-chip">Conflict as closeness</span><span class="pw-chip">+ 3 more</span></div>
+        </div>
+      </div>
+      <div class="pw-card r d3">
+        <div class="pw-em">🌿</div>
+        <div>
+          <div class="pw-name">Deliberate Living</div>
+          <div class="pw-desc">The difference between a good life and a full calendar. Meaning, enough, the architecture of a good day. A life that is actually yours.</div>
+          <div class="pw-chips"><span class="pw-chip">Good life vs full calendar</span><span class="pw-chip">Meaning</span><span class="pw-chip">A life that is yours</span><span class="pw-chip">+ 3 more</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ HONEST SECTION ═══ -->
+<section class="honest alt">
+  <div class="w w--md">
+    <div class="honest-grid">
+      <div class="r">
+        <div class="eyebrow">Let's be clear</div>
+        <h2 class="h2">What this is.<br><em>What it isn't.</em></h2>
+        <p class="lead">We'd rather you know exactly what Wellovie is before you sign up than feel misled after.</p>
+      </div>
+      <div class="honest-cols r d1">
+        <div class="honest-col honest-col--is">
+          <div class="honest-col-head">
+            <div class="honest-col-icon">✓</div>
+            <div class="honest-col-title">Wellovie is</div>
+          </div>
+          <ul class="honest-list">
+            <li>Psychoeducation — teaching you how emotions and psychology work</li>
+            <li>Content grounded in real psychology — not intuition, not trends</li>
+            <li>A place to develop skills and build self-understanding</li>
+            <li>A complement to therapy, not a replacement for it</li>
+            <li>Appropriate for generally healthy adults doing personal growth work</li>
+          </ul>
+        </div>
+        <div class="honest-col honest-col--not">
+          <div class="honest-col-head">
+            <div class="honest-col-icon honest-col-icon--no">✕</div>
+            <div class="honest-col-title">Wellovie is not</div>
+          </div>
+          <ul class="honest-list">
+            <li>Therapy, counselling, or clinical treatment of any kind</li>
+            <li>A crisis service — if you're in crisis, please call or text a helpline</li>
+            <li>A substitute for professional mental health care</li>
+            <li>Appropriate for acute mental health conditions without professional support</li>
+            <li>Staffed by therapists or licensed clinicians</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="crisis-bar r">
+      <div class="crisis-bar-icon">🆘</div>
+      <div class="crisis-bar-body">
+        <div class="crisis-bar-title">If you're in crisis right now</div>
+        <div class="crisis-bar-text">
+          Please reach out to a crisis line. In the US: text <strong>HOME</strong> to <strong>741741</strong> (Crisis Text Line) or call <strong>988</strong> (Suicide &amp; Crisis Lifeline). 
+          <a href="https://www.befrienders.org" target="_blank" rel="noopener">Find international resources here →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ PRICING ═══ -->
+<section class="pricing" id="pricing">
+  <div class="w">
+    <div class="r" style="text-align:center">
+      <div class="eyebrow">Pricing</div>
+      <h2 class="h2">Start free.<br><em>Go deeper when ready.</em></h2>
+      <p class="lead" style="margin:0 auto;max-width:40ch">The first modules of every pathway are free. No card. No time limit. No "free trial" that expires.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card r">
+        <div class="price-name">Free</div>
+        <div class="price-desc">Five modules across all four pathways, plus every crisis tool, forever. No card required.</div>
+        <div class="price-num">$0</div>
+        <div class="price-period">Always free. Always.</div>
+        <ul class="price-feats">
+          <li>5 modules across all 4 pathways</li>
+          <li>All crisis tools, always free</li>
+          <li>Daily check-in &amp; mood tracking</li>
+          <li>Progress saves between sessions</li>
+          <li>Works offline as a PWA</li>
+        </ul>
+        <a href="index.html" class="btn-price btn-price--line">Get started free</a>
+      </div>
+      <div class="price-card price-card--pro r d1">
+        <div class="price-badge">Most popular</div>
+        <div class="price-name">Pro</div>
+        <div class="price-desc">All 24 modules, all tools, everything unlocked. No drip-feeding. No artificial limits.</div>
+        <div class="price-num price-num--g">$9<span style="font-size:1.5rem;font-family:var(--fb)">/mo</span></div>
+        <div class="price-period">Or $79/year — save 27%</div>
+        <ul class="price-feats">
+          <li>All 24 modules across 4 pathways</li>
+          <li>Every tool, immediately unlocked</li>
+          <li>Worksheet history &amp; reflections</li>
+          <li>Everything in Free</li>
+        </ul>
+        <a href="index.html" class="btn-price btn-price--fill">Start 7-day free trial →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ FAQ ═══ -->
+<section class="faq" id="faq">
+  <div class="w">
+    <div class="r" style="text-align:center;margin-bottom:0">
+      <div class="eyebrow">Common questions</div>
+      <h2 class="h2">Honest answers.</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is this a replacement for therapy?
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <div class="faq-a">No — and we say that clearly upfront. Wellovie is psychoeducation: it teaches you the mechanics of how you work emotionally. Therapy is a relationship with a trained professional. Both have value. Many people use Wellovie alongside therapy, or after therapy, to go deeper on concepts they've encountered. If you're in crisis, please reach out to a professional.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How is this different from reading a psychology book?
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <div class="faq-a">Books give you frameworks. Wellovie gives you practice. Each module combines explanation with exercises, reflections, and tools you apply to your actual life — not hypothetical scenarios. The gap between knowing and being able to do is where most people stay stuck. We try to close it.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What does "works offline" mean?
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <div class="faq-a">Wellovie is a Progressive Web App (PWA). On iPhone, open this page in Safari, tap Share → Add to Home Screen. On Android, open in Chrome, tap Menu → Install app. It then lives on your home screen and works without an internet connection — no App Store required.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What happens to my data?
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <div class="faq-a">Your reflections and worksheet responses are stored securely in your account. They are never shared with third parties, never used to train AI models, and never sold. There are no ads in Wellovie products — we have no incentive to monetise your data. You can delete your account and all data at any time.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How long does each module take?
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        </button>
+        <div class="faq-a">15–20 minutes if you read and do the exercises. Some people take longer because they sit with the reflections. Progress saves automatically — you can leave mid-module and pick up exactly where you were. There's no streak pressure here.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final">
+  <div class="w w--sm" style="text-align:center">
+    <div class="eyebrow r">Begin</div>
+    <h2 class="final-h2 r">
+      The version of you<br>
+      who understands<br>
+      <em>themselves</em> starts here.
+    </h2>
+    <p class="final-p r">
+      Free to start. No card. No App Store.
+      Just an honest attempt to understand yourself better.
+    </p>
+    <a href="index.html" class="btn r" style="display:inline-flex;margin:0 auto;font-size:1.0625rem;padding:1.0625rem 2.25rem">
+      Create your free account
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </a>
+    <div class="final-trust r">
+      <div class="trust-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Free to start</div>
+      <div class="trust-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>No App Store</div>
+      <div class="trust-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Works offline</div>
+      <div class="trust-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Cancel anytime</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="w">
+    <div class="footer-row">
+      <div class="footer-logo" style="display:flex;align-items:center;gap:0.5rem">
+        <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ft-gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d95f35"/><stop offset="100%" stop-color="#e8a030"/></linearGradient>
+    <linearGradient id="ft-gm2" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#d95f35"/><stop offset="100%" stop-color="#f5c865"/></linearGradient>
+    <linearGradient id="ft-gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5c865" stop-opacity="0.9"/><stop offset="100%" stop-color="#e8a030" stop-opacity="0.6"/></linearGradient>
+  </defs>
+  <path d="M 9 34 A 18 18 0 1 1 39 34" stroke="url(#ft-gm)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M 15 36 A 12 12 0 1 1 33 36" stroke="url(#ft-gm2)" stroke-width="1.75" stroke-linecap="round" fill="none" opacity="0.6"/>
+  <circle cx="24" cy="24" r="3.5" fill="url(#ft-gg)"/>
+  <circle cx="24" cy="24" r="6" fill="#e8a030" opacity="0.1"/>
+  <path d="M 12 38 Q 24 35 36 38" stroke="url(#ft-gm)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+</svg>
+        Wello<em>vie</em>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="disclaimer.html">Disclaimer</a>
+      </div>
+      <div class="footer-note">© 2025 Wellovie · Psychoeducation only — not therapy, not a clinical service. If you're in crisis, please contact a helpline.</div>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+// ── SCROLL REVEAL ──
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)} });
+}, {threshold:0.08, rootMargin:'0px 0px -20px 0px'});
+document.querySelectorAll('.r').forEach(el => obs.observe(el));
+
+// ── FAQ ACCORDION ──
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ── NAV: scroll-aware active links + progress bar + show/hide links ──
+const navLinks  = document.getElementById('navLinks');
+const navProg   = document.getElementById('navProgress');
+const allLinks  = document.querySelectorAll('.nav-link');
+const hero      = document.querySelector('.hero');
+
+// Sections to track for active state
+const sections  = ['how-it-works','pathways','proof','pricing','faq'].map(id => document.getElementById(id)).filter(Boolean);
+
+let heroBottom = 0;
+function updateHeroBottom() {
+  heroBottom = hero ? hero.offsetTop + hero.offsetHeight - 80 : 400;
+}
+updateHeroBottom();
+window.addEventListener('resize', updateHeroBottom, {passive:true});
+
+window.addEventListener('scroll', () => {
+  const sy = window.scrollY;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+
+  // Progress bar
+  if(navProg) navProg.style.width = docH > 0 ? (sy / docH * 100) + '%' : '0%';
+
+  // Show nav links after hero
+  if(navLinks) {
+    if(sy > heroBottom) navLinks.classList.add('visible');
+    else navLinks.classList.remove('visible');
+  }
+
+  // Nav shadow
+  document.querySelector('nav').style.boxShadow = sy > 8 ? '0 1px 24px rgba(0,0,0,0.45)' : 'none';
+
+  // Active section highlight
+  let current = '';
+  sections.forEach(sec => {
+    if(sec && sy >= sec.offsetTop - 120) current = sec.id;
+  });
+  allLinks.forEach(link => {
+    link.classList.toggle('active', link.dataset.section === current);
+  });
+
+}, {passive:true});
+
+// ── MOBILE MENU ──
+function toggleMenu() {
+  const ham     = document.getElementById('navHam');
+  const drawer  = document.getElementById('navDrawer');
+  const overlay = document.getElementById('navOverlay');
+  const isOpen  = drawer.classList.contains('open');
+  ham.classList.toggle('open', !isOpen);
+  drawer.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+function closeMenu() {
+  document.getElementById('navHam').classList.remove('open');
+  document.getElementById('navDrawer').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close drawer on ESC
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMenu(); });
+
+// Smooth scroll offset for fixed nav height
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if(!target) return;
+    e.preventDefault();
+    const offset = 72; // nav height
+    window.scrollTo({top: target.offsetTop - offset, behavior: 'smooth'});
+  });
+});
+</script>
+
+</body>
+</html>

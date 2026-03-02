@@ -513,7 +513,7 @@
       try {
         const { data: { session } } = await sbClient.auth.getSession();
         if (session) {
-          const ack = localStorage.getItem('innershadow_disclaimer_acknowledged');
+          const ack = localStorage.getItem('wellovie_disclaimer_acknowledged');
           showLoading('Welcome back...');
           setTimeout(() => {
             window.location.href = ack === 'true' ? 'app.html' : 'disclaimer.html';
