@@ -220,13 +220,9 @@ const Nav = {
     setTimeout(() => { window.location.href = url; }, 200);
   },
 
-  // Go back safely
+  // Go back safely — always use fallback since SW breaks history
   back(fallback = '/app.html') {
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.href = fallback;
-    }
+    window.location.href = fallback;
   },
 
   // Get URL param
