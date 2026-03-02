@@ -3,9 +3,9 @@
 // Handles caching, offline support, and background sync
 // ================================================================
 
-const APP_VERSION = 'v1.0.0';
-const CACHE_NAME = `innershadow-${APP_VERSION}`;
-const RUNTIME_CACHE = `innershadow-runtime-${APP_VERSION}`;
+const APP_VERSION = 'v1.1.0';
+const CACHE_NAME = `wellovie-${APP_VERSION}`;
+const RUNTIME_CACHE = `wellovie-runtime-${APP_VERSION}`;
 
 // Files to cache immediately on install
 // These are the shell of the app — everything needed to load
@@ -80,7 +80,7 @@ self.addEventListener('activate', event => {
         return Promise.all(
           cacheNames
             .filter(name => {
-              // Delete old InnerShadow caches
+              // Delete old Wellovie caches
               return name.startsWith('innershadow-') && 
                      name !== CACHE_NAME &&
                      name !== RUNTIME_CACHE;
@@ -133,20 +133,15 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Styles, scripts, images — cache first (static assets only)
+  // App shell (HTML, CSS, JS) — cache first
+  // These only change on new deploys which bump APP_VERSION
   if (
+    request.destination === 'document' ||
     request.destination === 'style' ||
     request.destination === 'script' ||
-    request.destination === 'image' ||
-    request.url.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff2?)$/)
+    request.destination === 'image'
   ) {
     event.respondWith(cacheFirst(request, CACHE_NAME));
-    return;
-  }
-
-  // HTML documents - network first with redirect handling
-  if (request.destination === 'document') {
-    event.respondWith(handleDocumentRequest(request));
     return;
   }
 
@@ -159,71 +154,29 @@ self.addEventListener('fetch', event => {
 // CACHING STRATEGIES
 // ================================================================
 
-// Special handler for HTML documents that properly manages redirects
-async function handleDocumentRequest(request) {
-  const cache = await caches.open(CACHE_NAME);
-  
-  try {
-    // Try network first for HTML
-    const response = await fetch(request);
-    
-    // If it's a redirect, don't cache it
-    if (response.redirected) {
-      console.log('[SW] Document redirect detected to:', response.url);
-      return response; // Return the redirect response as-is
-    }
-    
-    // Cache successful, non-redirected HTML responses
-    if (response.ok) {
-      const responseToCache = response.clone();
-      cache.put(request, responseToCache);
-    }
-    
-    return response;
-  } catch (err) {
-    // If offline, return cached version
-    const cached = await cache.match(request);
-    if (cached && !cached.redirected) {
-      return cached;
-    }
-    
-    // Return offline page
-    const offlinePage = await cache.match('/offline.html');
-    return offlinePage || new Response(
-      offlineHTML(),
-      { headers: { 'Content-Type': 'text/html' } }
-    );
-  }
-}
-
 // Cache First — serve from cache, fall back to network
-// Best for: static assets (CSS, JS, images)
+// Best for: app shell, fonts, static assets
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
 
   if (cached) {
-    // CRITICAL: Never return redirected responses from cache
-    if (cached.redirected) {
-      console.log('[SW] Ignoring cached redirect for:', request.url);
-      // Fall through to network
-    } else {
-      return cached;
-    }
+    return cached;
   }
 
   try {
     const response = await fetch(request);
-    
-    // Only cache successful, non-redirected responses
-    if (response.ok && !response.redirected) {
+    if (response.ok) {
       cache.put(request, response.clone());
     }
-    
     return response;
   } catch (err) {
-    // Return a simple error response
-    return new Response('Network error', { status: 503 });
+    // Return offline page if we have one
+    const offlinePage = await cache.match('/offline.html');
+    return offlinePage || new Response(
+      offlineHTML(),
+      { headers: { 'Content-Type': 'text/html' } }
+    );
   }
 }
 
@@ -234,16 +187,13 @@ async function networkFirst(request, cacheName) {
 
   try {
     const response = await fetch(request);
-    if (response.ok && !response.redirected) {
+    if (response.ok) {
       cache.put(request, response.clone());
     }
     return response;
   } catch (err) {
     const cached = await cache.match(request);
-    if (cached && !cached.redirected) {
-      return cached;
-    }
-    return new Response(
+    return cached || new Response(
       'Network error. Please check your connection.',
       { status: 503 }
     );
@@ -258,18 +208,14 @@ async function staleWhileRevalidate(request, cacheName) {
 
   // Fetch in background regardless
   const fetchPromise = fetch(request).then(response => {
-    if (response.ok && !response.redirected) {
+    if (response.ok) {
       cache.put(request, response.clone());
     }
     return response;
   }).catch(() => null);
 
-  // Return cache immediately if we have it and it's not a redirect
-  if (cached && !cached.redirected) {
-    return cached;
-  }
-  
-  return fetchPromise;
+  // Return cache immediately if we have it
+  return cached || fetchPromise;
 }
 
 
@@ -285,7 +231,7 @@ self.addEventListener('push', event => {
     data = event.data.json();
   } catch (e) {
     data = {
-      title: 'InnerShadow',
+      title: 'Wellovie',
       body: event.data.text() || 'Your daily check-in is ready.'
     };
   }
@@ -315,7 +261,7 @@ self.addEventListener('push', event => {
 
   event.waitUntil(
     self.registration.showNotification(
-      data.title || 'InnerShadow',
+      data.title || 'Wellovie',
       options
     )
   );
@@ -430,7 +376,7 @@ function offlineHTML() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>InnerShadow — Offline</title>
+  <title>Wellovie — Offline</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -472,11 +418,11 @@ function offlineHTML() {
   <div>
     <div class="icon">🌑</div>
     <h1>You're offline</h1>
-    <p>InnerShadow needs a connection to sync your progress. Your data is safe — come back when you're connected.</p>
+    <p>Wellovie needs a connection to sync your progress. Your data is safe — come back when you're connected.</p>
     <button onclick="window.location.reload()">Try Again</button>
   </div>
 </body>
 </html>`;
 }
 
-console.log(`[SW] InnerShadow Service Worker ${APP_VERSION} loaded`);
+console.log(`[SW] Wellovie Service Worker ${APP_VERSION} loaded`);
