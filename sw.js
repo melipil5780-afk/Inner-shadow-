@@ -3,7 +3,7 @@
 // Handles caching, offline support, and background sync
 // ================================================================
 
-const APP_VERSION = 'v1.2.0';
+const APP_VERSION = 'v1.3.0';
 const CACHE_NAME = `wellovie-${APP_VERSION}`;
 const RUNTIME_CACHE = `wellovie-runtime-${APP_VERSION}`;
 
@@ -114,43 +114,42 @@ self.addEventListener('fetch', event => {
   // Skip chrome-extension and other non-http requests
   if (!request.url.startsWith('http')) return;
 
-  // Skip OAuth redirect URLs — SW cannot handle these
+  // Skip OAuth redirects
   if (url.searchParams.has('code') || url.searchParams.has('token') || url.searchParams.has('access_token')) {
     return;
   }
 
+  // NEVER intercept HTML page navigations — let browser handle these directly
+  // This prevents the redirected response error on auth flows
+  if (request.destination === 'document' || request.mode === 'navigate') {
+    return;
+  }
+
   // Supabase API calls — network only, never cache
-  // User data must always be fresh
   if (SUPABASE_PATTERN.test(request.url)) {
     event.respondWith(fetch(request));
     return;
   }
 
-  // Google Fonts — cache first, then network
+  // Google Fonts — cache first
   if (FONTS_PATTERN.test(request.url)) {
     event.respondWith(cacheFirst(request, RUNTIME_CACHE));
     return;
   }
 
-  // Module pages — cache on first visit, serve from cache after
-  if (MODULE_PATTERN.test(request.url)) {
-    event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE));
-    return;
-  }
-
-  // App shell (HTML, CSS, JS) — cache first
-  // These only change on new deploys which bump APP_VERSION
-  if (
-    request.destination === 'document' ||
-    request.destination === 'style' ||
-    request.destination === 'script' ||
-    request.destination === 'image'
-  ) {
+  // JS and CSS — cache first (versioned by SW version bump)
+  if (request.destination === 'style' || request.destination === 'script') {
     event.respondWith(cacheFirst(request, CACHE_NAME));
     return;
   }
 
-  // Everything else — network first with cache fallback
+  // Images — cache first
+  if (request.destination === 'image') {
+    event.respondWith(cacheFirst(request, RUNTIME_CACHE));
+    return;
+  }
+
+  // Everything else — network first
   event.respondWith(networkFirst(request, RUNTIME_CACHE));
 });
 
