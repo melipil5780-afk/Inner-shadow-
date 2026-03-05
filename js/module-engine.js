@@ -459,6 +459,14 @@ const ModuleEngine = (() => {
     }
   }
 
+  function restartModule() {
+    _currentStep = 0;
+    _answers = {};
+    render();
+    const scrollEl = document.getElementById('moduleScroll');
+    if (scrollEl) scrollEl.scrollTop = 0;
+  }
+
   function goBackToPathway() {
     const pathway = MODULE_PATHWAY_MAP[_moduleId];
     Nav.go(`/pathways/${pathway}/overview.html`);
@@ -1018,6 +1026,12 @@ const ModuleEngine = (() => {
           ` : ''}
           <button
             class="btn btn--ghost btn--sm"
+            onclick="ModuleEngine.restartModule()"
+          >
+            ↺ Start over
+          </button>
+          <button
+            class="btn btn--text btn--sm"
             onclick="ModuleEngine.goBackToPathway()"
           >
             Back to pathway
@@ -1119,6 +1133,7 @@ const ModuleEngine = (() => {
     init,
     next,
     back,
+    restartModule,
     goBackToPathway,
     goBackToApp,
     goToNextModule,
