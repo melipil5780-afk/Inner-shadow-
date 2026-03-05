@@ -1,5 +1,5 @@
 // ================================================================
-// INNERSHADOW — SERVICE WORKER
+// WELLOVIE — SERVICE WORKER
 // Handles caching, offline support, and background sync
 // ================================================================
 
@@ -77,7 +77,7 @@ self.addEventListener('activate', event => {
           cacheNames
             .filter(name => {
               // Delete old Wellovie caches
-              return name.startsWith('innershadow-') && 
+              return name.startsWith('wellovie-') && 
                      name !== CACHE_NAME &&
                      name !== RUNTIME_CACHE;
             })
@@ -240,7 +240,7 @@ self.addEventListener('push', event => {
     body: data.body || 'Your daily check-in is ready.',
     icon: '/assets/icons/icon-192.png',
     badge: '/assets/icons/icon-72.png',
-    tag: data.tag || 'innershadow-daily',
+    tag: data.tag || 'wellovie-daily',
     renotify: false,
     silent: false,
     data: {

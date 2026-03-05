@@ -447,7 +447,7 @@
     <div class="loading-text" id="loadingText">Loading...</div>
   </div>
 
-  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="/js/supabase.min.js"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/utils.js"></script>
 
@@ -540,7 +540,17 @@
 
           currentUser = session.user;
 
-          // ── KEY FIX: consistent localStorage key ──
+          // Check DB first, then localStorage
+          try {
+            const { data: userState } = await DB.getUserState(currentUser.id);
+            if (userState?.disclaimer_accepted) {
+              localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
+              await routeAfterDisclaimer();
+              return;
+            }
+          } catch (err) {
+            // DB unavailable — fall back to localStorage
+          }
           const alreadyAccepted = localStorage.getItem('wellovie_disclaimer_acknowledged');
           if (alreadyAccepted === 'true') {
             await routeAfterDisclaimer();
