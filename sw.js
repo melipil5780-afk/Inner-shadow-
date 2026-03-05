@@ -3,7 +3,7 @@
 // Handles caching, offline support, and background sync
 // ================================================================
 
-const APP_VERSION = 'v1.4.0';
+const APP_VERSION = 'v1.5.0';
 const CACHE_NAME = `wellovie-${APP_VERSION}`;
 const RUNTIME_CACHE = `wellovie-runtime-${APP_VERSION}`;
 
