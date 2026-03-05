@@ -83,11 +83,14 @@ const ModuleEngine = (() => {
         });
       }
 
-      // Restore step position  but don't skip past incomplete steps
-      if (_moduleState.current_step && _moduleState.current_step > 1) {
-        // Start from saved step, but cap at total
+      // Restore step position
+      // If completed (current_step === 99), start from beginning so user can redo
+      if (_moduleState.completed || _moduleState.current_step === 99) {
+        _currentStep = 0; // let them go through it again
+      } else if (_moduleState.current_step && _moduleState.current_step > 1) {
+        // Resume from saved step, capped at total
         _currentStep = Math.min(
-          _moduleState.current_step - 1, // stored as 1-indexed
+          _moduleState.current_step - 1,
           _steps.length - 1
         );
       }
