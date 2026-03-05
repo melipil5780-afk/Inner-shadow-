@@ -3,7 +3,7 @@
 // Handles caching, offline support, and background sync
 // ================================================================
 
-const APP_VERSION = 'v1.3.0';
+const APP_VERSION = 'v1.4.0';
 const CACHE_NAME = `wellovie-${APP_VERSION}`;
 const RUNTIME_CACHE = `wellovie-runtime-${APP_VERSION}`;
 
@@ -17,16 +17,12 @@ const PRECACHE_URLS = [
   '/login.html',
   '/assessment.html',
   '/app.html',
+  '/landing.html',
   '/manifest.json',
   '/css/main.css',
   '/js/supabase-client.js',
-  '/js/state.js',
   '/js/utils.js',
-  '/js/checkin.js',
-  '/js/tools.js',
-  '/js/module-engine.js',
-  // Google Fonts — cache so they work offline
-  'https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap'
+  '/js/module-engine.js'
 ];
 
 // Module pages — cached when visited, not on install
