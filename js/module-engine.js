@@ -55,25 +55,31 @@ const ModuleEngine = (() => {
     if (!session) return;
     _user = session.user;
 
-    // Check access
+    // Check access + load module progress in one call
     const isFree = FREE_MODULES.has(moduleId);
     const isDev  = DEVELOPER_EMAILS.has(_user.email);
+
+    // Always load module progress first
+    try {
+      const { data } = await DB.getOneModuleProgress(_user.id, moduleId);
+      _moduleState = data || {};
+    } catch (err) {
+      _moduleState = {};
+    }
+
     if (!isFree && !isDev) {
       const { data: us } = await DB.getUserState(_user.id);
       if (!us?.is_pro) {
-        // Check if unlocked via completion
-        const { data: mp } = await DB.getOneModuleProgress(_user.id, moduleId);
-        if (!mp?.unlocked) {
+        // Allow if completed OR explicitly unlocked
+        if (!_moduleState?.unlocked && !_moduleState?.completed) {
           Nav.go('/upgrade.html');
           return;
         }
       }
     }
 
-    // Load module progress
+    // Load module progress (already loaded above)
     try {
-      const { data } = await DB.getOneModuleProgress(_user.id, moduleId);
-      _moduleState = data || {};
 
       // Restore saved answers from Supabase
       const { data: saved } = await DB.getWorksheetResponses(_user.id, moduleId);
@@ -517,9 +523,13 @@ const ModuleEngine = (() => {
 
   async function saveProgress() {
     try {
-      await DB.updateModuleProgress(_user.id, _moduleId, {
-        current_step: _currentStep + 1 // store as 1-indexed
-      });
+      // Only track position - never touch completed/unlocked flags here
+      // Use plain update so we don't accidentally wipe other fields
+      await window.sb
+        .from('module_progress')
+        .update({ current_step: _currentStep + 1, updated_at: new Date().toISOString() })
+        .eq('user_id', _user.id)
+        .eq('module_id', _moduleId);
     } catch (err) {
       console.warn('[Engine] Progress save failed:', err);
     }
