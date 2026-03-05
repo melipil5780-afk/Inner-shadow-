@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0d0906">
-  <title>InnerShadow – Sign In</title>
+  <title>Wellovie – Sign In</title>
+    <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/icons/icon-512.png">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -373,7 +377,7 @@
     <div class="loading-text" id="loadingText">Signing in...</div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/utils.js"></script>
   <script>
@@ -392,7 +396,7 @@
       }
 
       // Check for returning user hint in localStorage
-      const lastEmail = localStorage.getItem('innershadow_last_email');
+      const lastEmail = localStorage.getItem('wellovie_last_email');
       if (lastEmail) {
         document.getElementById('emailInput').value = lastEmail;
         const chip = document.getElementById('welcomeChip');
@@ -478,11 +482,11 @@
       }
 
       // Save email hint for next time
-      localStorage.setItem('innershadow_last_email', email);
+      localStorage.setItem('wellovie_last_email', email);
 
       // Route correctly
       const disclaimerAccepted = localStorage.getItem(
-        'innershadow_disclaimer_acknowledged'
+        'wellovie_disclaimer_acknowledged'
       );
 
       Nav.go(

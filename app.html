@@ -8,6 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0d0906">
   <title>Wellovie</title>
+    <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/icons/icon-512.png">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1152,6 +1155,15 @@
           </div>
         </div>
 
+        <!-- Reflections -->
+        <div class="section-block" id="reflectionsSection" style="display:none">
+          <div class="section-header">
+            <p class="section-title">My Reflections</p>
+            <button class="section-toggle" id="reflectionsToggle" onclick="toggleReflections()">Show</button>
+          </div>
+          <div id="reflectionsList" style="display:none"></div>
+        </div>
+
         <!-- Pro upgrade banner (hidden for pro users) -->
         <div class="pro-banner" id="proBanner" onclick="Nav.go('/upgrade.html')">
           <p class="pro-banner__title">Unlock the full journey</p>
@@ -1244,7 +1256,7 @@
     <div class="loading-text" id="loadingText">Loading...</div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="/js/supabase-client.js"></script>
   <script src="/js/utils.js"></script>
   <script>
@@ -2037,10 +2049,89 @@
       document.getElementById('statTools').textContent =
         (userState?.tools_unlocked || []).length;
 
-      // Hide pro banner if already pro
-      if (userState?.is_pro) {
+      // Hide pro banner if already pro or dev
+      const isDev = currentUser && DEVELOPER_EMAILS.has(currentUser.email);
+      if (userState?.is_pro || isDev) {
         document.getElementById('proBanner').style.display = 'none';
       }
+
+      // Load reflections
+      loadReflections();
+    }
+
+    let reflectionsLoaded = false;
+    let reflectionsVisible = false;
+
+    async function loadReflections() {
+      if (!currentUser) return;
+      try {
+        const { data } = await DB.getWorksheetResponses ? 
+          { data: null } : { data: null };
+        
+        // Fetch all worksheet responses for this user
+        const result = await window.sb
+          .from('worksheet_responses')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .order('created_at', { ascending: false });
+
+        const responses = result.data || [];
+        
+        const section = document.getElementById('reflectionsSection');
+        const list = document.getElementById('reflectionsList');
+
+        if (responses.length === 0) {
+          section.style.display = 'block';
+          list.innerHTML = '<p class="reflections-empty">Complete a module to see your reflections here.</p>';
+          return;
+        }
+
+        section.style.display = 'block';
+        reflectionsLoaded = true;
+
+        // Group by module
+        const byModule = {};
+        responses.forEach(r => {
+          if (!byModule[r.module_id]) byModule[r.module_id] = [];
+          byModule[r.module_id].push(r);
+        });
+
+        list.innerHTML = Object.entries(byModule).map(([modId, answers]) => {
+          const modName = MODULE_LABELS[modId] || modId;
+          const answersHtml = answers
+            .filter(a => a.response && a.response.trim())
+            .map(a => {
+              let resp = a.response;
+              try { 
+                const parsed = JSON.parse(resp);
+                if (typeof parsed === 'string') resp = parsed;
+                else if (parsed.value) resp = parsed.value;
+                else if (Array.isArray(parsed)) resp = parsed.join(', ');
+              } catch(e) {}
+              return `<div class="reflection-a">${resp}</div>`;
+            }).join('');
+
+          if (!answersHtml) return '';
+
+          return `
+            <div class="reflection-entry">
+              <p class="reflection-module">${modName}</p>
+              ${answersHtml}
+            </div>
+          `;
+        }).filter(Boolean).join('');
+
+      } catch(err) {
+        console.warn('[App] Could not load reflections:', err);
+      }
+    }
+
+    function toggleReflections() {
+      reflectionsVisible = !reflectionsVisible;
+      const list = document.getElementById('reflectionsList');
+      const btn = document.getElementById('reflectionsToggle');
+      list.style.display = reflectionsVisible ? 'block' : 'none';
+      btn.textContent = reflectionsVisible ? 'Hide' : 'Show';
     }
 
     // ================================================================
