@@ -294,6 +294,7 @@ const DB = {
 
   async updateModuleProgress(userId, moduleId, updates) {
     try {
+      // Try update first - if no row exists, insert it
       const { data, error } = await sb
         .from('module_progress')
         .update({ ...updates, updated_at: new Date().toISOString() })
@@ -301,6 +302,24 @@ const DB = {
         .eq('module_id', moduleId)
         .select()
         .single();
+
+      // PGRST116 = no rows matched - row doesn't exist yet, insert it
+      if (error?.code === 'PGRST116' || (error && !data)) {
+        const { data: inserted, error: insertErr } = await sb
+          .from('module_progress')
+          .insert({
+            user_id:   userId,
+            module_id: moduleId,
+            unlocked:  true,
+            ...updates,
+            updated_at: new Date().toISOString()
+          })
+          .select()
+          .single();
+        if (insertErr) throw insertErr;
+        return { data: inserted, error: null };
+      }
+
       if (error) throw error;
       return { data, error: null };
     } catch (err) {
