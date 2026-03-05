@@ -313,31 +313,35 @@ const DB = {
   async completeModule(userId, moduleId) {
     const now = new Date().toISOString();
 
-    // 1. Mark this module complete
+    // 1. Mark this module complete (upsert so it works even if row missing)
     const { error: modErr } = await sb
       .from('module_progress')
-      .update({
+      .upsert({
+        user_id:      userId,
+        module_id:    moduleId,
         completed:    true,
         completed_at: now,
-        current_step: 99, // sentinel -- fully done
+        current_step: 99,
+        unlocked:     true,
         updated_at:   now
-      })
-      .eq('user_id', userId)
-      .eq('module_id', moduleId);
+      }, { onConflict: 'user_id,module_id' });
 
     if (modErr) {
       console.error('[DB] completeModule -- module update failed:', modErr);
       return { error: modErr };
     }
 
-    // 2. Unlock next module in sequence
+    // 2. Unlock next module in sequence (upsert so row is created if missing)
     const nextModuleId = MODULE_SEQUENCE[moduleId];
     if (nextModuleId) {
       await sb
         .from('module_progress')
-        .update({ unlocked: true, updated_at: now })
-        .eq('user_id', userId)
-        .eq('module_id', nextModuleId);
+        .upsert({
+          user_id:    userId,
+          module_id:  nextModuleId,
+          unlocked:   true,
+          updated_at: now
+        }, { onConflict: 'user_id,module_id' });
     }
 
     // 3. Add tool to user's unlocked tools array
