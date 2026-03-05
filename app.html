@@ -1159,9 +1159,9 @@
         <div class="section-block" id="reflectionsSection" style="display:none">
           <div class="section-header">
             <p class="section-title">My Reflections</p>
-            <button class="section-toggle" id="reflectionsToggle" onclick="toggleReflections()">Show</button>
+            <button class="section-toggle" id="reflectionsToggle" onclick="toggleReflections()">Hide</button>
           </div>
-          <div id="reflectionsList" style="display:none"></div>
+          <div id="reflectionsList"></div>
         </div>
 
         <!-- Pro upgrade banner (hidden for pro users) -->
@@ -2060,7 +2060,7 @@
     }
 
     let reflectionsLoaded = false;
-    let reflectionsVisible = false;
+    let reflectionsVisible = true;
 
     async function loadReflections() {
       if (!currentUser) return;
@@ -2069,7 +2069,7 @@
           { data: null } : { data: null };
         
         // Fetch all worksheet responses for this user
-        const result = await window.sb
+        const result = await sb
           .from('worksheet_responses')
           .select('*')
           .eq('user_id', currentUser.id)
