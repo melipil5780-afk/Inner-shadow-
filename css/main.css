@@ -44,9 +44,10 @@ input,textarea,select{font-family:var(--font-body);font-size:16px;-webkit-appear
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-softer);border-radius:2px}
 *{scrollbar-width:thin;-ms-overflow-style:auto}
 
-body{opacity:1;visibility:visible}
-body.loading{visibility:hidden;opacity:0}
-body.loaded{opacity:1;visibility:visible;transition:opacity 0.4s ease}
+body{opacity:0;visibility:visible;animation:page-fade-in 0.25s ease forwards}
+body.loading{opacity:0;animation:page-fade-in 0.25s ease forwards}
+body.loaded{opacity:1;visibility:visible;animation:none}
+@keyframes page-fade-in{from{opacity:0}to{opacity:1}}
 
 .app-shell{width:100%;max-width:28rem;height:100vh;height:-webkit-fill-available;margin:0 auto;background:var(--bg-card);display:flex;flex-direction:column;position:relative;overflow:hidden;border-left:1px solid var(--border-subtle);border-right:1px solid var(--border-subtle)}
 .app-shell::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.6}
