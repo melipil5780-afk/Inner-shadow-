@@ -1,1183 +1,241 @@
-// ================================================================
-// WELLOVIE  MODULE ENGINE
-// js/module-engine.js
-//
-// This single engine powers all 24 modules.
-// Each module page defines its STEPS array and calls ModuleEngine.init()
-// The engine handles everything else: rendering, navigation,
-// progress saving, input persistence, completion flow.
-//
-// HOW TO USE IN A MODULE PAGE:
-//
-//   <script src="/js/module-engine.js"></script>
-//   <script>
-//     document.addEventListener('DOMContentLoaded', () => {
-//       ModuleEngine.init('em-1', EM1_STEPS);
-//     });
-//   </script>
-//
-// STEP OBJECT STRUCTURE:
-//   {
-//     type:        'intro' | 'concept' | 'worksheet' | 'skill' | 'commitment' | 'reflection' | 'complete',
-//     title:       string,
-//     render:      function(state)  HTML string,
-//     afterRender: function(state)  void  (optional, runs after HTML is inserted)
-//     onLeave:     function(state)  void  (optional, runs before moving to next step)
-//   }
-// ================================================================
-
-const ModuleEngine = (() => {
-
-  //  Private state 
-
-  let _moduleId     = null;
-  let _steps        = [];
-  let _currentStep  = 0;
-  let _user         = null;
-  let _moduleState  = null;
-  let _answers      = {};   // keyed by step index
-  let _saveTimer    = null;
-
-  //  DOM refs 
-
-  const $ = id => document.getElementById(id);
-
-  // ================================================================
-  // PUBLIC API
-  // ================================================================
-
-  async function init(moduleId, steps) {
-    _moduleId = moduleId;
-    _steps    = steps;
-
-    // Auth guard
-    const session = await Auth.requireAuth('/index.html');
-    if (!session) return;
-    _user = session.user;
-
-    // Check access + load module progress in one call
-    const isFree = FREE_MODULES.has(moduleId);
-    const isDev  = DEVELOPER_EMAILS.has(_user.email);
-
-    // Always load module progress first
-    try {
-      const { data } = await DB.getOneModuleProgress(_user.id, moduleId);
-      _moduleState = data || {};
-    } catch (err) {
-      _moduleState = {};
-    }
-
-    if (!isFree && !isDev) {
-      const { data: us } = await DB.getUserState(_user.id);
-      if (!us?.is_pro) {
-        // Allow if completed OR explicitly unlocked
-        if (!_moduleState?.unlocked && !_moduleState?.completed) {
-          Nav.go('/upgrade.html');
-          return;
-        }
-      }
-    }
-
-    // Load module progress (already loaded above)
-    try {
-
-      // Restore saved answers from Supabase
-      const { data: saved } = await DB.getWorksheetResponses(_user.id, moduleId);
-      if (saved) {
-        saved.forEach(row => {
-          _answers[row.question_num] = row.response;
-        });
-      }
-
-      // Restore step position
-      console.log('[Engine] moduleState:', JSON.stringify({
-        completed: _moduleState.completed,
-        current_step: _moduleState.current_step,
-        started: _moduleState.started,
-        unlocked: _moduleState.unlocked
-      }));
-
-      // ALWAYS start from beginning if completed
-      if (_moduleState.completed || _moduleState.current_step === 99) {
-        _currentStep = 0;
-        console.log('[Engine] Completed module - resetting to step 0');
-      } else if (_moduleState.current_step && _moduleState.current_step > 1) {
-        _currentStep = Math.min(
-          _moduleState.current_step - 1,
-          _steps.length - 1
-        );
-        console.log('[Engine] Resuming at step', _currentStep);
-      } else {
-        console.log('[Engine] Starting fresh at step 0');
-      }
-
-    } catch (err) {
-      console.error('[Engine] State load failed:', err);
-      _moduleState = {};
-    }
-
-    // Handle ?reflect=true  jump to reflection step
-    if (Nav.getParam('reflect') === 'true') {
-      const reflectIdx = _steps.findIndex(s => s.type === 'reflection');
-      if (reflectIdx > -1) _currentStep = reflectIdx;
-    }
-
-    // Mark started
-    if (!_moduleState.started) {
-      await DB.updateModuleProgress(_user.id, moduleId, {
-        started:    true,
-        started_at: new Date().toISOString(),
-        unlocked:   true
-      });
-      _moduleState.started = true;
-    }
-
-    render();
-    UI.markLoaded();
-  }
-
-  // ================================================================
-  // RENDER
-  // ================================================================
-
-  function render() {
-    const step     = _steps[_currentStep];
-    const isLast   = _currentStep === _steps.length - 1;
-    const isFirst  = _currentStep === 0;
-    const progress = Math.round(((_currentStep + 1) / _steps.length) * 100);
-
-    // Update header
-    updateHeader(step, isFirst, isLast, progress);
-
-    // Render step content
-    const container = $('stepContent');
-    if (!container) return;
-
-    container.style.opacity   = '0';
-    container.style.transform = 'translateY(10px)';
-
-    setTimeout(() => {
-      container.innerHTML = wrapStep(step);
-
-      // Restore saved input for this step
-      restoreInputs();
-
-      // Bind input autosave
-      bindInputs();
-
-      // Run afterRender if defined
-      if (step.afterRender) {
-        step.afterRender({ answers: _answers, moduleId: _moduleId, user: _user });
-      }
-
-      container.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-      container.style.opacity    = '1';
-      container.style.transform  = 'translateY(0)';
-    }, 120);
-
-    // Update CTA buttons
-    updateCTA(step, isFirst, isLast);
-
-    // Save progress to Supabase
-    saveProgress();
-
-    // Scroll to top
-    const scrollEl = $('moduleScroll');
-    if (scrollEl) scrollEl.scrollTop = 0;
-  }
-
-  function wrapStep(step) {
-    const typeLabel = {
-      intro:      '',
-      concept:    'The concept',
-      worksheet:  'Worksheet',
-      skill:      'The skill',
-      commitment: 'Your commitment',
-      reflection: '3-day reflection',
-      complete:   ''
-    }[step.type] || '';
-
-    const typeBadge = typeLabel ? `
-      <div style="
-        display:inline-flex;
-        align-items:center;
-        gap:0.375rem;
-        background:var(--teal-bg-strong);
-        border:1px solid var(--teal-border);
-        border-radius:999px;
-        padding:0.25rem 0.75rem;
-        font-size:0.75rem;
-        font-weight:700;
-        letter-spacing:0.06em;
-        text-transform:uppercase;
-        color:var(--text-teal);
-        margin-bottom:1rem;
-      ">${typeLabel}</div>
-    ` : '';
-
-    return `
-      <div class="step-transition">
-        ${typeBadge}
-        ${step.render({ answers: _answers, moduleId: _moduleId, user: _user })}
-      </div>
-    `;
-  }
-
-  function updateHeader(step, isFirst, isLast, progress) {
-    // Progress dots
-    const dotsEl = $('progressDots');
-    if (dotsEl) {
-      dotsEl.innerHTML = _steps.map((_, i) => `
-        <div class="progress-dot ${i <= _currentStep ? 'progress-dot--active' : ''}"></div>
-      `).join('');
-    }
-
-    // Step counter
-    const counterEl = $('stepCounter');
-    if (counterEl) {
-      counterEl.textContent = `${_currentStep + 1} of ${_steps.length}`;
-    }
-
-    // Module title in header
-    const titleEl = $('moduleTitle');
-    if (titleEl) {
-      titleEl.textContent = MODULE_LABELS[_moduleId] || '';
-    }
-
-    // Back button state
-    const backEl = $('backBtn');
-    if (backEl) backEl.disabled = isFirst;
-  }
-
-  function updateCTA(step, isFirst, isLast) {
-    const nextEl  = $('nextBtn');
-    const backEl  = $('backBtn');
-    if (!nextEl) return;
-
-    // Commitment step  button text changes
-    if (step.type === 'commitment') {
-      nextEl.textContent = 'Save my commitment';
-      nextEl.disabled    = false;
-      return;
-    }
-
-    // Reflection step
-    if (step.type === 'reflection') {
-      nextEl.textContent = 'Save my reflection';
-      nextEl.disabled    = false;
-      return;
-    }
-
-    // Complete step  no next button, it has its own CTA
-    if (step.type === 'complete') {
-      nextEl.style.display = 'none';
-      if (backEl) backEl.style.display = 'none';
-      return;
-    }
-
-    // Worksheet steps  require input
-    if (step.type === 'worksheet') {
-      nextEl.textContent = 'Continue';
-      // Will be enabled/disabled by input binding
-      nextEl.disabled = !hasValidInput();
-      return;
-    }
-
-    nextEl.textContent = isLast ? 'Complete module' : 'Continue';
-    nextEl.disabled    = false;
-    nextEl.style.display = '';
-    if (backEl) backEl.style.display = '';
-  }
-
-  // ================================================================
-  // INPUT MANAGEMENT
-  // ================================================================
-
-  function bindInputs() {
-    const inputs    = document.querySelectorAll('.step-input');
-    const textareas = document.querySelectorAll('.step-textarea');
-
-    const onChange = () => {
-      saveInputsDebounced();
-      const nextEl = $('nextBtn');
-      if (nextEl && _steps[_currentStep]?.type === 'worksheet') {
-        nextEl.disabled = !hasValidInput();
-      }
-    };
-
-    inputs.forEach(el => {
-      el.addEventListener('input', onChange);
-      el.addEventListener('change', onChange);
-    });
-
-    textareas.forEach(el => {
-      el.addEventListener('input', onChange);
-    });
-
-    // Checkbox grids
-    document.querySelectorAll('.step-checkbox').forEach(el => {
-      el.addEventListener('change', onChange);
-    });
-  }
-
-  function restoreInputs() {
-    const savedForStep = _answers[_currentStep];
-    if (!savedForStep) return;
-
-    // Single textarea/input
-    const mainInput = $('stepMainInput') || $('stepMainTextarea');
-    if (mainInput && typeof savedForStep === 'string') {
-      mainInput.value = savedForStep;
-      return;
-    }
-
-    // Object of multiple inputs
-    if (typeof savedForStep === 'object') {
-      Object.entries(savedForStep).forEach(([key, val]) => {
-        const el = document.querySelector(`[data-key="${key}"]`);
-        if (!el) return;
-        if (el.type === 'checkbox') {
-          el.checked = val === true || val === 'true';
-        } else {
-          el.value = val;
-        }
-      });
-    }
-  }
-
-  function captureInputs() {
-    const step = _steps[_currentStep];
-
-    // Multiple inputs with data-key attributes
-    const keyed = document.querySelectorAll('[data-key]');
-    if (keyed.length > 0) {
-      const obj = {};
-      keyed.forEach(el => {
-        obj[el.dataset.key] = el.type === 'checkbox' ? el.checked : el.value;
-      });
-      return obj;
-    }
-
-    // Single main input
-    const mainInput    = $('stepMainInput');
-    const mainTextarea = $('stepMainTextarea');
-    if (mainInput)    return mainInput.value;
-    if (mainTextarea) return mainTextarea.value;
-
-    return null;
-  }
-
-  function hasValidInput() {
-    const captured = captureInputs();
-    if (!captured) return true; // No input required on this step
-
-    if (typeof captured === 'string') {
-      return captured.trim().length >= 10;
-    }
-
-    if (typeof captured === 'object') {
-      // At least one field must be filled
-      return Object.values(captured).some(v =>
-        typeof v === 'string' ? v.trim().length > 0 : v === true
-      );
-    }
-
-    return true;
-  }
-
-  function saveInputsDebounced() {
-    if (_saveTimer) clearTimeout(_saveTimer);
-    _saveTimer = setTimeout(() => saveInputs(), 800);
-  }
-
-  async function saveInputs() {
-    const captured = captureInputs();
-    if (!captured) return;
-
-    _answers[_currentStep] = captured;
-
-    // Save to Supabase
-    const responseStr = typeof captured === 'object'
-      ? JSON.stringify(captured)
-      : captured;
-
-    try {
-      await DB.saveWorksheetResponse(
-        _user.id,
-        _moduleId,
-        _currentStep,
-        responseStr
-      );
-    } catch (err) {
-      console.warn('[Engine] Input save failed:', err);
-    }
-  }
-
-  // ================================================================
-  // NAVIGATION
-  // ================================================================
-
-  async function next() {
-    const step = _steps[_currentStep];
-
-    // Save any pending inputs immediately
-    if (_saveTimer) {
-      clearTimeout(_saveTimer);
-      await saveInputs();
-    }
-
-    // Handle commitment step
-    if (step.type === 'commitment') {
-      await handleCommitmentSave();
-      return;
-    }
-
-    // Handle reflection step
-    if (step.type === 'reflection') {
-      await handleReflectionSave();
-      return;
-    }
-
-    // Run onLeave if defined
-    if (step.onLeave) {
-      step.onLeave({ answers: _answers, moduleId: _moduleId, user: _user });
-    }
-
-    // Advance
-    if (_currentStep < _steps.length - 1) {
-      _currentStep++;
-      render();
-    } else {
-      await complete();
-    }
-  }
-
-  function back() {
-    if (_currentStep > 0) {
-      _currentStep--;
-      render();
-    }
-  }
-
-  function restartModule() {
-    _currentStep = 0;
-    _answers = {};
-    render();
-    const scrollEl = document.getElementById('moduleScroll');
-    if (scrollEl) scrollEl.scrollTop = 0;
-  }
-
-  function goBackToPathway() {
-    const pathway = MODULE_PATHWAY_MAP[_moduleId];
-    Nav.go(`/pathways/${pathway}/overview.html`);
-  }
-
-  function goBackToApp() {
-    Nav.go('/app.html?tab=learn');
-  }
-
-  // ================================================================
-  // COMMITMENT + REFLECTION
-  // ================================================================
-
-  async function handleCommitmentSave() {
-    const captured = captureInputs();
-    const text     = typeof captured === 'string'
-      ? captured.trim()
-      : JSON.stringify(captured);
-
-    if (!text || text.length < 5) {
-      UI.showToast('Please write your commitment first.', 'error');
-      return;
-    }
-
-    const btn = $('nextBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
-
-    try {
-      await DB.saveCommitment(_user.id, _moduleId, text);
-      await DB.updateModuleProgress(_user.id, _moduleId, {
-        commitment_made: true
-      });
-      _moduleState.commitment_made = true;
-    } catch (err) {
-      console.error('[Engine] Commitment save failed:', err);
-    }
-
-    // Advance to next step
-    _currentStep++;
-    render();
-  }
-
-  async function handleReflectionSave() {
-    const captured = captureInputs();
-    const text     = typeof captured === 'string'
-      ? captured.trim()
-      : JSON.stringify(captured);
-
-    if (!text || text.length < 5) {
-      UI.showToast('Please write your reflection first.', 'error');
-      return;
-    }
-
-    const btn = $('nextBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
-
-    try {
-      await DB.saveReflection(_user.id, _moduleId, text);
-      _moduleState.reflection_completed = true;
-    } catch (err) {
-      console.error('[Engine] Reflection save failed:', err);
-    }
-
-    // Advance
-    _currentStep++;
-    render();
-  }
-
-  // ================================================================
-  // SAVE PROGRESS
-  // ================================================================
-
-  async function saveProgress() {
-    try {
-      // Only track position - never touch completed/unlocked flags here
-      // Use plain update so we don't accidentally wipe other fields
-      await window.sb
-        .from('module_progress')
-        .update({ current_step: _currentStep + 1, updated_at: new Date().toISOString() })
-        .eq('user_id', _user.id)
-        .eq('module_id', _moduleId);
-    } catch (err) {
-      console.warn('[Engine] Progress save failed:', err);
-    }
-  }
-
-  // ================================================================
-  // COMPLETE
-  // ================================================================
-
-  async function complete() {
-    UI.showLoading('Saving your progress...');
-
-    try {
-      const { error, pathwayComplete } = await DB.completeModule(_user.id, _moduleId);
-
-      if (error) throw error;
-
-      _moduleState.completed = true;
-
-      // Get unlocked tool
-      const toolId = MODULE_TOOL_MAP[_moduleId];
-
-      UI.hideLoading();
-
-      // Show completion step if defined, otherwise go to completion screen
-      const completeStep = _steps.find(s => s.type === 'complete');
-      if (completeStep) {
-        _currentStep = _steps.indexOf(completeStep);
-        render();
-      } else {
-        // Navigate to pathway complete page
-        const pathway = MODULE_PATHWAY_MAP[_moduleId];
-        Nav.go(
-          pathwayComplete
-            ? `/pathways/${pathway}/complete.html`
-            : `/pathways/${pathway}/overview.html?completed=${_moduleId}`
-        );
-      }
-
-      // Celebrate
-      setTimeout(() => {
-        UI.celebrate({ count: 70, spread: 65, origin: { y: 0.5 } });
-      }, 300);
-
-    } catch (err) {
-      console.error('[Engine] Complete failed:', err);
-      UI.hideLoading();
-      UI.showToast('Progress saved locally. Sync when reconnected.', 'error');
-    }
-  }
-
-  // ================================================================
-  // STEP HELPER RENDERERS
-  // Pre-built HTML blocks for common step patterns.
-  // Module files call these to build their steps.
-  // ================================================================
-
-  const Blocks = {
-
-    // Large display heading
-    heading(text) {
-      return `
-        <h2 style="
-          font-family:var(--font-display);
-          font-size:1.75rem;
-          font-weight:600;
-          color:var(--text-primary);
-          letter-spacing:-0.02em;
-          line-height:1.25;
-          margin-bottom:1rem;
-        ">${text}</h2>
-      `;
-    },
-
-    // Body paragraph
-    para(text, style = '') {
-      return `
-        <p style="
-          font-size:0.9375rem;
-          color:var(--text-secondary);
-          line-height:1.75;
-          margin-bottom:1rem;
-          ${style}
-        ">${text}</p>
-      `;
-    },
-
-    // Teal highlighted callout
-    callout(text) {
-      return `
-        <div style="
-          background:var(--teal-bg);
-          border:1px solid var(--teal-border);
-          border-radius:1rem;
-          padding:1.125rem 1.25rem;
-          margin-bottom:1rem;
-        ">
-          <p style="
-            font-size:0.9375rem;
-            color:var(--text-secondary);
-            line-height:1.7;
-          ">${text}</p>
-        </div>
-      `;
-    },
-
-    // Amber insight box
-    insight(title, text) {
-      return `
-        <div style="
-          background:var(--amber-bg);
-          border:1px solid var(--amber-border);
-          border-radius:1rem;
-          padding:1.125rem 1.25rem;
-          margin-bottom:1rem;
-        ">
-          <p style="
-            font-size:0.75rem;
-            font-weight:700;
-            letter-spacing:0.07em;
-            text-transform:uppercase;
-            color:var(--text-amber);
-            margin-bottom:0.5rem;
-          ">${title}</p>
-          <p style="
-            font-size:0.9375rem;
-            color:var(--text-secondary);
-            line-height:1.7;
-          ">${text}</p>
-        </div>
-      `;
-    },
-
-    // Numbered step list
-    steps(items) {
-      return `
-        <div style="display:flex;flex-direction:column;gap:0.875rem;margin-bottom:1rem">
-          ${items.map((item, i) => `
-            <div style="display:flex;gap:0.875rem;align-items:flex-start">
-              <div style="
-                width:2rem;height:2rem;
-                border-radius:0.5rem;
-                background:var(--gradient-main);
-                display:flex;align-items:center;justify-content:center;
-                font-size:0.8125rem;font-weight:700;color:white;
-                flex-shrink:0;
-              ">${i + 1}</div>
-              <p style="
-                font-size:0.9375rem;
-                color:var(--text-secondary);
-                line-height:1.65;
-                padding-top:0.25rem;
-                flex:1;
-              ">${item}</p>
-            </div>
-          `).join('')}
-        </div>
-      `;
-    },
-
-    // Red / teal compare blocks
-    compare(bad, good) {
-      return `
-        <div style="margin-bottom:1rem">
-          <div style="
-            background:var(--red-bg);
-            border-left:3px solid var(--red);
-            border-radius:0 0.75rem 0.75rem 0;
-            padding:0.875rem 1rem;
-            margin-bottom:0.625rem;
-          ">
-            <p style="font-size:0.75rem;font-weight:700;color:var(--text-red);margin-bottom:0.375rem;letter-spacing:0.05em;text-transform:uppercase">Before</p>
-            <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.6">${bad}</p>
-          </div>
-          <div style="
-            background:var(--teal-bg);
-            border-left:3px solid var(--teal);
-            border-radius:0 0.75rem 0.75rem 0;
-            padding:0.875rem 1rem;
-          ">
-            <p style="font-size:0.75rem;font-weight:700;color:var(--text-teal);margin-bottom:0.375rem;letter-spacing:0.05em;text-transform:uppercase">After</p>
-            <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.6">${good}</p>
-          </div>
-        </div>
-      `;
-    },
-
-    // Single textarea worksheet input
-    textarea(id = 'stepMainTextarea', placeholder = 'Write here...', minHeight = '120px') {
-      return `
-        <textarea
-          id="${id}"
-          class="step-textarea"
-          placeholder="${placeholder}"
-          style="
-            width:100%;
-            padding:0.875rem 1rem;
-            background:var(--bg-input);
-            border:1.5px solid var(--border-soft);
-            border-radius:0.875rem;
-            color:var(--text-primary);
-            font-size:15px;
-            font-family:var(--font-body);
-            line-height:1.65;
-            min-height:${minHeight};
-            resize:vertical;
-            -webkit-appearance:none;
-            transition:var(--transition-base);
-          "
-          onfocus="this.style.borderColor='var(--teal-border-strong)';this.style.boxShadow='0 0 0 3px var(--teal-glow-soft)'"
-          onblur="this.style.borderColor='';this.style.boxShadow=''"
-        ></textarea>
-      `;
-    },
-
-    // Text input (single line)
-    input(key, placeholder = '', label = '') {
-      return `
-        ${label ? `<p style="font-size:0.8125rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.375rem">${label}</p>` : ''}
-        <input
-          type="text"
-          class="step-input"
-          data-key="${key}"
-          placeholder="${placeholder}"
-          style="
-            width:100%;
-            padding:0.75rem 0.875rem;
-            background:var(--bg-input);
-            border:1.5px solid var(--border-soft);
-            border-radius:0.875rem;
-            color:var(--text-primary);
-            font-size:15px;
-            font-family:var(--font-body);
-            margin-bottom:0.625rem;
-            -webkit-appearance:none;
-            transition:var(--transition-base);
-          "
-          onfocus="this.style.borderColor='var(--teal-border-strong)'"
-          onblur="this.style.borderColor=''"
-        >
-      `;
-    },
-
-    // Keyed textarea (for multi-input worksheets)
-    keyedTextarea(key, placeholder = '', label = '', minHeight = '80px') {
-      return `
-        ${label ? `<p style="font-size:0.8125rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.375rem">${label}</p>` : ''}
-        <textarea
-          class="step-textarea"
-          data-key="${key}"
-          placeholder="${placeholder}"
-          style="
-            width:100%;
-            padding:0.75rem 0.875rem;
-            background:var(--bg-input);
-            border:1.5px solid var(--border-soft);
-            border-radius:0.875rem;
-            color:var(--text-primary);
-            font-size:15px;
-            font-family:var(--font-body);
-            line-height:1.6;
-            min-height:${minHeight};
-            resize:vertical;
-            margin-bottom:0.625rem;
-            -webkit-appearance:none;
-            transition:var(--transition-base);
-          "
-          onfocus="this.style.borderColor='var(--teal-border-strong)'"
-          onblur="this.style.borderColor=''"
-        ></textarea>
-      `;
-    },
-
-    // Section divider with label
-    divider(label) {
-      return `
-        <p style="
-          font-size:0.75rem;
-          font-weight:700;
-          letter-spacing:0.07em;
-          text-transform:uppercase;
-          color:var(--text-muted);
-          margin:1.25rem 0 0.75rem;
-        ">${label}</p>
-      `;
-    },
-
-    // Skill box  teal card with skill name + steps
-    skill(name, tagline, steps) {
-      return `
-        <div style="
-          background:var(--gradient-card);
-          border:1px solid var(--teal-border-strong);
-          border-radius:1.25rem;
-          padding:1.375rem;
-          margin-bottom:1rem;
-        ">
-          <div style="margin-bottom:1rem">
-            <p style="
-              font-size:0.75rem;font-weight:700;
-              letter-spacing:0.07em;text-transform:uppercase;
-              color:var(--text-teal);margin-bottom:0.375rem;
-            ">The skill</p>
-            <h3 style="
-              font-family:var(--font-display);
-              font-size:1.25rem;font-weight:600;
-              color:var(--text-primary);
-              letter-spacing:-0.01em;
-              margin-bottom:0.25rem;
-            ">${name}</h3>
-            <p style="font-size:0.875rem;color:var(--text-secondary)">${tagline}</p>
-          </div>
-          ${Blocks.steps(steps)}
-        </div>
-      `;
-    },
-
-    // Commitment box
-    commitment(prompt, placeholder) {
-      return `
-        <div style="
-          background:var(--teal-bg);
-          border:1px solid var(--teal-border);
-          border-radius:1rem;
-          padding:1.125rem 1.25rem;
-          margin-bottom:1rem;
-        ">
-          <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem">
-            ${prompt}
-          </p>
-          <p style="font-size:0.875rem;font-weight:600;color:var(--text-teal);margin-bottom:0.5rem">
-            I commit to:
-          </p>
-          ${Blocks.textarea('stepMainTextarea', placeholder, '90px')}
-        </div>
-        <p style="font-size:0.8125rem;color:var(--text-muted);line-height:1.5;text-align:center">
-          We'll follow up in 3 days to see how it's landing.
-        </p>
-      `;
-    },
-
-    // Reflection box (shown 3 days after commitment)
-    reflection(commitmentText) {
-      return `
-        <div style="
-          background:var(--amber-bg);
-          border:1px solid var(--amber-border);
-          border-radius:1rem;
-          padding:1.125rem 1.25rem;
-          margin-bottom:1rem;
-        ">
-          <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-amber);margin-bottom:0.5rem">
-            Your commitment was
-          </p>
-          <p style="font-size:0.9375rem;color:var(--text-primary);line-height:1.6;margin-bottom:1rem;font-style:italic">
-            "${commitmentText}"
-          </p>
-          <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem">
-            How has it actually gone? What did you notice? What was harder or easier than you expected?
-          </p>
-          ${Blocks.textarea('stepMainTextarea', 'Write honestly  there\'s no right answer here...', '100px')}
-        </div>
-      `;
-    },
-
-    // Tool unlock card  shown on completion step
-    toolUnlock(toolEmoji, toolName, toolTagline) {
-      return `
-        <div style="
-          background:linear-gradient(135deg,rgba(13,148,136,0.14),rgba(217,119,6,0.10));
-          border:1px solid var(--teal-border-strong);
-          border-radius:1.25rem;
-          padding:1.5rem;
-          text-align:center;
-          margin-bottom:1.25rem;
-          animation:scale-in 0.4s ease-out;
-        ">
-          <div style="font-size:3rem;margin-bottom:0.875rem">${toolEmoji}</div>
-          <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-teal);margin-bottom:0.375rem">
-            Tool unlocked
-          </p>
-          <h3 style="
-            font-family:var(--font-display);
-            font-size:1.375rem;font-weight:600;
-            color:var(--text-primary);
-            letter-spacing:-0.015em;
-            margin-bottom:0.375rem;
-          ">${toolName}</h3>
-          <p style="font-size:0.875rem;color:var(--text-secondary)">${toolTagline}</p>
-        </div>
-      `;
-    },
-
-    // Complete screen  shown after last step
-    complete(moduleTitle, pathwayKey, nextModuleId, toolEmoji, toolName, toolTagline) {
-      const hasNext = !!nextModuleId;
-      return `
-        <div style="text-align:center;padding:1rem 0">
-          <div style="font-size:4rem;margin-bottom:1.25rem;animation:float 3s ease-in-out infinite"></div>
-          <h2 style="
-            font-family:var(--font-display);
-            font-size:1.875rem;font-weight:600;
-            color:var(--text-primary);
-            letter-spacing:-0.02em;
-            margin-bottom:0.625rem;
-          ">Module complete</h2>
-          <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.65;margin-bottom:1.5rem">
-            You finished <strong style="color:var(--text-primary)">${moduleTitle}</strong>. That took real work.
-          </p>
-        </div>
-
-        ${toolEmoji ? Blocks.toolUnlock(toolEmoji, toolName, toolTagline) : ''}
-
-        <!-- Module feedback -->
-        <div id="moduleFeedbackCard" style="
-          background:var(--bg-card-light);border:1px solid var(--border-soft);
-          border-radius:1.125rem;padding:1.125rem;margin:1.25rem 0;
-        ">
-          <p style="font-size:0.8125rem;font-weight:600;color:var(--text-secondary);margin-bottom:0.875rem;text-align:center">
-            Was this module useful?
-          </p>
-          <div style="display:flex;gap:0.75rem;justify-content:center;margin-bottom:0" id="thumbsRow">
-            <button
-              onclick="ModuleEngine.submitModuleFeedback('up', '${moduleTitle}')"
-              style="
-                flex:1;max-width:7rem;padding:0.75rem;
-                background:rgba(20,184,166,0.08);border:1.5px solid rgba(20,184,166,0.25);
-                border-radius:0.875rem;font-size:1.5rem;cursor:pointer;transition:all 0.18s ease;
-              "
-              onmouseover="this.style.background='rgba(20,184,166,0.15)'"
-              onmouseout="this.style.background='rgba(20,184,166,0.08)'"
-            ></button>
-            <button
-              onclick="ModuleEngine.submitModuleFeedback('down', '${moduleTitle}')"
-              style="
-                flex:1;max-width:7rem;padding:0.75rem;
-                background:rgba(148,163,184,0.06);border:1.5px solid var(--border-soft);
-                border-radius:0.875rem;font-size:1.5rem;cursor:pointer;transition:all 0.18s ease;
-              "
-              onmouseover="this.style.background='rgba(148,163,184,0.12)'"
-              onmouseout="this.style.background='rgba(148,163,184,0.06)'"
-            ></button>
-          </div>
-          <div id="feedbackFollowUp" style="display:none;margin-top:0.875rem">
-            <p style="font-size:0.8125rem;color:var(--text-secondary);margin-bottom:0.5rem">What was missing?</p>
-            <textarea
-              id="feedbackText"
-              placeholder="Optional  anything you'd want more of, or that didn't land..."
-              style="
-                width:100%;padding:0.75rem;background:var(--bg-card);
-                border:1px solid var(--border-soft);border-radius:0.75rem;
-                color:var(--text-primary);font-size:0.875rem;line-height:1.6;
-                font-family:var(--font-body);resize:none;min-height:80px;box-sizing:border-box;
-              "
-            ></textarea>
-            <button
-              onclick="ModuleEngine.submitFeedbackText('${moduleTitle}')"
-              style="
-                width:100%;margin-top:0.5rem;padding:0.625rem;
-                background:var(--bg-card-light);border:1px solid var(--border-soft);
-                border-radius:0.75rem;color:var(--text-secondary);font-size:0.875rem;
-                cursor:pointer;font-family:var(--font-body);
-              "
-            >Send feedback</button>
-          </div>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:0.25rem">
-          ${hasNext ? `
-            <button
-              class="btn btn--primary btn--lg"
-              onclick="ModuleEngine.goToNextModule('${nextModuleId}','${pathwayKey}')"
-            >
-              Next module 
-            </button>
-          ` : ''}
-          <button
-            class="btn btn--ghost btn--sm"
-            onclick="ModuleEngine.restartModule()"
-          >
-            ↺ Start over
-          </button>
-          <button
-            class="btn btn--text btn--sm"
-            onclick="ModuleEngine.goBackToPathway()"
-          >
-            Back to pathway
-          </button>
-          <button
-            class="btn btn--text btn--sm"
-            onclick="ModuleEngine.goBackToApp()"
-          >
-            Go to home
-          </button>
-        </div>
-      `;
-    }
-  };
-
-  // ================================================================
-  // PUBLIC NAVIGATION HELPERS
-  // Called from complete screen buttons
-  // ================================================================
-
-  function goToNextModule(moduleId, pathway) {
-    Nav.go(`/pathways/${pathway}/${moduleId}.html`);
-  }
-
-  // ================================================================
-  // ================================================================
-  // FEEDBACK HELPERS
-  // Called from complete screen
-  // ================================================================
-
-  let _feedbackSubmitted = false;
-
-  async function submitModuleFeedback(rating, moduleTitle) {
-    if (_feedbackSubmitted) return;
-
-    // Update thumbs UI immediately
-    const thumbsRow = document.getElementById('thumbsRow');
-    if (thumbsRow) {
-      thumbsRow.innerHTML = `
-        <p style="font-size:0.875rem;color:var(--text-teal);font-weight:600;text-align:center;width:100%">
-          ${rating === 'up' ? ' Thanks for the feedback' : ' Thanks  noted'}
-        </p>
-      `;
-    }
-
-    // Show follow-up text field for thumbs down
-    if (rating === 'down') {
-      const followUp = document.getElementById('feedbackFollowUp');
-      if (followUp) followUp.style.display = 'block';
-    } else {
-      _feedbackSubmitted = true;
-    }
-
-    // Save to Supabase
-    if (_user) {
-      try {
-        await DB.saveFeedback({
-          userId:    _user.id,
-          type:      'module_rating',
-          moduleId:  _moduleId,
-          rating,
-          context:   moduleTitle
-        });
-      } catch (e) {}
-    }
-  }
-
-  async function submitFeedbackText(moduleTitle) {
-    if (_feedbackSubmitted) return;
-    _feedbackSubmitted = true;
-
-    const text = document.getElementById('feedbackText')?.value?.trim();
-    const followUp = document.getElementById('feedbackFollowUp');
-    if (followUp) {
-      followUp.innerHTML = `
-        <p style="font-size:0.875rem;color:var(--text-teal);font-weight:600;margin-top:0.25rem">
-           Sent  thank you
-        </p>
-      `;
-    }
-
-    if (_user && text) {
-      try {
-        await DB.saveFeedback({
-          userId:   _user.id,
-          type:     'module_comment',
-          moduleId: _moduleId,
-          text,
-          context:  moduleTitle
-        });
-      } catch (e) {}
-    }
-  }
-
-  // PUBLIC API
-  // ================================================================
-
-  return {
-    init,
-    next,
-    back,
-    restartModule,
-    goBackToPathway,
-    goBackToApp,
-    goToNextModule,
-    submitModuleFeedback,
-    submitFeedbackText,
-    Blocks,
-
-    // Expose for complete screen's "start tool" button if needed
-    get moduleId() { return _moduleId; },
-    get user()     { return _user; }
-  };
-
-})();
-
-// ================================================================
-// MODULE PAGE HTML SHELL
-// Every module page uses this exact structure.
-// Copy this comment into each module page for reference.
-// ================================================================
-//
-// <div class="shell">
-//   <div class="bg-orb bg-orb--teal"></div>
-//   <div class="bg-orb bg-orb--amber"></div>
-//
-//   <!-- Module header -->
-//   <div class="module-header">
-//     <div class="module-header__row">
-//       <button class="module-header__back" onclick="ModuleEngine.goBackToPathway()"></button>
-//       <p class="module-header__title" id="moduleTitle"></p>
-//       <span class="module-header__count" id="stepCounter"></span>
-//     </div>
-//     <div class="progress-dots" id="progressDots"></div>
-//   </div>
-//
-//   <!-- Step content -->
-//   <div class="tab-panel tab-panel--active" id="moduleScroll">
-//     <div style="padding:1.25rem 1.25rem 2rem" id="stepContent"></div>
-//   </div>
-//
-//   <!-- CTA -->
-//   <div class="cta-area">
-//     <button class="back-btn-sm" id="backBtn" onclick="ModuleEngine.back()"></button>
-//     <button class="btn btn--primary" id="nextBtn" onclick="ModuleEngine.next()">Continue</button>
-//   </div>
-// </div>
-
-console.log('[Wellovie] Module engine ready');
+/* ================================================================
+INNERSHADOW — EMBER & DUSK DESIGN SYSTEM
+css/main.css
+
+Concept: "Golden Hour Sanctuary"
+The feeling of dawn light — warm, held, and alive with possibility.
+Deep burnished earth tones ground you. Glowing ember-gold lifts you.
+Not clinical. Not cold. Not like any wellness app you've used before.
+================================================================ */
+
+/* ================================================================
+SECTION 1 — DESIGN TOKENS
+================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+--bg-dark:#0d0906;--bg-card:rgba(20,13,8,0.98);--bg-card-light:rgba(255,220,180,0.04);--bg-card-medium:rgba(255,210,160,0.07);--bg-card-dark:rgba(13,9,6,0.55);--bg-input:rgba(50,30,15,0.45);--bg-input-focus:rgba(60,38,20,0.75);
+--border-subtle:rgba(255,180,100,0.06);--border-soft:rgba(255,190,120,0.10);--border-softer:rgba(255,195,130,0.16);--border-medium:rgba(255,200,140,0.22);
+--ember:#d95f35;--ember-dark:#b84a25;--ember-light:#f07050;--ember-glow:rgba(217,95,53,0.40);--ember-glow-soft:rgba(217,95,53,0.16);--ember-bg:rgba(217,95,53,0.10);--ember-bg-strong:rgba(217,95,53,0.18);--ember-border:rgba(217,95,53,0.30);--ember-border-strong:rgba(217,95,53,0.55);--text-ember:#f4a07a;--text-ember-bright:#ff9060;
+--gold:#e8a030;--gold-dark:#c4841a;--gold-light:#f5b845;--gold-glow:rgba(232,160,48,0.38);--gold-glow-soft:rgba(232,160,48,0.15);--gold-bg:rgba(232,160,48,0.10);--gold-bg-strong:rgba(232,160,48,0.18);--gold-border:rgba(232,160,48,0.30);--gold-border-strong:rgba(232,160,48,0.55);--text-gold:#f5c865;--text-gold-dim:#e8a030;
+--rose:#c4607a;--rose-dark:#a04d63;--rose-light:#d97a90;--rose-glow:rgba(196,96,122,0.35);--rose-glow-soft:rgba(196,96,122,0.14);--rose-bg:rgba(196,96,122,0.10);--rose-bg-strong:rgba(196,96,122,0.18);--rose-border:rgba(196,96,122,0.30);--rose-border-strong:rgba(196,96,122,0.52);--text-rose:#e89aaa;--text-rose-dim:#d47888;
+--sage:#7aaa88;--sage-dark:#5c8870;--sage-light:#96c4a4;--sage-bg:rgba(122,170,136,0.10);--sage-bg-strong:rgba(122,170,136,0.18);--sage-border:rgba(122,170,136,0.28);--sage-border-strong:rgba(122,170,136,0.50);--text-sage:#a8d4b4;
+--red:#c43838;--red-bg:rgba(196,56,56,0.10);--red-bg-strong:rgba(196,56,56,0.18);--red-border:rgba(196,56,56,0.32);--red-border-strong:rgba(196,56,56,0.55);--text-red:#f0a0a0;--text-red-dim:#e07878;
+--text-primary:#fdf0e6;--text-secondary:#c4a882;--text-muted:#7a6050;--text-dim:#4a3828;--text-faint:#2a1e14;
+--gradient-main:linear-gradient(135deg,#d95f35,#e8a030);--gradient-warm:linear-gradient(135deg,#c4607a,#d95f35);--gradient-gold:linear-gradient(135deg,#e8a030,#f5b845);--gradient-glow:linear-gradient(135deg,rgba(217,95,53,0.20),rgba(232,160,48,0.14));--gradient-card:linear-gradient(145deg,rgba(45,26,14,0.70),rgba(22,13,7,0.50));--gradient-hero:linear-gradient(160deg,rgba(217,95,53,0.18),rgba(232,160,48,0.12),rgba(196,96,122,0.08));--gradient-text:linear-gradient(135deg,#f4a07a,#f5c865);--gradient-deep:linear-gradient(180deg,#0d0906 0%,#130b05 100%);
+--shadow-sm:0 2px 10px rgba(10,5,2,0.35);--shadow-md:0 8px 28px rgba(10,5,2,0.45);--shadow-lg:0 18px 45px rgba(10,5,2,0.50);--shadow-card:0 28px 55px -12px rgba(8,4,2,0.55);--shadow-ember:0 10px 28px rgba(217,95,53,0.28);--shadow-ember-lg:0 20px 45px rgba(217,95,53,0.35);--shadow-gold:0 10px 28px rgba(232,160,48,0.28);--shadow-rose:0 10px 28px rgba(196,96,122,0.25);--shadow-inner:inset 0 1px 0 rgba(255,200,140,0.08);
+--blur-ember:rgba(217,95,53,0.09);--blur-gold:rgba(232,160,48,0.07);--blur-rose:rgba(196,96,122,0.06);--blur-radius:160px;
+--font-display:'Cormorant Garamond',Georgia,'Times New Roman',serif;--font-body:'Outfit',-apple-system,BlinkMacSystemFont,sans-serif;
+--space-xs:.25rem;--space-sm:.5rem;--space-md:.75rem;--space-lg:1rem;--space-xl:1.25rem;--space-2xl:1.5rem;--space-3xl:2rem;--space-4xl:2.5rem;
+--radius-sm:.5rem;--radius-md:.875rem;--radius-lg:1.125rem;--radius-xl:1.5rem;--radius-2xl:2rem;--radius-full:9999px;
+--transition-fast:all 0.15s ease;--transition-base:all 0.28s ease;--transition-slow:all 0.45s ease;--transition-spring:all 0.35s cubic-bezier(0.34,1.56,0.64,1);--transition-smooth:all 0.4s cubic-bezier(0.4,0,0.2,1);
+--z-base:1;--z-card:10;--z-nav:100;--z-modal:500;--z-toast:900;--z-overlay:1000;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{width:100%;height:100%;font-family:var(--font-body);background:var(--bg-dark);color:var(--text-primary);overscroll-behavior:none;-webkit-overflow-scrolling:touch;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+a{color:var(--text-ember);text-decoration:none;transition:var(--transition-fast)}
+a:hover{color:var(--text-gold);text-decoration:underline}
+img,svg{display:block;max-width:100%}
+button{font-family:var(--font-body);cursor:pointer;border:none;background:none;-webkit-appearance:none;touch-action:manipulation;user-select:none;-webkit-touch-callout:none}
+input,textarea,select{font-family:var(--font-body);font-size:16px;-webkit-appearance:none}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-softer);border-radius:2px}
+*{scrollbar-width:thin;-ms-overflow-style:auto}
+
+body{opacity:0;visibility:visible;animation:page-fade-in 0.25s ease forwards}
+body.loading{opacity:0;animation:page-fade-in 0.25s ease forwards}
+body.loaded{opacity:1;visibility:visible;animation:none}
+@keyframes page-fade-in{from{opacity:0}to{opacity:1}}
+
+.app-shell{width:100%;max-width:28rem;height:100vh;height:-webkit-fill-available;margin:0 auto;background:var(--bg-card);display:flex;flex-direction:column;position:relative;overflow:hidden;border-left:1px solid var(--border-subtle);border-right:1px solid var(--border-subtle)}
+.app-shell::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.6}
+.app-main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;z-index:var(--z-card)}
+.app-content{padding:var(--space-lg) var(--space-xl);padding-top:max(var(--space-lg),env(safe-area-inset-top));padding-bottom:calc(5rem + env(safe-area-inset-bottom))}
+.app-content--full{padding-bottom:max(var(--space-3xl),env(safe-area-inset-bottom))}
+
+.bg-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:0}
+.bg-orb--ember{top:-10%;left:40%;transform:translateX(-50%);width:30rem;height:30rem;background:var(--blur-ember);filter:blur(var(--blur-radius));animation:pulse-orb 6s ease-in-out infinite}
+.bg-orb--gold{bottom:15%;right:-10%;width:22rem;height:22rem;background:var(--blur-gold);filter:blur(110px);animation:pulse-orb 8s ease-in-out infinite reverse}
+.bg-orb--rose{bottom:-8%;left:-5%;width:18rem;height:18rem;background:var(--blur-rose);filter:blur(90px)}
+
+.display-xl{font-family:var(--font-display);font-size:3rem;font-weight:600;line-height:1.08;letter-spacing:-.02em;color:var(--text-primary)}
+.display-lg{font-family:var(--font-display);font-size:2.375rem;font-weight:600;line-height:1.12;letter-spacing:-.018em;color:var(--text-primary)}
+.display-md{font-family:var(--font-display);font-size:1.875rem;font-weight:500;line-height:1.2;letter-spacing:-.01em;color:var(--text-primary)}
+.display-sm{font-family:var(--font-display);font-size:1.5rem;font-weight:500;line-height:1.25;color:var(--text-primary)}
+h1,h2,h3,h4,h5,h6{color:var(--text-primary);line-height:1.3}
+h1{font-size:1.75rem;font-weight:600;letter-spacing:-.02em}h2{font-size:1.375rem;font-weight:600;letter-spacing:-.015em}h3{font-size:1.125rem;font-weight:600}h4{font-size:1rem;font-weight:600}h5{font-size:.9375rem;font-weight:500}h6{font-size:.875rem;font-weight:500}
+.text-display{font-family:var(--font-display)}.text-italic{font-style:italic}
+.text-xl{font-size:1.25rem;line-height:1.55}.text-lg{font-size:1.125rem;line-height:1.65}.text-md{font-size:1rem;line-height:1.65}.text-sm{font-size:.9375rem;line-height:1.6}.text-xs{font-size:.875rem;line-height:1.5}.text-2xs{font-size:.8125rem;line-height:1.5}.text-3xs{font-size:.75rem;line-height:1.5}
+.text-primary{color:var(--text-primary)}.text-secondary{color:var(--text-secondary)}.text-muted{color:var(--text-muted)}.text-dim{color:var(--text-dim)}.text-ember{color:var(--text-ember)}.text-gold{color:var(--text-gold)}.text-rose{color:var(--text-rose)}.text-sage{color:var(--text-sage)}.text-red{color:var(--text-red)}
+.font-300{font-weight:300}.font-400{font-weight:400}.font-500{font-weight:500}.font-600{font-weight:600}.font-700{font-weight:700}
+.text-center{text-align:center}.text-left{text-align:left}.text-right{text-align:right}
+.text-gradient{background:var(--gradient-text);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.text-gradient-warm{background:linear-gradient(135deg,#f0a07a,#d97a90);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.card{background:var(--gradient-card);border:1px solid var(--border-soft);border-radius:var(--radius-xl);padding:var(--space-2xl);margin-bottom:var(--space-lg);position:relative;overflow:hidden;box-shadow:var(--shadow-inner)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,200,140,.12),transparent);pointer-events:none}
+.card--ember{background:var(--ember-bg);border-color:var(--ember-border)}.card--ember-strong{background:var(--ember-bg-strong);border-color:var(--ember-border-strong)}.card--gold{background:var(--gold-bg);border-color:var(--gold-border)}.card--gold-strong{background:var(--gold-bg-strong);border-color:var(--gold-border-strong)}.card--rose{background:var(--rose-bg);border-color:var(--rose-border)}.card--rose-strong{background:var(--rose-bg-strong);border-color:var(--rose-border-strong)}.card--sage{background:var(--sage-bg);border-color:var(--sage-border)}.card--red{background:var(--red-bg);border-color:var(--red-border)}
+.card--glass{background:var(--bg-card-light);border-color:var(--border-softer);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.card--glow{background:var(--gradient-glow);border-color:var(--ember-border)}
+.card--hero{background:var(--gradient-hero);border-color:var(--ember-border);text-align:center;padding:var(--space-4xl) var(--space-2xl)}
+.card--accent-ember{border-left:4px solid var(--ember);background:var(--ember-bg);border-top-color:var(--ember-border);border-right-color:var(--ember-border);border-bottom-color:var(--ember-border)}
+.card--accent-gold{border-left:4px solid var(--gold);background:var(--gold-bg);border-top-color:var(--gold-border);border-right-color:var(--gold-border);border-bottom-color:var(--gold-border)}
+.card--accent-rose{border-left:4px solid var(--rose);background:var(--rose-bg);border-top-color:var(--rose-border);border-right-color:var(--rose-border);border-bottom-color:var(--rose-border)}
+.card--accent-red{border-left:4px solid var(--red);background:var(--red-bg);border-top-color:var(--red-border);border-right-color:var(--red-border);border-bottom-color:var(--red-border)}
+.card--sm{padding:var(--space-lg);border-radius:var(--radius-lg)}.card--xs{padding:var(--space-md) var(--space-lg);border-radius:var(--radius-md)}.card--no-margin{margin-bottom:0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-md);width:100%;padding:var(--space-lg) var(--space-xl);min-height:52px;border-radius:var(--radius-lg);font-size:1rem;font-weight:600;font-family:var(--font-body);color:var(--text-primary);border:none;cursor:pointer;transition:var(--transition-spring);-webkit-appearance:none;touch-action:manipulation;user-select:none;-webkit-touch-callout:none;position:relative;overflow:hidden;white-space:nowrap;letter-spacing:.01em}
+.btn--primary::before,.btn--secondary::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent);transition:left .5s ease}
+.btn--primary:hover::before,.btn--secondary:hover::before{left:150%}
+.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .15s ease}
+.btn:active::after{background:rgba(255,255,255,.06)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn--primary{background:var(--gradient-main);box-shadow:var(--shadow-ember)}
+.btn--primary:hover:not(:disabled){box-shadow:var(--shadow-ember-lg);transform:translateY(-2px);filter:brightness(1.08)}
+.btn--secondary{background:var(--ember);box-shadow:var(--shadow-ember)}.btn--secondary:hover:not(:disabled){background:var(--ember-dark);transform:translateY(-2px)}
+.btn--tertiary{background:var(--gold);box-shadow:var(--shadow-gold);color:#1a0d04}.btn--tertiary:hover:not(:disabled){background:var(--gold-dark);transform:translateY(-2px)}
+.btn--rose{background:var(--rose);box-shadow:var(--shadow-rose)}.btn--rose:hover:not(:disabled){background:var(--rose-dark);transform:translateY(-2px)}
+.btn--ghost{background:var(--bg-card-light);border:1px solid var(--border-softer);color:var(--text-primary)}.btn--ghost:hover:not(:disabled){background:var(--bg-card-medium);border-color:var(--ember-border)}
+.btn--danger{background:var(--red)}.btn--danger:hover:not(:disabled){background:#a82e2e;transform:translateY(-2px)}
+.btn--text{background:none;color:var(--text-ember);padding:var(--space-sm) var(--space-lg);min-height:auto;width:auto}.btn--text:hover:not(:disabled){color:var(--text-gold)}
+.btn--lg{padding:var(--space-xl) var(--space-2xl);font-size:1.0625rem;min-height:58px;border-radius:var(--radius-xl)}.btn--sm{padding:var(--space-md) var(--space-lg);font-size:.9375rem;min-height:44px}.btn--xs{padding:var(--space-sm) var(--space-md);font-size:.875rem;min-height:36px;border-radius:var(--radius-md)}.btn--icon{width:2.75rem;height:2.75rem;min-height:unset;padding:0;border-radius:var(--radius-md);flex-shrink:0}.btn--mb{margin-bottom:var(--space-lg)}.btn--mt{margin-top:var(--space-lg)}
+
+.form-group{margin-bottom:var(--space-xl)}
+.form-label{display:block;font-size:.9375rem;font-weight:500;color:var(--text-secondary);margin-bottom:var(--space-sm);letter-spacing:.01em}
+.form-label--secondary{font-weight:400;color:var(--text-muted);font-size:.875rem}
+.form-input{width:100%;padding:var(--space-md) var(--space-lg);background:var(--bg-input);border:1px solid var(--border-soft);border-radius:var(--radius-md);color:var(--text-primary);font-size:16px;font-family:var(--font-body);transition:var(--transition-base);-webkit-appearance:none}
+.form-input::placeholder{color:var(--text-muted)}
+.form-input:focus{outline:none;background:var(--bg-input-focus);border-color:var(--ember-border-strong);box-shadow:0 0 0 3px var(--ember-glow-soft)}
+.form-input:disabled{opacity:.45;cursor:not-allowed}
+.form-textarea{width:100%;padding:var(--space-md) var(--space-lg);background:var(--bg-input);border:1px solid var(--border-soft);border-radius:var(--radius-md);color:var(--text-primary);font-size:16px;font-family:var(--font-body);line-height:1.65;min-height:120px;resize:vertical;transition:var(--transition-base);-webkit-appearance:none}
+.form-textarea::placeholder{color:var(--text-muted)}
+.form-textarea:focus{outline:none;background:var(--bg-input-focus);border-color:var(--ember-border-strong);box-shadow:0 0 0 3px var(--ember-glow-soft)}
+.char-counter{font-size:.8125rem;color:var(--text-muted);text-align:right;margin-top:var(--space-xs);transition:var(--transition-fast)}.char-counter--active{color:var(--text-ember);font-weight:600}
+.form-range{width:100%;height:6px;background:var(--bg-input);border-radius:var(--radius-full);outline:none;-webkit-appearance:none;cursor:pointer}
+.form-range::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--gradient-main);cursor:pointer;box-shadow:var(--shadow-ember);transition:var(--transition-fast)}
+.form-range::-webkit-slider-thumb:active{transform:scale(1.2)}
+.form-range::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--ember);cursor:pointer;border:none;box-shadow:var(--shadow-ember)}
+.checkbox-label{display:flex;align-items:center;gap:var(--space-sm);padding:var(--space-md) var(--space-lg);background:var(--bg-card-light);border:1px solid var(--border-soft);border-radius:var(--radius-md);cursor:pointer;transition:var(--transition-base);user-select:none}
+.checkbox-label:hover{border-color:var(--ember-border);background:var(--ember-bg)}.checkbox-label:active{transform:scale(.98)}.checkbox-label--checked{border-color:var(--ember-border-strong);background:var(--ember-bg-strong)}
+.checkbox-label input[type="checkbox"]{width:1.25rem;height:1.25rem;cursor:pointer;accent-color:var(--ember);flex-shrink:0}
+.checkbox-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-sm)}
+
+.progress-dots{display:flex;gap:var(--space-xs)}
+.progress-dot{flex:1;height:.375rem;background:rgba(200,140,80,.16);border-radius:var(--radius-full);transition:background .45s ease}
+.progress-dot--active{background:var(--gradient-main)}
+.progress-bar{width:100%;height:6px;background:rgba(200,140,80,.14);border-radius:var(--radius-full);overflow:hidden}
+.progress-bar__fill{height:100%;background:var(--gradient-main);border-radius:var(--radius-full);transition:width .65s cubic-bezier(.4,0,.2,1);position:relative}
+.progress-bar__fill::after{content:'';position:absolute;right:0;top:-2px;width:12px;height:10px;background:var(--gold-light);border-radius:50%;filter:blur(4px);opacity:.8}
+.progress-ring{position:relative;width:3rem;height:3rem;flex-shrink:0}
+.progress-ring svg{transform:rotate(-90deg)}
+.progress-ring__bg{fill:none;stroke:rgba(200,140,80,.15);stroke-width:3}
+.progress-ring__fill{fill:none;stroke:url(#progressGradient);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .65s cubic-bezier(.4,0,.2,1)}
+.progress-ring__label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.6875rem;font-weight:700;color:var(--text-ember)}
+
+.module-header{background:var(--gradient-card);border:1px solid var(--border-soft);border-radius:var(--radius-xl);padding:var(--space-lg) var(--space-xl);margin-bottom:var(--space-lg)}
+.module-header__row{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md)}
+.module-header__back{width:2.25rem;height:2.25rem;display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:var(--text-primary);background:var(--bg-card-light);border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition-fast);border:1px solid var(--border-soft)}
+.module-header__back:active{transform:scale(.92);background:var(--ember-bg)}
+.module-header__title{font-size:.9375rem;font-weight:600;color:var(--text-primary);text-align:center;flex:1;padding:0 var(--space-sm);line-height:1.3}
+.module-header__count{font-size:.8125rem;color:var(--text-muted);font-weight:500;min-width:2.25rem;text-align:right}
+
+.bottom-nav{position:relative;z-index:var(--z-nav);background:rgba(18,10,5,.96);border-top:1px solid var(--border-subtle);display:flex;align-items:stretch;padding-bottom:env(safe-area-inset-bottom);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);flex-shrink:0}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;padding:.625rem var(--space-sm);cursor:pointer;transition:var(--transition-fast);position:relative;min-height:56px;border:none;background:none;color:var(--text-muted)}
+.nav-tab:active{transform:scale(.90)}.nav-tab--active{color:var(--text-ember)}
+.nav-tab__icon{width:1.5rem;height:1.5rem;position:relative}
+.nav-tab__icon svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.nav-tab__label{font-size:.6875rem;font-weight:500;letter-spacing:.01em}
+.nav-tab--active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:2.25rem;height:2px;background:var(--gradient-main);border-radius:0 0 var(--radius-sm) var(--radius-sm);box-shadow:0 0 8px var(--ember-glow)}
+.nav-badge{position:absolute;top:.375rem;right:50%;transform:translateX(.75rem);width:.5rem;height:.5rem;background:var(--gold);border-radius:50%;border:2px solid var(--bg-dark);box-shadow:0 0 6px var(--gold-glow)}
+
+.pathway-card{background:var(--gradient-card);border:1px solid var(--border-soft);border-radius:var(--radius-xl);padding:var(--space-xl);margin-bottom:var(--space-lg);cursor:pointer;transition:var(--transition-spring);display:flex;align-items:center;gap:var(--space-lg);position:relative;overflow:hidden}
+.pathway-card::after{content:'';position:absolute;inset:0;background:linear-gradient(145deg,rgba(255,180,100,.04),transparent 60%);pointer-events:none}
+.pathway-card:hover{transform:translateY(-3px);border-color:var(--ember-border);box-shadow:var(--shadow-md),0 0 20px var(--ember-glow-soft)}
+.pathway-card:active{transform:scale(.98)}
+.pathway-card--locked{opacity:.45;cursor:default;filter:grayscale(.2)}.pathway-card--locked:hover{transform:none;border-color:var(--border-soft);box-shadow:none}
+.pathway-card--active{border-color:var(--ember-border-strong);background:var(--ember-bg)}
+.pathway-card__icon{font-size:2.25rem;flex-shrink:0;line-height:1}.pathway-card__body{flex:1;min-width:0}.pathway-card__title{font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:.2rem}.pathway-card__sub{font-size:.8125rem;color:var(--text-secondary);line-height:1.45}.pathway-card__lock{font-size:1rem;color:var(--text-muted);flex-shrink:0}
+
+.module-item{display:flex;align-items:center;gap:var(--space-lg);padding:var(--space-lg) var(--space-xl);background:var(--bg-card-light);border:1px solid var(--border-soft);border-radius:var(--radius-lg);margin-bottom:var(--space-sm);cursor:pointer;transition:var(--transition-spring)}
+.module-item:hover{border-color:var(--ember-border);background:var(--ember-bg);transform:translateX(3px)}.module-item:active{transform:scale(.98)}
+.module-item--locked{opacity:.40;cursor:default}.module-item--locked:hover{transform:none;border-color:var(--border-soft);background:var(--bg-card-light)}
+.module-item--completed{border-color:var(--sage-border)}
+.module-item__num{width:2.25rem;height:2.25rem;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.875rem;font-weight:700;flex-shrink:0;background:var(--bg-card-medium);color:var(--text-secondary)}
+.module-item--completed .module-item__num{background:var(--sage-bg-strong,rgba(122,170,136,.22));color:var(--text-sage)}
+.module-item__body{flex:1;min-width:0}.module-item__title{font-size:.9375rem;font-weight:600;color:var(--text-primary);line-height:1.3;margin-bottom:.15rem}.module-item__sub{font-size:.8125rem;color:var(--text-muted)}.module-item__status{font-size:1rem;flex-shrink:0}
+
+.tool-card{background:var(--gradient-card);border:1px solid var(--border-soft);border-radius:var(--radius-xl);padding:var(--space-xl);margin-bottom:var(--space-lg);cursor:pointer;transition:var(--transition-spring);position:relative;overflow:hidden}
+.tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,190,110,.10),transparent);pointer-events:none}
+.tool-card:hover{border-color:var(--ember-border);transform:translateY(-3px);box-shadow:var(--shadow-md),0 0 22px var(--ember-glow-soft)}.tool-card:active{transform:scale(.98)}
+.tool-card--locked{opacity:.35;cursor:default;filter:grayscale(.3)}.tool-card--locked:hover{transform:none;border-color:var(--border-soft);box-shadow:none}
+.tool-card__header{display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-md)}.tool-card__icon{font-size:1.75rem;line-height:1}.tool-card__title{font-size:1rem;font-weight:600;color:var(--text-primary)}.tool-card__tagline{font-size:.8125rem;color:var(--text-secondary);line-height:1.55}
+.tool-card__badge{margin-left:auto;font-size:.75rem;padding:.2rem .6rem;border-radius:var(--radius-full);font-weight:600}
+.tool-card__badge--earned{background:var(--gold-bg-strong);color:var(--text-gold)}.tool-card__badge--crisis{background:var(--red-bg);color:var(--text-red)}
+
+.step-list{display:flex;flex-direction:column;gap:var(--space-lg)}.step-item{display:flex;gap:var(--space-lg);align-items:flex-start}
+.step-num{width:2.25rem;height:2.25rem;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9375rem;flex-shrink:0;background:var(--gradient-main);color:var(--text-primary)}
+.step-num--ember{background:var(--ember-bg-strong);color:var(--text-ember)}.step-num--gold{background:var(--gold-bg-strong);color:var(--text-gold)}.step-num--red{background:var(--red-bg-strong);color:var(--text-red)}
+.step-text{color:var(--text-secondary);line-height:1.65;font-size:1rem;padding-top:.375rem;flex:1}
+.compare-block{padding:var(--space-lg);border-radius:var(--radius-lg);margin-bottom:var(--space-md)}.compare-block--red{background:var(--red-bg);border-left:3px solid var(--red)}.compare-block--ember{background:var(--ember-bg);border-left:3px solid var(--ember)}.compare-block--sage{background:var(--sage-bg);border-left:3px solid var(--sage)}
+.compare-label{font-size:.8125rem;font-weight:600;margin-bottom:var(--space-xs)}.compare-label--red{color:var(--text-red)}.compare-label--ember{color:var(--text-ember)}.compare-label--sage{color:var(--text-sage)}.compare-text{font-size:1rem;line-height:1.65;color:var(--text-secondary)}
+.quote-block{background:var(--bg-card-light);border-left:3px solid var(--ember);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:var(--space-lg) var(--space-xl);font-family:var(--font-display);font-style:italic;font-size:1.125rem;color:var(--text-secondary);line-height:1.7}
+.highlight-pill{display:inline-flex;align-items:center;gap:var(--space-xs);background:var(--ember-bg-strong);border:1px solid var(--ember-border);color:var(--text-ember);font-size:.875rem;font-weight:500;padding:.375rem var(--space-md);border-radius:var(--radius-full)}
+.insight-box{background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:var(--space-xl);margin-bottom:var(--space-lg)}
+.insight-box__header{display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-md)}.insight-box__title{font-size:1rem;font-weight:600;color:var(--text-gold)}.insight-box__body{color:var(--text-secondary);line-height:1.7;font-size:.9375rem}
+
+.mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--space-sm)}
+.mood-btn{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:var(--space-md) var(--space-xs);background:var(--bg-card-light);border:2px solid transparent;border-radius:var(--radius-lg);cursor:pointer;transition:var(--transition-spring)}
+.mood-btn:active{transform:scale(.90)}.mood-btn--selected{border-color:var(--ember-border-strong);background:var(--ember-bg-strong)}
+.mood-btn__emoji{font-size:1.75rem;line-height:1;transition:transform .25s var(--transition-spring)}.mood-btn:hover .mood-btn__emoji{transform:scale(1.18)}
+.mood-btn__label{font-size:.625rem;font-weight:600;color:var(--text-muted);text-align:center;letter-spacing:.02em;text-transform:uppercase}.mood-btn--selected .mood-btn__label{color:var(--text-ember)}
+
+.streak-display{display:flex;align-items:center;gap:var(--space-md);background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:var(--radius-lg);padding:var(--space-lg) var(--space-xl);box-shadow:inset 0 0 20px rgba(232,160,48,.05)}
+.streak-display__flame{font-size:2rem;line-height:1;animation:flame-flicker 2s ease-in-out infinite}.streak-display__count{font-size:2rem;font-weight:600;color:var(--text-gold);font-family:var(--font-display);line-height:1}.streak-display__label{font-size:.8125rem;color:var(--text-secondary)}
+
+.toast{position:fixed;bottom:calc(5.5rem + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(120px);background:rgba(180,90,40,.95);color:var(--text-primary);padding:var(--space-lg) var(--space-2xl);border-radius:var(--radius-lg);font-size:.9375rem;font-weight:500;z-index:var(--z-toast);opacity:0;transition:all .38s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;backdrop-filter:blur(12px);box-shadow:var(--shadow-lg),0 0 20px rgba(217,95,53,.3);max-width:calc(100vw - 3rem);text-align:center;border:1px solid var(--ember-border)}
+.toast--show{transform:translateX(-50%) translateY(0);opacity:1}.toast--error{background:rgba(180,50,50,.95);border-color:var(--red-border)}.toast--success{background:rgba(80,140,100,.95);border-color:var(--sage-border)}
+
+.loading-overlay{position:fixed;inset:0;background:rgba(8,5,3,.88);display:none;align-items:center;justify-content:center;z-index:var(--z-overlay);flex-direction:column;gap:var(--space-lg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.loading-overlay--show{display:flex}
+.loading-spinner{width:3rem;height:3rem;border:3px solid var(--border-softer);border-top:3px solid var(--ember);border-radius:50%;animation:spin .85s linear infinite;box-shadow:0 0 14px var(--ember-glow-soft)}.loading-text{color:var(--text-secondary);font-size:1rem;font-weight:500}
+.skeleton{background:linear-gradient(90deg,rgba(60,35,18,.4) 25%,rgba(80,48,24,.6) 50%,rgba(60,35,18,.4) 75%);background-size:200% 100%;animation:skeleton-wave 1.6s ease-in-out infinite;border-radius:var(--radius-md)}.skeleton--text{height:1rem;border-radius:var(--radius-full)}.skeleton--card{height:6rem;border-radius:var(--radius-xl)}
+
+.badge{display:inline-flex;align-items:center;gap:.25rem;padding:.2rem .6rem;border-radius:var(--radius-full);font-size:.75rem;font-weight:600;letter-spacing:.02em}
+.badge--ember{background:var(--ember-bg-strong);color:var(--text-ember);border:1px solid var(--ember-border)}.badge--gold{background:var(--gold-bg-strong);color:var(--text-gold);border:1px solid var(--gold-border)}.badge--rose{background:var(--rose-bg-strong);color:var(--text-rose);border:1px solid var(--rose-border)}.badge--sage{background:var(--sage-bg-strong,rgba(122,170,136,.22));color:var(--text-sage);border:1px solid var(--sage-border)}.badge--red{background:var(--red-bg-strong);color:var(--text-red);border:1px solid var(--red-border)}.badge--pro{background:var(--gradient-main);color:var(--text-primary);border:none}
+
+.divider{display:flex;align-items:center;gap:var(--space-lg);margin:var(--space-2xl) 0}.divider__line{flex:1;height:1px;background:var(--border-softer)}.divider__text{color:var(--text-muted);font-size:.875rem;font-weight:500;white-space:nowrap}.divider--vertical{width:1px;height:100%;background:var(--border-soft);margin:0 var(--space-lg)}
+
+.error-message{background:var(--red-bg-strong);border:1px solid var(--red-border);border-radius:var(--radius-lg);padding:var(--space-lg) var(--space-xl);color:var(--text-red);font-size:.9375rem;line-height:1.6;display:none}.error-message--show{display:block}
+.success-message{background:var(--sage-bg);border:1px solid var(--sage-border);border-radius:var(--radius-lg);padding:var(--space-lg) var(--space-xl);color:var(--text-sage);font-size:.9375rem;line-height:1.6;display:none}.success-message--show{display:block}
+
+@keyframes pulse-orb{0%,100%{opacity:.5;transform:translateX(-50%) scale(1)}50%{opacity:.9;transform:translateX(-50%) scale(1.06)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes fade-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fade-in-up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scale-in{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+@keyframes slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes skeleton-wave{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes checkmark{0%{stroke-dashoffset:50}100%{stroke-dashoffset:0}}
+@keyframes ember-pulse{0%,100%{box-shadow:0 0 0 0 rgba(217,95,53,0)}50%{box-shadow:0 0 0 8px rgba(217,95,53,.08)}}
+@keyframes flame-flicker{0%,100%{transform:scale(1) rotate(-1deg)}25%{transform:scale(1.05) rotate(1deg)}75%{transform:scale(.97) rotate(-.5deg)}}
+@keyframes glow-breathe{0%,100%{opacity:.6}50%{opacity:1}}
+
+.animate-fade-in{animation:fade-in .4s ease-out forwards}.animate-fade-in-up{animation:fade-in-up .5s ease-out forwards}.animate-scale-in{animation:scale-in .32s ease-out forwards}.animate-float{animation:float 3s ease-in-out infinite}.animate-ember-pulse{animation:ember-pulse 2.5s ease-in-out infinite}.animate-glow{animation:glow-breathe 3s ease-in-out infinite}.step-transition{animation:fade-in .35s ease-out}
+.stagger>*{opacity:0;animation:fade-in-up .42s ease-out forwards}.stagger>*:nth-child(1){animation-delay:.05s}.stagger>*:nth-child(2){animation-delay:.11s}.stagger>*:nth-child(3){animation-delay:.17s}.stagger>*:nth-child(4){animation-delay:.23s}.stagger>*:nth-child(5){animation-delay:.29s}.stagger>*:nth-child(6){animation-delay:.35s}
+
+.hidden{display:none!important}.visible{display:block!important}.flex{display:flex}.grid{display:grid}.inline{display:inline}.inline-flex{display:inline-flex}
+.flex-col{flex-direction:column}.flex-center{align-items:center;justify-content:center}.items-center{align-items:center}.items-start{align-items:flex-start}.justify-between{justify-content:space-between}.justify-center{justify-content:center}.flex-1{flex:1}.flex-shrink-0{flex-shrink:0}
+.gap-xs{gap:var(--space-xs)}.gap-sm{gap:var(--space-sm)}.gap-md{gap:var(--space-md)}.gap-lg{gap:var(--space-lg)}.gap-xl{gap:var(--space-xl)}.gap-2xl{gap:var(--space-2xl)}
+.mb-xs{margin-bottom:var(--space-xs)}.mb-sm{margin-bottom:var(--space-sm)}.mb-md{margin-bottom:var(--space-md)}.mb-lg{margin-bottom:var(--space-lg)}.mb-xl{margin-bottom:var(--space-xl)}.mb-2xl{margin-bottom:var(--space-2xl)}.mb-3xl{margin-bottom:var(--space-3xl)}.mt-lg{margin-top:var(--space-lg)}.mt-xl{margin-top:var(--space-xl)}.mt-2xl{margin-top:var(--space-2xl)}.mt-3xl{margin-top:var(--space-3xl)}
+.overflow-hidden{overflow:hidden}.overflow-auto{overflow:auto}.rounded-full{border-radius:var(--radius-full)}.w-full{width:100%}.relative{position:relative}.pointer{cursor:pointer}.no-select{user-select:none}
+
+@media(min-width:640px){
+  body{display:flex;align-items:center;justify-content:center;background:#070503;padding:1.5rem}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(217,95,53,.04),transparent 60%),radial-gradient(ellipse at 70% 70%,rgba(232,160,48,.03),transparent 55%);pointer-events:none;z-index:0}
+  .app-shell{height:844px;max-height:92vh;border-radius:2.75rem;border:1px solid rgba(255,180,100,.08);box-shadow:var(--shadow-card),0 0 0 1px rgba(255,180,100,.04),0 0 60px rgba(217,95,53,.06);overflow:hidden;position:relative;z-index:1}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+@supports(-webkit-touch-callout:none){.app-shell{height:-webkit-fill-available}}
