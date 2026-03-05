@@ -421,7 +421,95 @@
       color: var(--text-secondary);
     }
 
+    /* ── Reflections section ─────────────────────────────── */
+    .ref-card {
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-soft);
+      margin-bottom: .875rem;
+      overflow: hidden;
+      background: var(--gradient-card);
+    }
+    .ref-card--ember { border-color: var(--ember-border); }
+    .ref-card--gold  { border-color: var(--gold-border); }
+    .ref-card--rose  { border-color: var(--rose-border); }
+    .ref-card--sage  { border-color: var(--sage-border); }
+
+    .ref-card__header {
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+      padding: .875rem 1rem .75rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .ref-card--ember .ref-card__header { background: var(--ember-bg); }
+    .ref-card--gold  .ref-card__header { background: var(--gold-bg); }
+    .ref-card--rose  .ref-card__header { background: var(--rose-bg); }
+    .ref-card--sage  .ref-card__header { background: var(--sage-bg); }
+
+    .ref-card__emoji {
+      font-size: 1.125rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .ref-card__title {
+      font-family: var(--font-display);
+      font-size: .9375rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -.01em;
+      line-height: 1.3;
+    }
+    .ref-card--ember .ref-card__title { color: var(--text-ember); }
+    .ref-card--gold  .ref-card__title { color: var(--text-gold); }
+    .ref-card--rose  .ref-card__title { color: var(--text-rose); }
+    .ref-card--sage  .ref-card__title { color: var(--text-sage); }
+
+    .ref-card__answers {
+      padding: .875rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .625rem;
+    }
+    .ref-answer {
+      display: flex;
+      gap: .625rem;
+      align-items: flex-start;
+    }
+    .ref-answer__num {
+      flex-shrink: 0;
+      width: 1.375rem;
+      height: 1.375rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .6875rem;
+      font-weight: 600;
+      margin-top: .1rem;
+      background: var(--border-soft);
+      color: var(--text-muted);
+    }
+    .ref-card--ember .ref-answer__num { background: var(--ember-bg-strong); color: var(--text-ember); }
+    .ref-card--gold  .ref-answer__num { background: var(--gold-bg-strong);  color: var(--text-gold); }
+    .ref-card--rose  .ref-answer__num { background: var(--rose-bg-strong);  color: var(--text-rose); }
+    .ref-card--sage  .ref-answer__num { background: var(--sage-bg-strong);  color: var(--text-sage); }
+
+    .ref-answer__text {
+      font-size: .9rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .reflections-empty {
+      font-size: .9375rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 1.5rem 0;
+      font-style: italic;
+    }
+
     /* Pending reflection */
+
     .reflection-nudge {
       background: linear-gradient(135deg,
         rgba(13,148,136,0.10),
@@ -2096,29 +2184,51 @@
           byModule[r.module_id].push(r);
         });
 
+        // Map module IDs to pathway color
+        const MODULE_COLOR = {
+          'em-1':'ember','em-2':'ember','em-3':'ember','em-4':'ember','em-5':'ember','em-6':'ember',
+          'id-1':'gold','id-2':'gold','id-3':'gold','id-4':'gold','id-5':'gold','id-6':'gold',
+          'cn-1':'rose','cn-2':'rose','cn-3':'rose','cn-4':'rose','cn-5':'rose','cn-6':'rose',
+          'lw-1':'sage','lw-2':'sage','lw-3':'sage','lw-4':'sage','lw-5':'sage','lw-6':'sage'
+        };
+        const MODULE_EMOJI = {
+          'em-1':'🌊','em-2':'🫀','em-3':'🪞','em-4':'🌿','em-5':'🧩','em-6':'⚡',
+          'id-1':'🧬','id-2':'🧭','id-3':'📖','id-4':'✨','id-5':'🌑','id-6':'🏛️',
+          'cn-1':'🔗','cn-2':'🪢','cn-3':'👂','cn-4':'🫧','cn-5':'🔥','cn-6':'🌱',
+          'lw-1':'🌅','lw-2':'🕯️','lw-3':'🏗️','lw-4':'⚖️','lw-5':'🌳','lw-6':'🧭'
+        };
+
         list.innerHTML = Object.entries(byModule).map(([modId, answers]) => {
           const modName = MODULE_LABELS[modId] || modId;
-          const answersHtml = answers
-            .filter(a => a.response && a.response.trim())
-            .map(a => {
-              let resp = a.response;
-              try { 
-                const parsed = JSON.parse(resp);
-                if (typeof parsed === 'string') resp = parsed;
-                else if (parsed.value) resp = parsed.value;
-                else if (Array.isArray(parsed)) resp = parsed.join(', ');
-              } catch(e) {}
-              return `<div class="reflection-a">${resp}</div>`;
-            }).join('');
+          const color = MODULE_COLOR[modId] || 'ember';
+          const emoji = MODULE_EMOJI[modId] || '◆';
 
-          if (!answersHtml) return '';
+          const validAnswers = answers.filter(a => a.response && a.response.trim());
+          if (!validAnswers.length) return '';
+
+          const answersHtml = validAnswers.map((a, idx) => {
+            let resp = a.response;
+            try {
+              const parsed = JSON.parse(resp);
+              if (typeof parsed === 'string') resp = parsed;
+              else if (parsed.value) resp = parsed.value;
+              else if (Array.isArray(parsed)) resp = parsed.join(', ');
+            } catch(e) {}
+            return `
+              <div class="ref-answer">
+                <span class="ref-answer__num">${idx + 1}</span>
+                <p class="ref-answer__text">${resp}</p>
+              </div>`;
+          }).join('');
 
           return `
-            <div class="reflection-entry">
-              <p class="reflection-module">${modName}</p>
-              ${answersHtml}
-            </div>
-          `;
+            <div class="ref-card ref-card--${color}">
+              <div class="ref-card__header">
+                <span class="ref-card__emoji">${emoji}</span>
+                <p class="ref-card__title">${modName}</p>
+              </div>
+              <div class="ref-card__answers">${answersHtml}</div>
+            </div>`;
         }).filter(Boolean).join('');
 
       } catch(err) {
