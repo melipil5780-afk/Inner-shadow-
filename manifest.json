@@ -2,12 +2,12 @@
   "name": "Wellovie",
   "short_name": "Wellovie",
   "description": "Come home to yourself. Emotional skills, self-knowledge, and a life that feels like yours.",
-  "start_url": "/index.html",
+  "start_url": "/landing.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0f1e",
-  "theme_color": "#0a0f1e",
+  "background_color": "#0d0906",
+  "theme_color": "#0d0906",
   "categories": [
     "health",
     "lifestyle",
@@ -62,15 +62,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "assets/screenshots/home.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Wellovie Home"
     }
   ],
   "shortcuts": [
