@@ -90,15 +90,25 @@ const ModuleEngine = (() => {
       }
 
       // Restore step position
-      // If completed (current_step === 99), start from beginning so user can redo
+      console.log('[Engine] moduleState:', JSON.stringify({
+        completed: _moduleState.completed,
+        current_step: _moduleState.current_step,
+        started: _moduleState.started,
+        unlocked: _moduleState.unlocked
+      }));
+
+      // ALWAYS start from beginning if completed
       if (_moduleState.completed || _moduleState.current_step === 99) {
-        _currentStep = 0; // let them go through it again
+        _currentStep = 0;
+        console.log('[Engine] Completed module - resetting to step 0');
       } else if (_moduleState.current_step && _moduleState.current_step > 1) {
-        // Resume from saved step, capped at total
         _currentStep = Math.min(
           _moduleState.current_step - 1,
           _steps.length - 1
         );
+        console.log('[Engine] Resuming at step', _currentStep);
+      } else {
+        console.log('[Engine] Starting fresh at step 0');
       }
 
     } catch (err) {
