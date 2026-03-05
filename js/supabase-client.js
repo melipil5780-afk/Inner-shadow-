@@ -1,5 +1,5 @@
 // ================================================================
-// INNERSHADOW -- SUPABASE CLIENT
+// WELLOVIE -- SUPABASE CLIENT
 // js/supabase-client.js
 //
 // Import this in every page that needs Supabase.
@@ -151,9 +151,18 @@ const Auth = {
   async redirectIfLoggedIn(redirectTo = '/app.html') {
     const session = await this.getSession();
     if (session) {
-      const disclaimerAcknowledged = localStorage.getItem(
-        'wellovie_disclaimer_acknowledged'
-      );
+      // Check DB first, fall back to localStorage
+      try {
+        const { data: userState } = await DB.getUserState(session.user.id);
+        if (userState?.disclaimer_accepted) {
+          localStorage.setItem('wellovie_disclaimer_acknowledged', 'true');
+          window.location.href = redirectTo;
+          return true;
+        }
+      } catch (err) {
+        // DB check failed — fall back to localStorage
+      }
+      const disclaimerAcknowledged = localStorage.getItem('wellovie_disclaimer_acknowledged');
       window.location.href = disclaimerAcknowledged === 'true'
         ? redirectTo
         : '/disclaimer.html';

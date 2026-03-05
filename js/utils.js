@@ -1,5 +1,5 @@
 // ================================================================
-// INNERSHADOW  SHARED UTILITIES
+// WELLOVIE  SHARED UTILITIES
 // js/utils.js
 //
 // Import after supabase-client.js on every page.
