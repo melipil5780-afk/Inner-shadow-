@@ -325,7 +325,7 @@ const DateTime = {
 
 // ================================================================
 // SECTION 4  LOCAL STATE CACHE
-// Syncs with Supabase but serves from cache for instant load
+// localStorage persistence
 // ================================================================
 
 const Cache = {
@@ -381,20 +381,6 @@ const Cache = {
 // ================================================================
 
 const Validate = {
-
-  email(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  },
-
-  password(password) {
-    return {
-      valid:         password.length >= 8,
-      hasLength:     password.length >= 8,
-      hasUppercase:  /[A-Z]/.test(password),
-      hasLowercase:  /[a-z]/.test(password),
-      hasNumber:     /[0-9]/.test(password)
-    };
-  },
 
   minLength(text, min) {
     return (text || '').trim().length >= min;
@@ -662,6 +648,31 @@ const Str = {
 
 
 // ================================================================
+// SECTION 11  LICENSE / ACCESS
+// ================================================================
+
+const License = {
+  KEY: 'wellovie_license',
+
+  save(key) {
+    localStorage.setItem(this.KEY, key.trim());
+  },
+
+  get() {
+    return localStorage.getItem(this.KEY);
+  },
+
+  isUnlocked() {
+    return !!localStorage.getItem(this.KEY);
+  },
+
+  clear() {
+    localStorage.removeItem(this.KEY);
+  }
+};
+
+
+// ================================================================
 // EXPORT  everything on window for page access
 // ================================================================
 
@@ -675,6 +686,7 @@ window.Assessment = Assessment;
 window.Mood       = Mood;
 window.Streak     = Streak;
 window.Str        = Str;
+window.License    = License;
 
 // Initialize device detection
 Device.initInstallPrompt();
