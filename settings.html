@@ -3,324 +3,353 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0d0906">
-  <title>Wellovie – Settings</title>
-    <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/assets/icons/icon-512.png">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="/css/main.css">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Settings — Wellovie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    html, body { position: fixed; width: 100%; height: 100%; overflow: hidden; }
-    body { display: flex; align-items: center; justify-content: center; background: var(--bg-dark); }
-    .shell {
-      width: 100%; max-width: 28rem; height: 100vh; height: -webkit-fill-available;
-      background: var(--bg-card); display: flex; flex-direction: column;
-      position: relative; overflow: hidden;
-      border-left: 1px solid var(--border-subtle); border-right: 1px solid var(--border-subtle);
-    }
-    .scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-    .scroll-area::-webkit-scrollbar { display: none; }
-    .inner { padding: max(1.5rem, env(safe-area-inset-top)) 1.25rem max(2rem, env(safe-area-inset-bottom)); }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .page-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.75rem; }
+    :root {
+      --bg:  #0f0d0a; --bg2: #161310; --bg3: #1e1a15;
+      --bd:  rgba(196,168,130,0.12); --bd2: rgba(196,168,130,0.22);
+      --t1:  #f0e8d8; --t2: rgba(240,232,216,0.65); --t3: rgba(240,232,216,0.35);
+      --te:  #d95f35; --ts: #4a8a60; --tr: #c05050;
+      --fs:  'Cormorant Garamond', Georgia, serif;
+      --fb:  'Outfit', -apple-system, sans-serif;
+    }
+
+    body { font-family: var(--fb); background: var(--bg); color: var(--t1); min-height: 100vh; }
+
+    .page { max-width: 560px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
+
+    /* Header */
+    .page-header {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 0 2rem;
+    }
+
     .back-btn {
-      width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center;
-      background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 0.875rem;
-      color: var(--text-primary); font-size: 1.125rem; cursor: pointer; transition: var(--transition-fast);
+      background: var(--bg2); border: 1px solid var(--bd); border-radius: 0.5rem;
+      width: 2.25rem; height: 2.25rem; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; color: var(--t2);
+      font-size: 1.125rem; text-decoration: none; transition: border-color 0.2s;
+      flex-shrink: 0;
     }
-    .back-btn:active { transform: scale(0.92); }
-    .page-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; }
+    .back-btn:hover { border-color: var(--bd2); color: var(--t1); }
 
-    .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; margin-top: 1.5rem; }
-    .section-label:first-of-type { margin-top: 0; }
+    .page-title { font-family: var(--fs); font-size: 1.875rem; font-weight: 400; }
 
-    /* Profile card */
-    .profile-card {
-      background: var(--bg-card-light); border: 1px solid var(--border-soft); border-radius: 1.25rem;
-      padding: 1.25rem; display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
-    }
-    .profile-avatar {
-      width: 3.5rem; height: 3.5rem; border-radius: 50%;
-      background: var(--gradient-main); display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; font-weight: 700; color: white; flex-shrink: 0;
-    }
-    .profile-info__name { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.2rem; }
-    .profile-info__email { font-size: 0.8125rem; color: var(--text-muted); }
+    /* Section */
+    .settings-section { margin-bottom: 2rem; }
 
-    /* Settings list */
-    .settings-list { background: var(--gradient-card); border: 1px solid var(--border-soft); border-radius: 1.25rem; overflow: hidden; margin-bottom: 1rem; }
-    .settings-item {
-      display: flex; align-items: center; gap: 0.875rem;
-      padding: 1rem 1.125rem; border-bottom: 1px solid var(--border-subtle);
-      cursor: pointer; transition: background 0.15s ease;
-    }
-    .settings-item:last-child { border-bottom: none; }
-    .settings-item:active { background: var(--bg-card-light); }
-    .settings-item__icon { font-size: 1.125rem; width: 1.75rem; text-align: center; flex-shrink: 0; }
-    .settings-item__body { flex: 1; }
-    .settings-item__label { font-size: 0.9375rem; font-weight: 500; color: var(--text-primary); }
-    .settings-item__sub { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.1rem; }
-    .settings-item__arrow { font-size: 0.875rem; color: var(--text-muted); }
-    .settings-item--danger .settings-item__label { color: var(--text-red, #f87171); }
-
-    /* Toggle switch */
-    .toggle { position: relative; width: 2.75rem; height: 1.5rem; flex-shrink: 0; }
-    .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider {
-      position: absolute; inset: 0; background: rgba(148,163,184,0.2);
-      border-radius: 999px; cursor: pointer; transition: 0.25s ease;
-    }
-    .toggle-slider:before {
-      content: ''; position: absolute; width: 1.125rem; height: 1.125rem;
-      left: 0.1875rem; bottom: 0.1875rem; background: white; border-radius: 50%; transition: 0.25s ease;
-    }
-    .toggle input:checked + .toggle-slider { background: var(--ember); }
-    .toggle input:checked + .toggle-slider:before { transform: translateX(1.25rem); }
-
-    /* Pro badge */
-    .pro-badge {
-      background: linear-gradient(135deg, rgba(232,160,48,0.2), rgba(232,160,48,0.1));
-      border: 1px solid rgba(232,160,48,0.3); border-radius: 999px;
-      padding: 0.2rem 0.625rem; font-size: 0.75rem; font-weight: 700; color: #f5c865;
+    .settings-label {
+      font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.09em;
+      text-transform: uppercase; color: var(--t3); padding: 0 0.25rem;
+      margin-bottom: 0.625rem;
     }
 
-    .version-text { text-align: center; font-size: 0.75rem; color: var(--text-muted); padding: 1.5rem 0 0.5rem; }
+    .settings-group {
+      background: var(--bg2); border: 1px solid var(--bd); border-radius: 0.875rem;
+      overflow: hidden;
+    }
 
-    @media (min-width: 640px) { .shell { height: 844px; max-height: 92vh; border-radius: 2.5rem; border: 1px solid var(--border-subtle); } }
+    .settings-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.125rem; border-bottom: 1px solid var(--bd);
+      cursor: pointer; transition: background 0.15s; gap: 1rem;
+      text-decoration: none; color: inherit;
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row:hover { background: rgba(196,168,130,0.04); }
+    .settings-row.destructive:hover { background: rgba(192,80,80,0.06); }
+
+    .row-left { display: flex; align-items: center; gap: 0.75rem; }
+    .row-icon { font-size: 1.125rem; width: 1.5rem; text-align: center; flex-shrink: 0; }
+    .row-label { font-size: 0.9375rem; font-weight: 500; }
+    .row-sub { font-size: 0.8rem; color: var(--t3); margin-top: 0.1rem; }
+    .row-right { color: var(--t3); font-size: 0.875rem; flex-shrink: 0; }
+
+    .destructive .row-label { color: var(--tr); }
+    .destructive .row-icon  { filter: saturate(0.5); }
+
+    /* License info block */
+    .license-block {
+      background: rgba(74,138,96,0.08); border: 1px solid rgba(74,138,96,0.25);
+      border-radius: 0.875rem; padding: 1.25rem 1.125rem;
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+    }
+
+    .license-dot {
+      width: 0.625rem; height: 0.625rem; border-radius: 50%;
+      background: var(--ts); flex-shrink: 0;
+      box-shadow: 0 0 8px rgba(74,138,96,0.5);
+    }
+
+    .license-text { flex: 1; }
+    .license-title { font-size: 0.9375rem; font-weight: 600; color: var(--ts); margin-bottom: 0.2rem; }
+    .license-key { font-size: 0.8rem; color: var(--t3); font-family: monospace; letter-spacing: 0.05em; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px); z-index: 200;
+      display: none; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .modal-backdrop.show { display: flex; }
+
+    .modal {
+      background: var(--bg2); border: 1px solid var(--bd2);
+      border-radius: 1.25rem; padding: 2rem; max-width: 380px; width: 100%;
+    }
+
+    .modal-title { font-family: var(--fs); font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .modal-sub { font-size: 0.9rem; color: var(--t2); line-height: 1.6; margin-bottom: 1.75rem; }
+
+    .modal-actions { display: flex; gap: 0.75rem; }
+
+    .modal-btn {
+      flex: 1; padding: 0.875rem; border-radius: 999px; font-family: var(--fb);
+      font-size: 0.9375rem; font-weight: 600; cursor: pointer; border: 1px solid var(--bd2);
+      transition: all 0.2s;
+    }
+
+    .modal-btn-cancel { background: transparent; color: var(--t2); }
+    .modal-btn-cancel:hover { background: var(--bg3); }
+
+    .modal-btn-confirm {
+      background: linear-gradient(135deg,#c05050,#a03030);
+      color: var(--t1); border-color: transparent;
+    }
+    .modal-btn-confirm:hover { opacity: 0.9; }
+
+    /* Reset progress modal */
+    #reset-modal .modal-title { color: var(--tr); }
+    #transfer-modal .modal-title { color: var(--t1); }
+
+    .transfer-input {
+      width: 100%; background: var(--bg3); border: 1px solid var(--bd2);
+      border-radius: 0.625rem; padding: 0.875rem 1rem; font-family: var(--fb);
+      font-size: 0.9375rem; color: var(--t1); outline: none;
+      transition: border-color 0.2s; margin-bottom: 1.25rem;
+      text-align: center; letter-spacing: 0.05em;
+    }
+    .transfer-input:focus { border-color: var(--te); }
+    .transfer-input::placeholder { color: var(--t3); letter-spacing: 0; }
+
+    .modal-btn-unlock {
+      background: linear-gradient(135deg,#d95f35,#c84a25);
+      color: var(--t1); border-color: transparent;
+    }
+    .modal-btn-unlock:hover { opacity: 0.9; }
+
+    .transfer-error { color: #e06060; font-size: 0.8125rem; margin-bottom: 1rem; display: none; }
+    .transfer-error.show { display: block; }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="bg-orb bg-orb--ember"></div>
-    <div class="bg-orb bg-orb--amber"></div>
-    <div class="scroll-area">
-      <div class="inner">
 
-        <div class="page-header">
-          <button class="back-btn" onclick="Nav.back('/app.html')">←</button>
-          <h1 class="page-title">Settings</h1>
-        </div>
+<div class="page">
 
-        <!-- Profile -->
-        <div class="profile-card animate-fade-in">
-          <div class="profile-avatar" id="avatarInitial">?</div>
-          <div class="profile-info">
-            <p class="profile-info__name" id="profileName">Loading...</p>
-            <p class="profile-info__email" id="profileEmail"></p>
-          </div>
-        </div>
+  <div class="page-header">
+    <a href="/course.html" class="back-btn">←</a>
+    <h1 class="page-title">Settings</h1>
+  </div>
 
-        <!-- Feedback -->
-        <p class="section-label">Share feedback</p>
-        <div class="settings-list animate-fade-in">
-          <div class="settings-item" onclick="toggleSuggestForm()" id="suggestToggle">
-            <span class="settings-item__icon">💡</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Suggest something</p>
-              <p class="settings-item__sub">Topics, modules, or anything you need</p>
-            </div>
-            <span class="settings-item__arrow" id="suggestArrow">→</span>
+  <!-- License status -->
+  <div class="license-block" id="license-block" style="display:none">
+    <div class="license-dot"></div>
+    <div class="license-text">
+      <div class="license-title">Course unlocked</div>
+      <div class="license-key" id="license-key-display"></div>
+    </div>
+  </div>
+
+  <!-- Course -->
+  <div class="settings-section">
+    <div class="settings-label">Course</div>
+    <div class="settings-group">
+      <a href="/assessment.html" class="settings-row">
+        <div class="row-left">
+          <div class="row-icon">🎯</div>
+          <div>
+            <div class="row-label">Retake assessment</div>
+            <div class="row-sub">Get rerouted to a different pathway</div>
           </div>
         </div>
-
-        <div id="suggestForm" style="display:none;margin-top:-0.5rem;margin-bottom:1rem;padding:1.125rem;background:var(--bg-card-light);border:1px solid var(--border-soft);border-radius:0 0 1.25rem 1.25rem">
-          <textarea id="suggestionText" placeholder="What would you want Wellovie to cover? What brought you here that we haven't addressed?" style="
-            width:100%;padding:0.75rem;background:var(--bg-card);
-            border:1px solid var(--border-soft);border-radius:0.875rem;
-            color:var(--text-primary);font-size:0.875rem;line-height:1.65;
-            font-family:var(--font-body);resize:none;min-height:90px;box-sizing:border-box;margin-bottom:0.625rem;
-          "></textarea>
-          <button onclick="submitSuggestion()" style="
-            width:100%;padding:0.75rem;
-            background:rgba(217,95,53,0.1);border:1.5px solid rgba(217,95,53,0.3);
-            border-radius:0.875rem;color:var(--text-ember);font-size:0.875rem;font-weight:600;
-            font-family:var(--font-body);cursor:pointer;
-          ">Send →</button>
-          <p id="suggestionThanks" style="display:none;text-align:center;font-size:0.875rem;color:var(--text-ember);font-weight:600;margin-top:0.625rem">✓ Sent — thank you</p>
-        </div>
-
-        <!-- Account -->
-        <p class="section-label">Account</p>
-        <div class="settings-list animate-fade-in">
-          <div class="settings-item" onclick="Nav.go('/upgrade.html')">
-            <span class="settings-item__icon">✨</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Upgrade to Pro</p>
-              <p class="settings-item__sub">Unlock all 24 modules</p>
-            </div>
-            <span class="settings-item__arrow">→</span>
-          </div>
-          <div class="settings-item" id="resetProgressItem" onclick="confirmResetProgress()">
-            <span class="settings-item__icon">↺</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Reset progress</p>
-              <p class="settings-item__sub">Start the assessment again</p>
-            </div>
-            <span class="settings-item__arrow">→</span>
+        <div class="row-right">→</div>
+      </a>
+      <div class="settings-row" onclick="openModal('reset-modal')">
+        <div class="row-left">
+          <div class="row-icon">🔄</div>
+          <div>
+            <div class="row-label">Reset progress</div>
+            <div class="row-sub">Start the course over from the beginning</div>
           </div>
         </div>
-
-        <!-- Preferences -->
-        <p class="section-label">Preferences</p>
-        <div class="settings-list animate-fade-in">
-          <div class="settings-item">
-            <span class="settings-item__icon">🔔</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Daily reminders</p>
-              <p class="settings-item__sub">Gentle nudge to keep going</p>
-            </div>
-            <label class="toggle">
-              <input type="checkbox" id="notifToggle" onchange="savePreference('notifications', this.checked)">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-          <div class="settings-item">
-            <span class="settings-item__icon">🌙</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Reduce animations</p>
-              <p class="settings-item__sub">For lower-motion preference</p>
-            </div>
-            <label class="toggle">
-              <input type="checkbox" id="motionToggle" onchange="savePreference('reduceMotion', this.checked)">
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- About -->
-        <p class="section-label">About</p>
-        <div class="settings-list animate-fade-in">
-          <div class="settings-item" onclick="Nav.go('/privacy.html')">
-            <span class="settings-item__icon">🔒</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Privacy policy</p>
-            </div>
-            <span class="settings-item__arrow">→</span>
-          </div>
-          <div class="settings-item" onclick="Nav.go('/terms.html')">
-            <span class="settings-item__icon">📄</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Terms of service</p>
-            </div>
-            <span class="settings-item__arrow">→</span>
-          </div>
-          <div class="settings-item" onclick="Nav.go('/disclaimer.html')">
-            <span class="settings-item__icon">ℹ️</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Clinical disclaimer</p>
-            </div>
-            <span class="settings-item__arrow">→</span>
-          </div>
-        </div>
-
-        <!-- Danger zone -->
-        <p class="section-label">Account actions</p>
-        <div class="settings-list animate-fade-in">
-          <div class="settings-item" onclick="signOut()">
-            <span class="settings-item__icon">🚪</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Sign out</p>
-            </div>
-            <span class="settings-item__arrow">→</span>
-          </div>
-          <div class="settings-item settings-item--danger" onclick="confirmDeleteAccount()">
-            <span class="settings-item__icon">🗑</span>
-            <div class="settings-item__body">
-              <p class="settings-item__label">Delete account</p>
-              <p class="settings-item__sub">This cannot be undone</p>
-            </div>
-            <span class="settings-item__arrow">→</span>
-          </div>
-        </div>
-
-        <p class="version-text">Wellovie v1.0 · Made with care</p>
-
+        <div class="row-right">→</div>
       </div>
     </div>
   </div>
 
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text" id="loadingText">Loading...</div>
+  <!-- Device -->
+  <div class="settings-section">
+    <div class="settings-label">Access</div>
+    <div class="settings-group">
+      <div class="settings-row" onclick="openModal('transfer-modal')">
+        <div class="row-left">
+          <div class="row-icon">📱</div>
+          <div>
+            <div class="row-label">Use on another device</div>
+            <div class="row-sub">Re-enter your license key on any device</div>
+          </div>
+        </div>
+        <div class="row-right">→</div>
+      </div>
+    </div>
   </div>
 
-  <script src="/js/supabase.min.js"></script>
-  <script src="/js/supabase-client.js"></script>
-  <script src="/js/utils.js"></script>
-  <script>
+  <!-- About -->
+  <div class="settings-section">
+    <div class="settings-label">About</div>
+    <div class="settings-group">
+      <a href="https://wellovie.com" class="settings-row" target="_blank">
+        <div class="row-left">
+          <div class="row-icon">🌐</div>
+          <div><div class="row-label">wellovie.com</div></div>
+        </div>
+        <div class="row-right">↗</div>
+      </a>
+      <a href="/disclaimer.html" class="settings-row">
+        <div class="row-left">
+          <div class="row-icon">⚠️</div>
+          <div><div class="row-label">Disclaimer</div></div>
+        </div>
+        <div class="row-right">→</div>
+      </a>
+      <a href="/privacy.html" class="settings-row">
+        <div class="row-left">
+          <div class="row-icon">🔒</div>
+          <div><div class="row-label">Privacy policy</div></div>
+        </div>
+        <div class="row-right">→</div>
+      </a>
+      <a href="/terms.html" class="settings-row">
+        <div class="row-left">
+          <div class="row-icon">📄</div>
+          <div><div class="row-label">Terms of service</div></div>
+        </div>
+        <div class="row-right">→</div>
+      </a>
+    </div>
+  </div>
 
-  function toggleSuggestForm() {
-    const form = document.getElementById('suggestForm');
-    const arrow = document.getElementById('suggestArrow');
-    const open = form.style.display === 'none';
-    form.style.display = open ? 'block' : 'none';
-    arrow.textContent = open ? '↓' : '→';
+  <!-- Danger zone -->
+  <div class="settings-section">
+    <div class="settings-label">Danger zone</div>
+    <div class="settings-group">
+      <div class="settings-row destructive" onclick="openModal('clear-modal')">
+        <div class="row-left">
+          <div class="row-icon">🗑️</div>
+          <div>
+            <div class="row-label">Clear all data</div>
+            <div class="row-sub">Removes all progress, reflections, and license</div>
+          </div>
+        </div>
+        <div class="row-right">→</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- RESET PROGRESS MODAL -->
+<div class="modal-backdrop" id="reset-modal">
+  <div class="modal">
+    <div class="modal-title">Reset progress?</div>
+    <p class="modal-sub">This will clear your module progress, streaks, and reflections. Your license key stays — you won't need to re-enter it.</p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeModal('reset-modal')">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="resetProgress()">Reset progress</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLEAR ALL MODAL -->
+<div class="modal-backdrop" id="clear-modal">
+  <div class="modal">
+    <div class="modal-title" style="color:var(--tr)">Clear everything?</div>
+    <p class="modal-sub">This removes all data from this device — progress, reflections, streak, and your license key. You'll need to re-enter your key to access the course again.</p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeModal('clear-modal')">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="clearAll()">Clear everything</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSFER / USE ON NEW DEVICE MODAL -->
+<div class="modal-backdrop" id="transfer-modal">
+  <div class="modal" id="transfer-modal-inner">
+    <div class="modal-title">Use on another device</div>
+    <p class="modal-sub">Your license key works on any device you own. Just open <strong style="color:var(--t1)">learn.wellovie.com</strong> on the new device and enter your key there.</p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeModal('transfer-modal')" style="flex:none;width:100%">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/utils.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script>
+  // Show license info
+  document.addEventListener('DOMContentLoaded', () => {
+    const key = License.getKey();
+    if (key) {
+      const block = document.getElementById('license-block');
+      const display = document.getElementById('license-key-display');
+      block.style.display = 'flex';
+      // Show masked key: XXXX-XXXX-XXXX-1234
+      const parts = key.split('-');
+      if (parts.length >= 4) {
+        const masked = parts.slice(0, -1).map(() => '••••').join('-') + '-' + parts[parts.length - 1];
+        display.textContent = masked;
+      } else {
+        display.textContent = key.slice(0, 4) + '••••••••';
+      }
+    }
+  });
+
+  function openModal(id) {
+    document.getElementById(id).classList.add('show');
   }
 
-  async function submitSuggestion() {
-    const text = document.getElementById('suggestionText')?.value?.trim();
-    if (!text) return;
-    document.getElementById('suggestionThanks').style.display = 'block';
-    document.querySelector('[onclick="submitSuggestion()"]').disabled = true;
-    try {
-      const session = await Auth.getSession();
-      if (session) await DB.saveFeedback({ userId: session.user.id, type: 'suggestion', text, context: 'settings' });
-    } catch(e) {}
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
   }
 
-  async function init() {
-    const session = await Auth.requireAuth('/index.html');
-    if (!session) return;
+  // Close modal on backdrop click
+  document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+    backdrop.addEventListener('click', e => {
+      if (e.target === backdrop) backdrop.classList.remove('show');
+    });
+  });
 
-    // Profile
-    const email = session.user.email || '';
-    const name = session.user.user_metadata?.full_name || email.split('@')[0] || 'You';
-    document.getElementById('profileName').textContent = name;
-    document.getElementById('profileEmail').textContent = email;
-    document.getElementById('avatarInitial').textContent = name.charAt(0).toUpperCase();
-
-    // Load preferences
-    try {
-      const prefs = JSON.parse(localStorage.getItem('wellovie_prefs') || '{}');
-      if (prefs.notifications) document.getElementById('notifToggle').checked = true;
-      if (prefs.reduceMotion) document.getElementById('motionToggle').checked = true;
-    } catch (e) {}
-
-    UI.markLoaded();
+  function resetProgress() {
+    // Clear progress but keep license
+    const license = License.getKey();
+    const customerName = License.getCustomerName();
+    localStorage.clear();
+    if (license) localStorage.setItem('wellovie_license', license);
+    if (customerName) localStorage.setItem('wellovie_customer', customerName);
+    closeModal('reset-modal');
+    UI.showSuccess('Progress reset. Starting fresh.');
+    setTimeout(() => { window.location.href = '/course.html'; }, 1200);
   }
 
-  function savePreference(key, value) {
-    try {
-      const prefs = JSON.parse(localStorage.getItem('wellovie_prefs') || '{}');
-      prefs[key] = value;
-      localStorage.setItem('wellovie_prefs', JSON.stringify(prefs));
-    } catch (e) {}
+  function clearAll() {
+    localStorage.clear();
+    closeModal('clear-modal');
+    setTimeout(() => { window.location.href = '/index.html'; }, 500);
   }
-
-  async function signOut() {
-    if (!confirm('Sign out of Wellovie?')) return;
-    await Auth.signOut();
-    Nav.go('/index.html');
-  }
-
-  async function confirmResetProgress() {
-    if (!confirm('Reset your progress? This will restart your assessment and clear module history.')) return;
-    // Reset would go here — for now just redirect
-    Nav.go('/assessment.html');
-  }
-
-  function confirmDeleteAccount() {
-    if (!confirm('Delete your account? All data will be permanently removed and cannot be recovered.')) return;
-    alert('To delete your account, please contact us at support@wellovie.com');
-  }
-
-  document.addEventListener('DOMContentLoaded', init);
-  </script>
-  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+</script>
 </body>
 </html>

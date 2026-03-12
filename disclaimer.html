@@ -2,17 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0d0906">
-  <title>Wellovie – Before We Begin</title>
-    <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/assets/icons/icon-512.png">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="/css/main.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">  <meta name="theme-color" content="#0d0906">
+  <title>Wellovie – Before We Begin</title>  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/icons/icon-512.png">  <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     html, body {
@@ -408,7 +400,7 @@
         <div class="privacy-note mb-lg">
           <span class="privacy-note__icon">🔒</span>
           <p class="privacy-note__text">
-            <strong>Your privacy matters.</strong> Your worksheet responses, reflections, and check-ins are stored securely and encrypted. We do not sell your data, share it with advertisers, or use it to profile you. You can delete your account and all associated data at any time from Settings.
+            <strong>Your privacy matters.</strong> Your worksheet responses, reflections, and check-ins are stored only on your device — never on a server. We do not sell your data, share it with advertisers, or use it to profile you. You can clear all local course data at any time from Settings.
           </p>
         </div>
 
@@ -446,9 +438,6 @@
     <div class="loading-spinner"></div>
     <div class="loading-text" id="loadingText">Loading...</div>
   </div>
-
-  <script src="/js/supabase.min.js"></script>
-  <script src="/js/supabase-client.js"></script>
   <script src="/js/utils.js"></script>
 
   <script>
@@ -517,7 +506,7 @@
         try {
           const { data: userState } = await DB.getUserState(currentUser.id);
           if (userState?.assessment_completed) {
-            Nav.go('/app.html', 'Welcome back...');
+            Nav.go('/course.html', 'Welcome back...');
           } else {
             Nav.go('/assessment.html', 'Getting started...');
           }
@@ -597,12 +586,6 @@
 
       startWhenReady();
     })();
-  </script>
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    }
   </script>
 </body>
 </html>

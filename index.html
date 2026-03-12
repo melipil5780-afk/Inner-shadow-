@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wellovie — The Inner Work Course</title>
+  <meta name="description" content="4 pathways. 24 modules. Evidence-based tools for the inner work that actually changes things.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:  #0f0d0a; --bg2: #161310; --bg3: #1e1a15;
+      --bd:  rgba(196,168,130,0.12); --bd2: rgba(196,168,130,0.22);
+      --t1:  #f0e8d8; --t2: rgba(240,232,216,0.65); --t3: rgba(240,232,216,0.35);
+      --te:  #d95f35; --tg: #c88a30; --ts: #4a8a60;
+      --gm:  linear-gradient(135deg,#d95f35,#c84a25);
+      --sh:  0 4px 24px rgba(217,95,53,0.25);
+      --fs:  'Cormorant Garamond', Georgia, serif;
+      --fb:  'Outfit', -apple-system, sans-serif;
+      --r:   1.125rem;
+      --max: 1100px;
+      --pad: clamp(1.25rem, 5vw, 4rem);
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--fb); background: var(--bg); color: var(--t1); min-height: 100vh; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(15,13,10,0.92); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--bd);
+    }
+    .nav-inner {
+      max-width: var(--max); margin: 0 auto;
+      padding: 0 var(--pad); height: 4rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+    }
+    .nav-logo { font-family: var(--fs); font-size: 1.375rem; font-weight: 500; color: var(--t1); text-decoration: none; flex-shrink: 0; }
+    .nav-logo span { color: var(--te); font-style: italic; }
+    .nav-right { display: flex; align-items: center; gap: 1.25rem; }
+    .nav-link { font-size: 0.8125rem; color: var(--t3); text-decoration: none; transition: color 0.2s; white-space: nowrap; }
+    .nav-link:hover { color: var(--t2); }
+    .nav-cta {
+      background: var(--gm); color: var(--t1); font-family: var(--fb);
+      font-size: 0.8125rem; font-weight: 700; padding: 0.5rem 1.25rem;
+      border-radius: 999px; border: none; cursor: pointer;
+      text-decoration: none; box-shadow: var(--sh); transition: opacity 0.2s, transform 0.2s; white-space: nowrap;
+    }
+    .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ── LAYOUT WRAPPER ──────────────────────────────────────── */
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
+    .section { padding: 6rem 0; }
+    .divider { border: none; border-top: 1px solid var(--bd); margin: 0; }
+
+    /* ── HERO ────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 8rem var(--pad) 5rem; position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; width: min(700px, 90vw); height: min(700px, 90vw); border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(217,95,53,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%,-55%); pointer-events: none;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(217,95,53,0.1); border: 1px solid rgba(217,95,53,0.28);
+      color: var(--te); font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.375rem 0.875rem; border-radius: 999px; margin-bottom: 2rem;
+      animation: fadeUp 0.6s 0.1s both;
+    }
+    .hero-title {
+      font-family: var(--fs); font-size: clamp(2.75rem, 6vw, 6rem);
+      font-weight: 400; line-height: 1.05; letter-spacing: -0.01em;
+      max-width: 900px; margin-bottom: 1.5rem; animation: fadeUp 0.6s 0.2s both;
+    }
+    .hero-title em { font-style: italic; color: var(--te); }
+    .hero-sub {
+      font-size: clamp(1rem, 1.5vw, 1.25rem); color: var(--t2);
+      line-height: 1.7; max-width: 580px; margin-bottom: 3rem;
+      animation: fadeUp 0.6s 0.3s both;
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeUp 0.6s 0.4s both; }
+    .hero-returner { margin-top: 1.25rem; font-size: 0.8125rem; color: var(--t3); animation: fadeUp 0.6s 0.5s both; }
+    .hero-returner a { color: var(--te); text-decoration: none; border-bottom: 1px solid rgba(217,95,53,0.3); transition: border-color 0.2s; }
+    .hero-returner a:hover { border-color: var(--te); }
+    .hero-stats {
+      display: flex; gap: clamp(1.5rem, 4vw, 3.5rem); margin-top: 4.5rem;
+      flex-wrap: wrap; justify-content: center; animation: fadeUp 0.6s 0.6s both;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-num { font-family: var(--fs); font-size: clamp(2rem, 3.5vw, 2.75rem); font-weight: 500; line-height: 1; margin-bottom: 0.25rem; }
+    .hero-stat-lbl { font-size: 0.75rem; color: var(--t3); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ── BUTTONS ─────────────────────────────────────────────── */
+    .btn-primary {
+      background: var(--gm); color: var(--t1); font-family: var(--fb);
+      font-size: 1rem; font-weight: 700; padding: 1rem 2.25rem;
+      border-radius: 999px; border: none; cursor: pointer;
+      text-decoration: none; box-shadow: var(--sh);
+      transition: all 0.25s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(217,95,53,0.35); }
+    .btn-ghost {
+      background: transparent; color: var(--t2); font-family: var(--fb);
+      font-size: 0.9375rem; font-weight: 500; padding: 1rem 1.75rem;
+      border-radius: 999px; border: 1px solid var(--bd2); cursor: pointer;
+      text-decoration: none; transition: all 0.25s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-ghost:hover { border-color: var(--t2); color: var(--t1); }
+
+    /* ── SECTION HEADERS ─────────────────────────────────────── */
+    .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--te); margin-bottom: 0.75rem; }
+    .section-title { font-family: var(--fs); font-size: clamp(2rem, 3.5vw, 3.25rem); font-weight: 400; line-height: 1.15; margin-bottom: 1rem; }
+    .section-title em { font-style: italic; color: var(--te); }
+    .section-sub { font-size: 1.0625rem; color: var(--t2); line-height: 1.75; max-width: 520px; margin-bottom: 3rem; }
+
+    /* ── PATHWAYS ────────────────────────────────────────────── */
+    .pathways-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+    .pathway-card { background: var(--bg2); border: 1px solid var(--bd); border-radius: var(--r); padding: 1.875rem; transition: border-color 0.25s, transform 0.3s; }
+    .pathway-card:hover { border-color: var(--bd2); transform: translateY(-4px); }
+    .pathway-icon { font-size: 2.25rem; margin-bottom: 1rem; display: block; }
+    .pathway-name { font-family: var(--fs); font-size: 1.5rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .pathway-count { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.875rem; }
+    .pathway-desc { font-size: 0.9rem; color: var(--t2); line-height: 1.65; }
+
+    /* ── FEATURES ────────────────────────────────────────────── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .feature { background: var(--bg2); border: 1px solid var(--bd); border-radius: var(--r); padding: 1.875rem; }
+    .feature-icon { font-size: 1.625rem; margin-bottom: 1rem; }
+    .feature-title { font-family: var(--fs); font-size: 1.25rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .feature-desc { font-size: 0.9rem; color: var(--t2); line-height: 1.7; }
+
+    /* ── SOCIAL PROOF ────────────────────────────────────────── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .testimonial { background: var(--bg2); border: 1px solid var(--bd); border-radius: var(--r); padding: 1.875rem; display: flex; flex-direction: column; gap: 1rem; }
+    .testimonial-stars { color: var(--tg); font-size: 0.875rem; letter-spacing: 0.1em; }
+    .testimonial-text { font-family: var(--fs); font-size: 1.125rem; line-height: 1.65; color: var(--t1); font-style: italic; flex: 1; }
+    .testimonial-author { font-size: 0.8125rem; color: var(--t3); font-weight: 500; }
+
+    /* ── PRICING ─────────────────────────────────────────────── */
+    .pricing-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .pricing-left { }
+    .pricing-left .section-sub { max-width: 100%; }
+    .price-card { background: var(--bg2); border: 1px solid var(--bd2); border-radius: 1.5rem; padding: 2.75rem; }
+    .price-tag { font-family: var(--fs); font-size: 4.5rem; font-weight: 400; line-height: 1; margin-bottom: 0.25rem; }
+    .price-sub { font-size: 0.875rem; color: var(--t3); margin-bottom: 2rem; }
+    .price-includes { text-align: left; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .price-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9375rem; color: var(--t2); }
+    .price-item::before { content: '✓'; color: var(--ts); font-weight: 700; flex-shrink: 0; }
+    .price-note { font-size: 0.8125rem; color: var(--t3); margin-top: 1.25rem; line-height: 1.55; }
+    .assessment-nudge {
+      margin-top: 1.5rem; padding: 1.125rem 1.25rem;
+      background: rgba(200,138,48,0.07); border: 1px solid rgba(200,138,48,0.2);
+      border-radius: var(--r);
+    }
+    .assessment-nudge p { font-size: 0.875rem; color: var(--t2); line-height: 1.65; }
+    .assessment-nudge a { color: var(--tg); text-decoration: none; font-weight: 600; border-bottom: 1px solid rgba(200,138,48,0.3); transition: border-color 0.2s; }
+    .assessment-nudge a:hover { border-color: var(--tg); }
+
+    /* ── FAQ ─────────────────────────────────────────────────── */
+    .faq-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .faq-intro { position: sticky; top: 6rem; }
+    .faq-list { }
+    .faq-item { border-bottom: 1px solid var(--bd); }
+    .faq-item:first-child { border-top: 1px solid var(--bd); }
+    .faq-q {
+      width: 100%; background: none; border: none; color: var(--t1);
+      font-family: var(--fb); font-size: 1rem; font-weight: 500;
+      text-align: left; padding: 1.375rem 0; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      transition: color 0.2s;
+    }
+    .faq-q:hover { color: var(--te); }
+    .faq-chevron { font-size: 1.25rem; color: var(--t3); transition: transform 0.3s, color 0.2s; flex-shrink: 0; line-height: 1; }
+    .faq-item.open .faq-chevron { transform: rotate(45deg); color: var(--te); }
+    .faq-a { font-size: 0.9375rem; color: var(--t2); line-height: 1.8; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.3s; }
+    .faq-item.open .faq-a { max-height: 300px; padding-bottom: 1.375rem; }
+
+    /* ── UNLOCK ──────────────────────────────────────────────── */
+    #unlock { background: var(--bg2); border-top: 1px solid var(--bd); border-bottom: 1px solid var(--bd); padding: 6rem var(--pad); scroll-margin-top: 80px; }
+    .unlock-layout { max-width: var(--max); margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+    .unlock-copy { }
+    .unlock-copy-title { font-family: var(--fs); font-size: clamp(2rem, 3vw, 3rem); font-weight: 400; line-height: 1.15; margin-bottom: 1rem; }
+    .unlock-copy-title em { font-style: italic; color: var(--te); }
+    .unlock-copy p { font-size: 1rem; color: var(--t2); line-height: 1.75; margin-bottom: 1.25rem; }
+    .unlock-copy p:last-child { margin-bottom: 0; }
+    .unlock-form-wrap { }
+    #already-unlocked { display: none; background: rgba(74,138,96,0.1); border: 1px solid rgba(74,138,96,0.3); border-radius: 0.875rem; padding: 1.5rem; margin-bottom: 2rem; text-align: center; }
+    .au-title { font-family: var(--fs); font-size: 1.375rem; color: var(--ts); margin-bottom: 0.375rem; }
+    .au-sub { font-size: 0.875rem; color: var(--t2); margin-bottom: 1rem; }
+    .au-btn { background: linear-gradient(135deg,#4a8a60,#3a7050); color: var(--t1); font-family: var(--fb); font-size: 0.9375rem; font-weight: 700; padding: 0.75rem 2rem; border-radius: 999px; border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: opacity 0.2s; }
+    .au-btn:hover { opacity: 0.9; }
+    .unlock-form { display: flex; flex-direction: column; gap: 0.875rem; }
+    .unlock-input { background: var(--bg3); border: 1px solid var(--bd2); border-radius: 0.75rem; padding: 1rem 1.25rem; font-family: var(--fb); font-size: 1rem; color: var(--t1); outline: none; transition: border-color 0.2s; text-align: center; letter-spacing: 0.05em; width: 100%; }
+    .unlock-input::placeholder { color: var(--t3); letter-spacing: 0; }
+    .unlock-input:focus { border-color: var(--te); }
+    .unlock-btn { background: var(--gm); color: var(--t1); font-family: var(--fb); font-size: 1rem; font-weight: 700; padding: 1rem; border-radius: 999px; border: none; cursor: pointer; box-shadow: var(--sh); transition: all 0.25s; }
+    .unlock-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(217,95,53,0.35); }
+    .unlock-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .unlock-error { color: #e06060; font-size: 0.875rem; display: none; padding: 0.75rem; background: rgba(224,96,96,0.1); border-radius: 0.5rem; border: 1px solid rgba(224,96,96,0.2); }
+    .unlock-error.show { display: block; }
+    .unlock-link { color: var(--t3); font-size: 0.8125rem; text-align: center; }
+    .unlock-link a { color: var(--te); text-decoration: none; }
+    .unlock-link a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer { padding: 3rem 0; border-top: 1px solid var(--bd); }
+    .footer-inner { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .footer-logo { font-family: var(--fs); font-size: 1.125rem; color: var(--t2); }
+    .footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .footer-links a { font-size: 0.8125rem; color: var(--t3); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--t2); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── TABLET (≤1024px) ────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .pathways-grid { grid-template-columns: repeat(2, 1fr); }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .testimonials-grid { grid-template-columns: repeat(2, 1fr); }
+      .pricing-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+      .pricing-left .section-sub { max-width: 540px; }
+      .faq-layout { grid-template-columns: 1fr; gap: 2rem; }
+      .faq-intro { position: static; }
+      .unlock-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+      .unlock-copy { text-align: center; }
+    }
+
+    /* ── MOBILE (≤640px) ─────────────────────────────────────── */
+    @media (max-width: 640px) {
+      :root { --pad: 1.25rem; }
+      .nav-link { display: none; }
+      .section { padding: 4rem 0; }
+      .hero { padding: 7rem var(--pad) 4rem; }
+      .pathways-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .pricing-layout { gap: 2rem; }
+      .price-card { padding: 2rem 1.5rem; }
+      .hero-stats { gap: 1.5rem; }
+      footer .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="https://wellovie.com" class="nav-logo">Wello<span>vie</span></a>
+    <div class="nav-right">
+      <a href="#unlock" class="nav-link">Already have a key?</a>
+      <a href="https://wellovie.lemonsqueezy.com/buy/REPLACE_WITH_YOUR_LS_LINK" class="nav-cta">Get the course — $79 →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-tag">✦ Self-guided course</div>
+  <h1 class="hero-title">The inner work that<br><em>actually changes things.</em></h1>
+  <p class="hero-sub">Four pathways. Twenty-four modules. Evidence-based tools drawn from the same frameworks therapists use — built for the person doing this on their own.</p>
+  <div class="hero-actions">
+    <a href="https://wellovie.lemonsqueezy.com/buy/REPLACE_WITH_YOUR_LS_LINK" class="btn-primary">Get the course — $79 →</a>
+    <a href="/assessment.html" class="btn-ghost">Not sure? Take the free assessment</a>
+  </div>
+  <p class="hero-returner">Already purchased? <a href="#unlock">Enter your key here →</a></p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-lbl">Pathways</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">24</div><div class="hero-stat-lbl">Modules</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">1×</div><div class="hero-stat-lbl">Payment</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">∞</div><div class="hero-stat-lbl">Access</div></div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PATHWAYS -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-label">What's inside</div>
+    <h2 class="section-title">Four pathways.<br><em>One complete journey.</em></h2>
+    <p class="section-sub">Start with the pathway that fits where you are right now. The assessment takes 3 minutes and routes you to the right place.</p>
+    <div class="pathways-grid" id="pathways">
+      <div class="pathway-card">
+        <span class="pathway-icon">🌊</span>
+        <div class="pathway-name">Emotional</div>
+        <div class="pathway-count" style="color:#d95f35">6 modules</div>
+        <p class="pathway-desc">Understanding what you feel, why you feel it, and how to work with emotions instead of fighting them.</p>
+      </div>
+      <div class="pathway-card">
+        <span class="pathway-icon">🧭</span>
+        <div class="pathway-name">Identity</div>
+        <div class="pathway-count" style="color:#c88a30">6 modules</div>
+        <p class="pathway-desc">Who you are beneath the roles, expectations, and stories you've inherited. What you actually want.</p>
+      </div>
+      <div class="pathway-card">
+        <span class="pathway-icon">🤝</span>
+        <div class="pathway-name">Connection</div>
+        <div class="pathway-count" style="color:#4a8a60">6 modules</div>
+        <p class="pathway-desc">Attachment patterns, communication, and the specific skills that make real closeness possible.</p>
+      </div>
+      <div class="pathway-card">
+        <span class="pathway-icon">🌱</span>
+        <div class="pathway-name">Living</div>
+        <div class="pathway-count" style="color:#2a7a8a">6 modules</div>
+        <p class="pathway-desc">Building a life that actually fits — meaning, structure, energy, and what makes days feel worth having.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Not a subscription.<br><em>A course.</em></h2>
+    <p class="section-sub">Buy it once, work through it at your own pace, keep it forever. No monthly fees. No streak guilt.</p>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">Assessment first</div>
+        <p class="feature-desc">A short assessment routes you to the right pathway based on where you actually are — not where you think you should be.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🧠</div>
+        <div class="feature-title">Evidence-based tools</div>
+        <p class="feature-desc">Every module is built on frameworks therapists use — CBT, ACT, attachment theory, somatic work, CFT. Translated for self-guided use.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔥</div>
+        <div class="feature-title">Daily check-ins</div>
+        <p class="feature-desc">A 30-second mood check-in keeps you connected to your own state as you move through the course.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🛠</div>
+        <div class="feature-title">Toolkit you keep</div>
+        <p class="feature-desc">Skills unlock as you complete modules and stay in your toolkit permanently — available any time, any mood.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📱</div>
+        <div class="feature-title">Works anywhere</div>
+        <p class="feature-desc">Opens in any browser on any device — phone, tablet, or desktop. No download, no installation, no App Store.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">Your data stays yours</div>
+        <p class="feature-desc">Your reflections and progress live on your device only. Nothing is stored on a server or tied to an account.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SOCIAL PROOF -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-label">What people say</div>
+    <h2 class="section-title">Real people.<br><em>Real work.</em></h2>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I've tried therapy, journaling, meditation apps. This is the first thing that actually helped me understand why I keep repeating the same patterns."</p>
+        <div class="testimonial-author">— Early access participant, Emotional pathway</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The Connection modules changed how I argue with my partner. Not because I learned tricks — because I finally understood what was actually happening."</p>
+        <div class="testimonial-author">— Early access participant, Connection pathway</div>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I kept waiting to 'feel ready' to do this work. The assessment just said: start here, do this module. That was exactly what I needed."</p>
+        <div class="testimonial-author">— Early access participant, Identity pathway</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PRICING -->
+<section class="section">
+  <div class="wrap">
+    <div class="pricing-layout">
+      <div class="pricing-left">
+        <div class="section-label">Pricing</div>
+        <h2 class="section-title">One price.<br><em>Lifetime access.</em></h2>
+        <p class="section-sub">No monthly fees. No tiers. No expiry. Pay once and the course is yours — every pathway, every module, every tool.</p>
+        <div class="assessment-nudge">
+          <p>Not sure which pathway is right for you? <a href="/assessment.html">Take the free 3-minute assessment first</a> — no purchase needed.</p>
+        </div>
+      </div>
+      <div class="price-card">
+        <div class="price-tag">$79</div>
+        <div class="price-sub">One-time payment — yours forever</div>
+        <div class="price-includes">
+          <div class="price-item">All 4 pathways — 24 modules</div>
+          <div class="price-item">Personalized assessment + routing</div>
+          <div class="price-item">Full toolkit — all skills unlocked as you go</div>
+          <div class="price-item">Daily check-in + progress tracking</div>
+          <div class="price-item">Reflections saved privately on your device</div>
+          <div class="price-item">Works on any device — phone, tablet, desktop</div>
+          <div class="price-item">Lifetime access — no expiry</div>
+        </div>
+        <a href="https://wellovie.lemonsqueezy.com/buy/REPLACE_WITH_YOUR_LS_LINK" class="btn-primary" style="width:100%;justify-content:center;font-size:1.0625rem;padding:1.125rem">
+          Get the course — $79 →
+        </a>
+        <p class="price-note">You'll receive a license key by email immediately after purchase. Enter it below to unlock the course on this device.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- FAQ -->
+<section class="section">
+  <div class="wrap">
+    <div class="faq-layout">
+      <div class="faq-intro">
+        <div class="section-label">Questions</div>
+        <h2 class="section-title">Things people<br><em>usually ask.</em></h2>
+        <p style="font-size:0.9375rem;color:var(--t2);line-height:1.75;margin-top:0.5rem">Anything else? Email <a href="mailto:melipil5780@gmail.com" style="color:var(--te);text-decoration:none;border-bottom:1px solid rgba(217,95,53,0.3)">melipil5780@gmail.com</a></p>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">Can I use it on multiple devices?<span class="faq-chevron">+</span></button>
+          <div class="faq-a">Yes. Your license key works on any device you own — just open the site and enter your key. Because everything is stored locally on each device, your progress won't automatically sync between them, but the course content is fully accessible everywhere.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">What if I lose my license key?<span class="faq-chevron">+</span></button>
+          <div class="faq-a">Your key is always in your original purchase confirmation email from Lemon Squeezy. Search your inbox for "Wellovie" and it'll be there. If you genuinely can't find it, email melipil5780@gmail.com and we'll sort it out.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">Do I need to complete all four pathways?<span class="faq-chevron">+</span></button>
+          <div class="faq-a">No. The assessment routes you to the pathway that fits your situation right now. Most people start with one pathway, work through all 6 modules, and then naturally move to another. You have access to all four — work at your own pace, in whatever order makes sense.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">Is this a replacement for therapy?<span class="faq-chevron">+</span></button>
+          <div class="faq-a">No, and it's not trying to be. Wellovie is for people doing self-guided inner work — understanding themselves, building skills, working through patterns. If you're in crisis or managing a serious mental health condition, please work with a professional. The two can complement each other well.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">What's your refund policy?<span class="faq-chevron">+</span></button>
+          <div class="faq-a">Not the right fit? Email <a href="mailto:melipil5780@gmail.com" style="color:var(--te);text-decoration:none">melipil5780@gmail.com</a> within 7 days of purchase for a full refund — no questions.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">How long does it take to complete?<span class="faq-chevron">+</span></button>
+          <div class="faq-a">Each module is designed to take 20–40 minutes, including the exercises. A single pathway (6 modules) is roughly 3–4 hours of work total. Most people spread it across a few weeks — this isn't something to rush. There's no deadline and no expiry.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">What happens to my progress and reflections?<span class="faq-chevron">+</span></button>
+          <div class="faq-a">Everything stays on your device. Your progress, reflections, and check-ins are stored in your browser's local storage — not on any server. This means they're private by default, but it also means clearing your browser data will clear your progress. We recommend bookmarking the course page and not clearing site data for this domain.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">Questions about your purchase?<span class="faq-chevron">+</span></button>
+          <div class="faq-a">Reach out at <a href="mailto:melipil5780@gmail.com" style="color:var(--te);text-decoration:none">melipil5780@gmail.com</a> and we'll get back to you.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- UNLOCK -->
+<section id="unlock">
+  <div class="unlock-layout">
+    <div class="unlock-copy">
+      <h2 class="unlock-copy-title">Already<br><em>purchased?</em></h2>
+      <p>Enter your license key from your purchase email to unlock the full course on this device.</p>
+      <p>Your key works on any device you own — just enter it each time on a new device.</p>
+    </div>
+    <div class="unlock-form-wrap">
+      <div id="already-unlocked">
+        <div class="au-title">✓ You're already unlocked</div>
+        <div class="au-sub" id="au-name">Your course is ready.</div>
+        <a href="/course.html" class="au-btn">Go to your course →</a>
+      </div>
+      <div class="unlock-form">
+        <input type="text" id="license-input" class="unlock-input" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+        <div class="unlock-error" id="unlock-error"></div>
+        <button class="unlock-btn" id="unlock-btn" onclick="handleUnlock()">Unlock my course →</button>
+        <p class="unlock-link">No key yet? <a href="https://wellovie.lemonsqueezy.com/buy/REPLACE_WITH_YOUR_LS_LINK">Purchase here</a> — key arrives by email instantly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">Wellovie</div>
+    <div class="footer-links">
+      <a href="https://wellovie.com">wellovie.com</a>
+      <a href="/disclaimer.html">Disclaimer</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/utils.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (License.isUnlocked()) {
+      const banner = document.getElementById('already-unlocked');
+      const name = License.getCustomerName();
+      banner.style.display = 'block';
+      if (name) document.getElementById('au-name').textContent = `Welcome back, ${name}. Your course is waiting.`;
+    }
+  });
+
+  async function handleUnlock() {
+    const input = document.getElementById('license-input');
+    const btn   = document.getElementById('unlock-btn');
+    const err   = document.getElementById('unlock-error');
+    const key   = input.value.trim();
+    err.classList.remove('show');
+    if (!key) { showError('Please enter your license key.'); return; }
+    btn.disabled = true;
+    btn.textContent = 'Verifying...';
+    const result = await License.activate(key);
+    if (result.success) {
+      btn.textContent = '✓ Unlocked!';
+      UI.showSuccess('Course unlocked! Taking you in...');
+      setTimeout(() => { window.location.href = '/course.html'; }, 900);
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Unlock my course →';
+      showError(result.error || 'Invalid key. Check your purchase email and try again.');
+    }
+  }
+
+  function showError(msg) {
+    const err = document.getElementById('unlock-error');
+    err.textContent = msg; err.classList.add('show');
+  }
+
+  document.getElementById('license-input').addEventListener('keydown', e => { if (e.key === 'Enter') handleUnlock(); });
+  document.getElementById('license-input').addEventListener('input', e => {
+    const pos = e.target.selectionStart;
+    e.target.value = e.target.value.toUpperCase();
+    e.target.setSelectionRange(pos, pos);
+  });
+
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+</script>
+</body>
+</html>
