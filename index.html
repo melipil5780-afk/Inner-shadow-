@@ -10,12 +10,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --bg:  #0d0906; --bg2: #140d08; --bg3: #1e150e;
       --bd:  rgba(255,190,120,0.10); --bd2: rgba(255,200,140,0.22);
       --t1:  #fdf0e6; --t2: #c4a882; --t3: #7a6050;
-      --te:  #d95f35; --tg: #e8a030; --ts: #7aaa88;
+      --te:  #f4a07a; --tg: #f5c865; --ts: #7aaa88;
+      --ember: #d95f35; --gold: #e8a030;
       --gm:  linear-gradient(135deg,#d95f35,#e8a030);
       --sh:  0 10px 28px rgba(217,95,53,0.28);
       --fs:  'Cormorant Garamond', Georgia, serif;
@@ -24,14 +24,12 @@
       --max: 1100px;
       --pad: clamp(1.25rem, 5vw, 4rem);
     }
-
     html { scroll-behavior: smooth; }
     body { font-family: var(--fb); background: var(--bg); color: var(--t1); min-height: 100vh; overflow-x: hidden; }
     body::before {
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
     }
-
     /* ── NAV ─────────────────────────────────────────────────── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -43,8 +41,8 @@
       padding: 0 var(--pad); height: 4rem;
       display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
     }
-    .nav-logo { font-family: var(--fs); font-size: 1.375rem; font-weight: 500; color: var(--t1); text-decoration: none; flex-shrink: 0; }
-    .nav-logo span { color: var(--te); font-style: italic; }
+    .nav-logo { font-family: var(--fs); font-size: 1.4375rem; font-weight: 600; color: var(--t1); text-decoration: none; flex-shrink: 0; display: flex; align-items: center; gap: 0.5625rem; }
+    .nav-logo em { color: var(--te); font-style: italic; }
     .nav-right { display: flex; align-items: center; gap: 1.25rem; }
     .nav-link { font-size: 0.8125rem; color: var(--t3); text-decoration: none; transition: color 0.2s; white-space: nowrap; }
     .nav-link:hover { color: var(--t2); }
@@ -55,12 +53,10 @@
       text-decoration: none; box-shadow: var(--sh); transition: opacity 0.2s, transform 0.2s; white-space: nowrap;
     }
     .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
-
     /* ── LAYOUT WRAPPER ──────────────────────────────────────── */
     .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
     .section { padding: 6rem 0; }
     .divider { border: none; border-top: 1px solid var(--bd); margin: 0; }
-
     /* ── HERO ────────────────────────────────────────────────── */
     .hero {
       min-height: 100vh; display: flex; flex-direction: column;
@@ -93,16 +89,15 @@
     }
     .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeUp 0.6s 0.4s both; }
     .hero-returner { margin-top: 1.25rem; font-size: 0.8125rem; color: var(--t3); animation: fadeUp 0.6s 0.5s both; }
-    .hero-returner a { color: var(--te); text-decoration: none; border-bottom: 1px solid rgba(217,95,53,0.3); transition: border-color 0.2s; }
+    .hero-returner a { color: var(--te); text-decoration: none; border-bottom: 1px solid rgba(244,160,122,0.3); transition: border-color 0.2s; }
     .hero-returner a:hover { border-color: var(--te); }
     .hero-stats {
       display: flex; gap: clamp(1.5rem, 4vw, 3.5rem); margin-top: 4.5rem;
       flex-wrap: wrap; justify-content: center; animation: fadeUp 0.6s 0.6s both;
     }
     .hero-stat { text-align: center; }
-    .hero-stat-num { font-family: var(--fs); font-size: clamp(2rem, 3.5vw, 2.75rem); font-weight: 500; line-height: 1; margin-bottom: 0.25rem; }
+    .hero-stat-num { font-family: var(--fs); font-size: clamp(2rem, 3.5vw, 2.75rem); font-weight: 500; line-height: 1; margin-bottom: 0.25rem; color: var(--te); }
     .hero-stat-lbl { font-size: 0.75rem; color: var(--t3); text-transform: uppercase; letter-spacing: 0.06em; }
-
     /* ── BUTTONS ─────────────────────────────────────────────── */
     .btn-primary {
       background: var(--gm); color: var(--t1); font-family: var(--fb);
@@ -119,107 +114,64 @@
       text-decoration: none; transition: all 0.25s; display: inline-flex; align-items: center; gap: 0.5rem;
     }
     .btn-ghost:hover { border-color: var(--t2); color: var(--t1); }
-
     /* ── SECTION HEADERS ─────────────────────────────────────── */
     .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--te); margin-bottom: 0.75rem; }
     .section-title { font-family: var(--fs); font-size: clamp(2rem, 3.5vw, 3.25rem); font-weight: 400; line-height: 1.15; margin-bottom: 1rem; }
     .section-title em { font-style: italic; color: var(--te); }
     .section-sub { font-size: 1.0625rem; color: var(--t2); line-height: 1.75; max-width: 520px; margin-bottom: 3rem; }
-
     /* ── PATHWAYS ────────────────────────────────────────────── */
-    .pathways-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
-    }
+    .pathways-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
     .pathway-card { background: var(--bg2); border: 1px solid var(--bd); border-radius: var(--r); padding: 1.875rem; transition: border-color 0.25s, transform 0.3s; }
     .pathway-card:hover { border-color: var(--bd2); transform: translateY(-4px); }
     .pathway-icon { font-size: 2.25rem; margin-bottom: 1rem; display: block; }
     .pathway-name { font-family: var(--fs); font-size: 1.5rem; font-weight: 500; margin-bottom: 0.5rem; }
     .pathway-count { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.875rem; }
     .pathway-desc { font-size: 0.9rem; color: var(--t2); line-height: 1.65; }
-
     /* ── FEATURES ────────────────────────────────────────────── */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
     .feature { background: var(--bg2); border: 1px solid var(--bd); border-radius: var(--r); padding: 1.875rem; }
     .feature-icon { font-size: 1.625rem; margin-bottom: 1rem; }
     .feature-title { font-family: var(--fs); font-size: 1.25rem; font-weight: 500; margin-bottom: 0.5rem; }
     .feature-desc { font-size: 0.9rem; color: var(--t2); line-height: 1.7; }
-
     /* ── SOCIAL PROOF ────────────────────────────────────────── */
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-    }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
     .testimonial { background: var(--bg2); border: 1px solid var(--bd); border-radius: var(--r); padding: 1.875rem; display: flex; flex-direction: column; gap: 1rem; }
     .testimonial-stars { color: var(--tg); font-size: 0.875rem; letter-spacing: 0.1em; }
     .testimonial-text { font-family: var(--fs); font-size: 1.125rem; line-height: 1.65; color: var(--t1); font-style: italic; flex: 1; }
     .testimonial-author { font-size: 0.8125rem; color: var(--t3); font-weight: 500; }
-
     /* ── PRICING ─────────────────────────────────────────────── */
-    .pricing-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
-    }
-    .pricing-left { }
+    .pricing-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
     .pricing-left .section-sub { max-width: 100%; }
     .price-card { background: var(--bg2); border: 1px solid var(--bd2); border-radius: 1.5rem; padding: 2.75rem; }
-    .price-tag { font-family: var(--fs); font-size: 4.5rem; font-weight: 400; line-height: 1; margin-bottom: 0.25rem; }
+    .price-tag { font-family: var(--fs); font-size: 4.5rem; font-weight: 400; line-height: 1; margin-bottom: 0.25rem; color: var(--tg); }
     .price-sub { font-size: 0.875rem; color: var(--t3); margin-bottom: 2rem; }
     .price-includes { text-align: left; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
     .price-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9375rem; color: var(--t2); }
     .price-item::before { content: '✓'; color: var(--ts); font-weight: 700; flex-shrink: 0; }
     .price-note { font-size: 0.8125rem; color: var(--t3); margin-top: 1.25rem; line-height: 1.55; }
-    .assessment-nudge {
-      margin-top: 1.5rem; padding: 1.125rem 1.25rem;
-      background: rgba(232,160,48,0.07); border: 1px solid rgba(232,160,48,0.2);
-      border-radius: var(--r);
-    }
+    .assessment-nudge { margin-top: 1.5rem; padding: 1.125rem 1.25rem; background: rgba(245,200,101,0.07); border: 1px solid rgba(245,200,101,0.2); border-radius: var(--r); }
     .assessment-nudge p { font-size: 0.875rem; color: var(--t2); line-height: 1.65; }
-    .assessment-nudge a { color: var(--tg); text-decoration: none; font-weight: 600; border-bottom: 1px solid rgba(200,138,48,0.3); transition: border-color 0.2s; }
+    .assessment-nudge a { color: var(--tg); text-decoration: none; font-weight: 600; border-bottom: 1px solid rgba(245,200,101,0.3); transition: border-color 0.2s; }
     .assessment-nudge a:hover { border-color: var(--tg); }
-
     /* ── FAQ ─────────────────────────────────────────────────── */
-    .faq-layout {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 4rem;
-      align-items: start;
-    }
+    .faq-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; align-items: start; }
     .faq-intro { position: sticky; top: 6rem; }
-    .faq-list { }
     .faq-item { border-bottom: 1px solid var(--bd); }
     .faq-item:first-child { border-top: 1px solid var(--bd); }
-    .faq-q {
-      width: 100%; background: none; border: none; color: var(--t1);
-      font-family: var(--fb); font-size: 1rem; font-weight: 500;
-      text-align: left; padding: 1.375rem 0; cursor: pointer;
-      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-      transition: color 0.2s;
-    }
+    .faq-q { width: 100%; background: none; border: none; color: var(--t1); font-family: var(--fb); font-size: 1rem; font-weight: 500; text-align: left; padding: 1.375rem 0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 1rem; transition: color 0.2s; }
     .faq-q:hover { color: var(--te); }
     .faq-chevron { font-size: 1.25rem; color: var(--t3); transition: transform 0.3s, color 0.2s; flex-shrink: 0; line-height: 1; }
     .faq-item.open .faq-chevron { transform: rotate(45deg); color: var(--te); }
     .faq-a { font-size: 0.9375rem; color: var(--t2); line-height: 1.8; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.3s; }
     .faq-item.open .faq-a { max-height: 300px; padding-bottom: 1.375rem; }
-
     /* ── UNLOCK ──────────────────────────────────────────────── */
     #unlock { background: var(--bg2); border-top: 1px solid var(--bd); border-bottom: 1px solid var(--bd); padding: 6rem var(--pad); scroll-margin-top: 80px; }
     .unlock-layout { max-width: var(--max); margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-    .unlock-copy { }
     .unlock-copy-title { font-family: var(--fs); font-size: clamp(2rem, 3vw, 3rem); font-weight: 400; line-height: 1.15; margin-bottom: 1rem; }
     .unlock-copy-title em { font-style: italic; color: var(--te); }
     .unlock-copy p { font-size: 1rem; color: var(--t2); line-height: 1.75; margin-bottom: 1.25rem; }
     .unlock-copy p:last-child { margin-bottom: 0; }
-    .unlock-form-wrap { }
-    #already-unlocked { display: none; background: rgba(74,138,96,0.1); border: 1px solid rgba(74,138,96,0.3); border-radius: 0.875rem; padding: 1.5rem; margin-bottom: 2rem; text-align: center; }
+    #already-unlocked { display: none; background: rgba(122,170,136,0.1); border: 1px solid rgba(122,170,136,0.3); border-radius: 0.875rem; padding: 1.5rem; margin-bottom: 2rem; text-align: center; }
     .au-title { font-family: var(--fs); font-size: 1.375rem; color: var(--ts); margin-bottom: 0.375rem; }
     .au-sub { font-size: 0.875rem; color: var(--t2); margin-bottom: 1rem; }
     .au-btn { background: linear-gradient(135deg,#7aaa88,#5c8870); color: var(--t1); font-family: var(--fb); font-size: 0.9375rem; font-weight: 700; padding: 0.75rem 2rem; border-radius: 999px; border: none; cursor: pointer; text-decoration: none; display: inline-block; transition: opacity 0.2s; }
@@ -236,7 +188,6 @@
     .unlock-link { color: var(--t3); font-size: 0.8125rem; text-align: center; }
     .unlock-link a { color: var(--te); text-decoration: none; }
     .unlock-link a:hover { text-decoration: underline; }
-
     /* ── FOOTER ──────────────────────────────────────────────── */
     footer { padding: 3rem 0; border-top: 1px solid var(--bd); }
     .footer-inner { max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
@@ -244,10 +195,7 @@
     .footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
     .footer-links a { font-size: 0.8125rem; color: var(--t3); text-decoration: none; transition: color 0.2s; }
     .footer-links a:hover { color: var(--t2); }
-
     @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* ── TABLET (≤1024px) ────────────────────────────────────── */
     @media (max-width: 1024px) {
       .pathways-grid { grid-template-columns: repeat(2, 1fr); }
       .features-grid { grid-template-columns: repeat(2, 1fr); }
@@ -259,8 +207,6 @@
       .unlock-layout { grid-template-columns: 1fr; gap: 2.5rem; }
       .unlock-copy { text-align: center; }
     }
-
-    /* ── MOBILE (≤640px) ─────────────────────────────────────── */
     @media (max-width: 640px) {
       :root { --pad: 1.25rem; }
       .nav-link { display: none; }
@@ -278,17 +224,28 @@
   </style>
 </head>
 <body>
-
 <nav>
   <div class="nav-inner">
-    <a href="https://wellovie.com" class="nav-logo">Wello<span>vie</span></a>
+    <a href="https://wellovie.com" class="nav-logo">
+      <svg width="24" height="24" viewBox="0 0 48 48" fill="none" style="flex-shrink:0">
+        <defs>
+          <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d95f35"/><stop offset="100%" stop-color="#e8a030"/></linearGradient>
+          <linearGradient id="lg2" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#d95f35"/><stop offset="100%" stop-color="#f5c865"/></linearGradient>
+          <linearGradient id="lg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f5c865"/><stop offset="100%" stop-color="#e8a030"/></linearGradient>
+        </defs>
+        <path d="M 9 34 A 18 18 0 1 1 39 34" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M 15 36 A 12 12 0 1 1 33 36" stroke="url(#lg2)" stroke-width="1.75" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <circle cx="24" cy="24" r="3.5" fill="url(#lg3)"/>
+        <path d="M 12 38 Q 24 35 36 38" stroke="url(#lg1)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+      </svg>
+      Wello<em>vie</em>
+    </a>
     <div class="nav-right">
       <a href="#unlock" class="nav-link">Already have a key?</a>
       <a href="https://wellovie.lemonsqueezy.com/buy/REPLACE_WITH_YOUR_LS_LINK" class="nav-cta">Get the course — $79 →</a>
     </div>
   </div>
 </nav>
-
 <!-- HERO -->
 <section class="hero">
   <div class="hero-glow"></div>
@@ -307,26 +264,24 @@
     <div class="hero-stat"><div class="hero-stat-num">∞</div><div class="hero-stat-lbl">Access</div></div>
   </div>
 </section>
-
 <hr class="divider">
-
 <!-- PATHWAYS -->
 <section class="section">
   <div class="wrap">
     <div class="section-label">What's inside</div>
     <h2 class="section-title">Four pathways.<br><em>One complete journey.</em></h2>
     <p class="section-sub">Start with the pathway that fits where you are right now. The assessment takes 3 minutes and routes you to the right place.</p>
-    <div class="pathways-grid" id="pathways">
+    <div class="pathways-grid">
       <div class="pathway-card">
         <span class="pathway-icon">🌊</span>
         <div class="pathway-name">Emotional</div>
-        <div class="pathway-count" style="color:#d95f35">6 modules</div>
+        <div class="pathway-count" style="color:#f4a07a">6 modules</div>
         <p class="pathway-desc">Understanding what you feel, why you feel it, and how to work with emotions instead of fighting them.</p>
       </div>
       <div class="pathway-card">
         <span class="pathway-icon">🧭</span>
         <div class="pathway-name">Identity</div>
-        <div class="pathway-count" style="color:#e8a030">6 modules</div>
+        <div class="pathway-count" style="color:#f5c865">6 modules</div>
         <p class="pathway-desc">Who you are beneath the roles, expectations, and stories you've inherited. What you actually want.</p>
       </div>
       <div class="pathway-card">
@@ -338,15 +293,13 @@
       <div class="pathway-card">
         <span class="pathway-icon">🌱</span>
         <div class="pathway-name">Living</div>
-        <div class="pathway-count" style="color:#2a7a8a">6 modules</div>
+        <div class="pathway-count" style="color:#c4a882">6 modules</div>
         <p class="pathway-desc">Building a life that actually fits — meaning, structure, energy, and what makes days feel worth having.</p>
       </div>
     </div>
   </div>
 </section>
-
 <hr class="divider">
-
 <!-- FEATURES -->
 <section class="section">
   <div class="wrap">
@@ -354,69 +307,29 @@
     <h2 class="section-title">Not a subscription.<br><em>A course.</em></h2>
     <p class="section-sub">Buy it once, work through it at your own pace, keep it forever. No monthly fees. No streak guilt.</p>
     <div class="features-grid">
-      <div class="feature">
-        <div class="feature-icon">🎯</div>
-        <div class="feature-title">Assessment first</div>
-        <p class="feature-desc">A short assessment routes you to the right pathway based on where you actually are — not where you think you should be.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🧠</div>
-        <div class="feature-title">Evidence-based tools</div>
-        <p class="feature-desc">Every module is built on frameworks therapists use — CBT, ACT, attachment theory, somatic work, CFT. Translated for self-guided use.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🔥</div>
-        <div class="feature-title">Daily check-ins</div>
-        <p class="feature-desc">A 30-second mood check-in keeps you connected to your own state as you move through the course.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🛠</div>
-        <div class="feature-title">Toolkit you keep</div>
-        <p class="feature-desc">Skills unlock as you complete modules and stay in your toolkit permanently — available any time, any mood.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">📱</div>
-        <div class="feature-title">Works anywhere</div>
-        <p class="feature-desc">Opens in any browser on any device — phone, tablet, or desktop. No download, no installation, no App Store.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">🔒</div>
-        <div class="feature-title">Your data stays yours</div>
-        <p class="feature-desc">Your reflections and progress live on your device only. Nothing is stored on a server or tied to an account.</p>
-      </div>
+      <div class="feature"><div class="feature-icon">🎯</div><div class="feature-title">Assessment first</div><p class="feature-desc">A short assessment routes you to the right pathway based on where you actually are — not where you think you should be.</p></div>
+      <div class="feature"><div class="feature-icon">🧠</div><div class="feature-title">Evidence-based tools</div><p class="feature-desc">Every module is built on frameworks therapists use — CBT, ACT, attachment theory, somatic work, CFT. Translated for self-guided use.</p></div>
+      <div class="feature"><div class="feature-icon">🔥</div><div class="feature-title">Daily check-ins</div><p class="feature-desc">A 30-second mood check-in keeps you connected to your own state as you move through the course.</p></div>
+      <div class="feature"><div class="feature-icon">🛠</div><div class="feature-title">Toolkit you keep</div><p class="feature-desc">Skills unlock as you complete modules and stay in your toolkit permanently — available any time, any mood.</p></div>
+      <div class="feature"><div class="feature-icon">📱</div><div class="feature-title">Works anywhere</div><p class="feature-desc">Opens in any browser on any device — phone, tablet, or desktop. No download, no installation, no App Store.</p></div>
+      <div class="feature"><div class="feature-icon">🔒</div><div class="feature-title">Your data stays yours</div><p class="feature-desc">Your reflections and progress live on your device only. Nothing is stored on a server or tied to an account.</p></div>
     </div>
   </div>
 </section>
-
 <hr class="divider">
-
 <!-- SOCIAL PROOF -->
 <section class="section">
   <div class="wrap">
     <div class="section-label">What people say</div>
     <h2 class="section-title">Real people.<br><em>Real work.</em></h2>
     <div class="testimonials-grid">
-      <div class="testimonial">
-        <div class="testimonial-stars">★★★★★</div>
-        <p class="testimonial-text">"I've tried therapy, journaling, meditation apps. This is the first thing that actually helped me understand why I keep repeating the same patterns."</p>
-        <div class="testimonial-author">— Early access participant, Emotional pathway</div>
-      </div>
-      <div class="testimonial">
-        <div class="testimonial-stars">★★★★★</div>
-        <p class="testimonial-text">"The Connection modules changed how I argue with my partner. Not because I learned tricks — because I finally understood what was actually happening."</p>
-        <div class="testimonial-author">— Early access participant, Connection pathway</div>
-      </div>
-      <div class="testimonial">
-        <div class="testimonial-stars">★★★★★</div>
-        <p class="testimonial-text">"I kept waiting to 'feel ready' to do this work. The assessment just said: start here, do this module. That was exactly what I needed."</p>
-        <div class="testimonial-author">— Early access participant, Identity pathway</div>
-      </div>
+      <div class="testimonial"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"I've tried therapy, journaling, meditation apps. This is the first thing that actually helped me understand why I keep repeating the same patterns."</p><div class="testimonial-author">— Early access participant, Emotional pathway</div></div>
+      <div class="testimonial"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"The Connection modules changed how I argue with my partner. Not because I learned tricks — because I finally understood what was actually happening."</p><div class="testimonial-author">— Early access participant, Connection pathway</div></div>
+      <div class="testimonial"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"I kept waiting to 'feel ready' to do this work. The assessment just said: start here, do this module. That was exactly what I needed."</p><div class="testimonial-author">— Early access participant, Identity pathway</div></div>
     </div>
   </div>
 </section>
-
 <hr class="divider">
-
 <!-- PRICING -->
 <section class="section">
   <div class="wrap">
@@ -441,17 +354,13 @@
           <div class="price-item">Works on any device — phone, tablet, desktop</div>
           <div class="price-item">Lifetime access — no expiry</div>
         </div>
-        <a href="https://wellovie.lemonsqueezy.com/buy/REPLACE_WITH_YOUR_LS_LINK" class="btn-primary" style="width:100%;justify-content:center;font-size:1.0625rem;padding:1.125rem">
-          Get the course — $79 →
-        </a>
+        <a href="https://wellovie.lemonsqueezy.com/buy/REPLACE_WITH_YOUR_LS_LINK" class="btn-primary" style="width:100%;justify-content:center;font-size:1.0625rem;padding:1.125rem">Get the course — $79 →</a>
         <p class="price-note">You'll receive a license key by email immediately after purchase. Enter it below to unlock the course on this device.</p>
       </div>
     </div>
   </div>
 </section>
-
 <hr class="divider">
-
 <!-- FAQ -->
 <section class="section">
   <div class="wrap">
@@ -459,46 +368,21 @@
       <div class="faq-intro">
         <div class="section-label">Questions</div>
         <h2 class="section-title">Things people<br><em>usually ask.</em></h2>
-        <p style="font-size:0.9375rem;color:var(--t2);line-height:1.75;margin-top:0.5rem">Anything else? Email <a href="mailto:melipil5780@gmail.com" style="color:var(--te);text-decoration:none;border-bottom:1px solid rgba(217,95,53,0.3)">melipil5780@gmail.com</a></p>
+        <p style="font-size:0.9375rem;color:var(--t2);line-height:1.75;margin-top:0.5rem">Anything else? Email <a href="mailto:melipil5780@gmail.com" style="color:var(--te);text-decoration:none;border-bottom:1px solid rgba(244,160,122,0.3)">melipil5780@gmail.com</a></p>
       </div>
       <div class="faq-list">
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)">Can I use it on multiple devices?<span class="faq-chevron">+</span></button>
-          <div class="faq-a">Yes. Your license key works on any device you own — just open the site and enter your key. Because everything is stored locally on each device, your progress won't automatically sync between them, but the course content is fully accessible everywhere.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)">What if I lose my license key?<span class="faq-chevron">+</span></button>
-          <div class="faq-a">Your key is always in your original purchase confirmation email from Lemon Squeezy. Search your inbox for "Wellovie" and it'll be there. If you genuinely can't find it, email melipil5780@gmail.com and we'll sort it out.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)">Do I need to complete all four pathways?<span class="faq-chevron">+</span></button>
-          <div class="faq-a">No. The assessment routes you to the pathway that fits your situation right now. Most people start with one pathway, work through all 6 modules, and then naturally move to another. You have access to all four — work at your own pace, in whatever order makes sense.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)">Is this a replacement for therapy?<span class="faq-chevron">+</span></button>
-          <div class="faq-a">No, and it's not trying to be. Wellovie is for people doing self-guided inner work — understanding themselves, building skills, working through patterns. If you're in crisis or managing a serious mental health condition, please work with a professional. The two can complement each other well.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)">What's your refund policy?<span class="faq-chevron">+</span></button>
-          <div class="faq-a">Not the right fit? Email <a href="mailto:melipil5780@gmail.com" style="color:var(--te);text-decoration:none">melipil5780@gmail.com</a> within 7 days of purchase for a full refund — no questions.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)">How long does it take to complete?<span class="faq-chevron">+</span></button>
-          <div class="faq-a">Each module is designed to take 20–40 minutes, including the exercises. A single pathway (6 modules) is roughly 3–4 hours of work total. Most people spread it across a few weeks — this isn't something to rush. There's no deadline and no expiry.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)">What happens to my progress and reflections?<span class="faq-chevron">+</span></button>
-          <div class="faq-a">Everything stays on your device. Your progress, reflections, and check-ins are stored in your browser's local storage — not on any server. This means they're private by default, but it also means clearing your browser data will clear your progress. We recommend bookmarking the course page and not clearing site data for this domain.</div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)">Questions about your purchase?<span class="faq-chevron">+</span></button>
-          <div class="faq-a">Reach out at <a href="mailto:melipil5780@gmail.com" style="color:var(--te);text-decoration:none">melipil5780@gmail.com</a> and we'll get back to you.</div>
-        </div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I use it on multiple devices?<span class="faq-chevron">+</span></button><div class="faq-a">Yes. Your license key works on any device you own — just open the site and enter your key. Because everything is stored locally on each device, your progress won't automatically sync between them, but the course content is fully accessible everywhere.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What if I lose my license key?<span class="faq-chevron">+</span></button><div class="faq-a">Your key is always in your original purchase confirmation email from Lemon Squeezy. Search your inbox for "Wellovie" and it'll be there. If you genuinely can't find it, email melipil5780@gmail.com and we'll sort it out.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Do I need to complete all four pathways?<span class="faq-chevron">+</span></button><div class="faq-a">No. The assessment routes you to the pathway that fits your situation right now. Most people start with one pathway, work through all 6 modules, and then naturally move to another. You have access to all four — work at your own pace, in whatever order makes sense.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Is this a replacement for therapy?<span class="faq-chevron">+</span></button><div class="faq-a">No, and it's not trying to be. Wellovie is for people doing self-guided inner work — understanding themselves, building skills, working through patterns. If you're in crisis or managing a serious mental health condition, please work with a professional. The two can complement each other well.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What's your refund policy?<span class="faq-chevron">+</span></button><div class="faq-a">Not the right fit? Email <a href="mailto:melipil5780@gmail.com" style="color:var(--te);text-decoration:none">melipil5780@gmail.com</a> within 7 days of purchase for a full refund — no questions.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">How long does it take to complete?<span class="faq-chevron">+</span></button><div class="faq-a">Each module is designed to take 20–40 minutes, including the exercises. A single pathway (6 modules) is roughly 3–4 hours of work total. Most people spread it across a few weeks — this isn't something to rush. There's no deadline and no expiry.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What happens to my progress and reflections?<span class="faq-chevron">+</span></button><div class="faq-a">Everything stays on your device. Your progress, reflections, and check-ins are stored in your browser's local storage — not on any server. This means they're private by default, but it also means clearing your browser data will clear your progress.</div></div>
+        <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Questions about your purchase?<span class="faq-chevron">+</span></button><div class="faq-a">Reach out at <a href="mailto:melipil5780@gmail.com" style="color:var(--te);text-decoration:none">melipil5780@gmail.com</a> and we'll get back to you.</div></div>
       </div>
     </div>
   </div>
 </section>
-
 <!-- UNLOCK -->
 <section id="unlock">
   <div class="unlock-layout">
@@ -522,9 +406,7 @@
     </div>
   </div>
 </section>
-
 <hr class="divider">
-
 <footer>
   <div class="footer-inner">
     <div class="footer-logo">Wellovie</div>
@@ -536,7 +418,6 @@
     </div>
   </div>
 </footer>
-
 <script src="/js/utils.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -547,7 +428,6 @@
       if (name) document.getElementById('au-name').textContent = `Welcome back, ${name}. Your course is waiting.`;
     }
   });
-
   async function handleUnlock() {
     const input = document.getElementById('license-input');
     const btn   = document.getElementById('unlock-btn');
@@ -560,7 +440,6 @@
     const result = await License.activate(key);
     if (result.success) {
       btn.textContent = '✓ Unlocked!';
-      UI.showSuccess('Course unlocked! Taking you in...');
       setTimeout(() => { window.location.href = '/course.html'; }, 900);
     } else {
       btn.disabled = false;
@@ -568,19 +447,16 @@
       showError(result.error || 'Invalid key. Check your purchase email and try again.');
     }
   }
-
   function showError(msg) {
     const err = document.getElementById('unlock-error');
     err.textContent = msg; err.classList.add('show');
   }
-
   document.getElementById('license-input').addEventListener('keydown', e => { if (e.key === 'Enter') handleUnlock(); });
   document.getElementById('license-input').addEventListener('input', e => {
     const pos = e.target.selectionStart;
     e.target.value = e.target.value.toUpperCase();
     e.target.setSelectionRange(pos, pos);
   });
-
   function toggleFaq(btn) {
     const item = btn.closest('.faq-item');
     const wasOpen = item.classList.contains('open');
